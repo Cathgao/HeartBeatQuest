@@ -120,8 +120,8 @@ as a refer, here I lists what these color bar means.
 This mod supports DIY Interface via Unity asset bundle, please refer to [UnityUI/Readme.md](UnityUI/Readme.md)
 
 > [!NOTE]
-> **FELL FREE TO REQUEST UI FEATURE**  
-> If you are creating a super cool UI but can't do it with current mod, fell free to open an issue.  
+> **FEEL FREE TO REQUEST UI FEATURE**  
+> If you are creating a super cool UI but can't do it with current mod, feel free to open an issue.  
 > If you have any ideas about the UI, also welcome to open an issue. More customization capabilities can be added in the future if someone wants it.
 
 # Development information
