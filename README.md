@@ -124,6 +124,12 @@ This mod supports DIY Interface via Unity asset bundle, please refer to [UnityUI
 > If you are creating a super cool UI but can't do it with current mod, feel free to open an issue.  
 > If you have any ideas about the UI, also welcome to open an issue. More customization capabilities can be added in the future if someone wants it.
 
+# Mod Interaction
+
+This mod works with the following other mods:
+- BeatLeader, record your heart rate
+- Replay, replay the recorded heart rate in the replay file.
+
 # Development information
 
 ## How it works for Bluetooth device
