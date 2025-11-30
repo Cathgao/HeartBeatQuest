@@ -94,6 +94,12 @@ You can input your token, or sign in your pulsoid account directly.(Special than
 > All your heart rate data is obtained directly from pulsoid server. But your token is forwarded from HeartBeatQuest's server when first connect.
 > You can also edit your mod config file directly to skip the token forward. Your game is directly connected to pulsoid server, nothing will be forwarded.
 
+# Supported Mods
+
+This mod is able to work with the following other mods:
+- [BeatLeader](https://github.com/BeatLeader/beatleader-qmod), record your heart rate in to the record file.
+- [Replay](https://github.com/Metalit/Replay), display the recorded heart rate in the record file when replaying.
+
 # Default UI and DIY
 
 > [!TIP]
@@ -123,12 +129,6 @@ This mod supports DIY Interface via Unity asset bundle, please refer to [UnityUI
 > **FEEL FREE TO REQUEST UI FEATURE**  
 > If you are creating a super cool UI but can't do it with current mod, feel free to open an issue.  
 > If you have any ideas about the UI, also welcome to open an issue. More customization capabilities can be added in the future if someone wants it.
-
-# Mod Interaction
-
-This mod works with the following other mods:
-- BeatLeader, record your heart rate
-- Replay, replay the recorded heart rate in the replay file.
 
 # Development information
 
