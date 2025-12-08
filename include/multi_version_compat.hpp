@@ -2,5 +2,4 @@
 #include "paper/shared/logger.hpp"
 #else
 #include "paper2_scotland2/shared/logger.hpp"
-#include "metacore/shared/game.hpp"
 #endif

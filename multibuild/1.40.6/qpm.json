@@ -41,11 +41,6 @@
       "id": "conditional-dependencies",
       "versionRange": "0.3.0",
       "additionalData": {}
-    },
-    {
-      "id": "metacore",
-      "versionRange": "^1.3.2",
-      "additionalData": {}
     }
   ]
 }
