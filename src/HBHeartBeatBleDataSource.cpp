@@ -11,6 +11,7 @@
 #include "scotland2/shared/modloader.h"
 #include "BeatLeaderRecorder.hpp"
 #include <sys/stat.h>
+#include "multi_version_compat.hpp"
 
 namespace HeartBeat{
     DECLARE_DATA_SOURCE(HeartBeatBleDataSource)
@@ -116,7 +117,7 @@ void LoadJavaLibrary(){
     */
     //auto path_str = env->NewStringUTF(path.c_str());
 
-    auto unityPlayerClass = env->FindClass("com/unity3d/player/UnityPlayer");
+    auto unityPlayerClass = env->FindClass(UNITY_ACTIVITY_CLASS);
     if(unityPlayerClass == nullptr){
         getLogger().error("UnityPlayer class not found");
         return;

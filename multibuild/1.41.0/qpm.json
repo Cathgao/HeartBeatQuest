@@ -40,6 +40,11 @@
       "id": "conditional-dependencies",
       "versionRange": "0.3.0",
       "additionalData": {}
+    },
+    {
+    "id": "flamingo",
+    "versionRange": "^1.1.2",
+    "additionalData": {}
     }
   ]
 }
