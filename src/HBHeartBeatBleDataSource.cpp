@@ -117,20 +117,38 @@ void LoadJavaLibrary(){
     */
     //auto path_str = env->NewStringUTF(path.c_str());
 
-    auto unityPlayerClass = env->FindClass(UNITY_ACTIVITY_CLASS);
-    if(unityPlayerClass == nullptr){
-        getLogger().error("UnityPlayer class not found");
-        return;
-    }
+    // auto unityPlayerClass = env->FindClass("com/unity3d/player/UnityPlayerGameActivity");
+    // if(unityPlayerClass == nullptr){
+    //     getLogger().error("UnityPlayer class not found");
+    //     return;
+    // }
+    jobject ClassLoader;
+    {
+        jclass atClass =
+            env->FindClass("android/app/ActivityThread");
 
-    auto ClassClass = env->FindClass("java/lang/Class");
-    auto ClassClass_getClassLoader = env->GetMethodID(ClassClass, "getClassLoader", 
-        "()Ljava/lang/ClassLoader;");
-    if(ClassClass_getClassLoader == nullptr){
-        getLogger().error("Can't find class loader");
-        return;
+        jmethodID currentApplication =
+            env->GetStaticMethodID(
+                atClass,
+                "currentApplication",
+                "()Landroid/app/Application;");
+
+        jobject application =
+            env->CallStaticObjectMethod(atClass, currentApplication);
+        jclass contextClass =
+            env->FindClass("android/content/Context");
+
+        jmethodID getClassLoader =
+            env->GetMethodID(
+                contextClass,
+                "getClassLoader",
+                "()Ljava/lang/ClassLoader;");
+
+        ClassLoader =
+            env->CallObjectMethod(application, getClassLoader);
+
     }
-    auto ClassLoader = env->CallObjectMethod(unityPlayerClass, ClassClass_getClassLoader);
+    // auto ClassLoader = env->CallObjectMethod(unityPlayerClass, ClassClass_getClassLoader);
     CHECK_EXCEPTION();
 
     jobject buffobj;

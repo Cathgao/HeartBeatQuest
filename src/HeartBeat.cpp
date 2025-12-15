@@ -107,12 +107,10 @@ namespace HeartBeat{
 };
 
 #define ASSET_UI_PATH "/sdcard/ModData/com.beatgames.beatsaber/Mods/HeartBeatQuest/UI/"
-
+#define DEFAULT_UI_PATH "/sdcard/ModData/com.beatgames.beatsaber/Mods/HeartBeatQuest/defaultUI.bundle"
 namespace HeartBeat{
     AssetBundleManager assetBundleMgr;
     
-    #include "DefaultUI.inl"
-
     void FixPrefab(UnityEngine::Transform * transform){
         auto tm = transform->GetComponent<TMPro::TMP_Text *>();
         if(tm){
@@ -207,12 +205,9 @@ namespace HeartBeat{
             }
             getLogger().info("bundle load over");
         };
-
-        auto AssetBundle_LoadFromMemory = (function_ptr_t<UnityEngine::AssetBundle*,ArrayW<uint8_t>, uint32_t>)CRASH_UNLESS(il2cpp_functions::resolve_icall("UnityEngine.AssetBundle::LoadFromMemory_Internal"));
-        ArrayW<uint8_t> data(sizeof(default_ui));
-        memcpy(data->begin(), default_ui, sizeof(default_ui));
+        
         try{
-            auto bundle = AssetBundle_LoadFromMemory(data, 0);
+            auto bundle = UnityEngine::AssetBundle::LoadFromFile(DEFAULT_UI_PATH);
             LoadAssetBundle(bundle, {});
             getLogger().info("Unload bundle {}", (void*)bundle);
             bundle->Unload(true);
@@ -272,14 +267,8 @@ namespace HeartBeat{
                     getLogger().error("Can't load asset bundle {}", assetUI.filePath.value());
                 }
             }else{
-                ArrayW<uint8_t> data(sizeof(default_ui));
-                memcpy(data->begin(), default_ui, sizeof(default_ui));
                 try{
-                    static std::optional<function_ptr_t<UnityEngine::AssetBundle*,ArrayW<uint8_t>, uint32_t>> AssetBundle_LoadFromMemory = {};
-                    if(!AssetBundle_LoadFromMemory.has_value())
-                        AssetBundle_LoadFromMemory = (function_ptr_t<UnityEngine::AssetBundle*,ArrayW<uint8_t>, uint32_t>)CRASH_UNLESS(il2cpp_functions::resolve_icall("UnityEngine.AssetBundle::LoadFromMemory_Internal"));
-
-                    bundle = AssetBundle_LoadFromMemory.value()(data, 0);
+                    bundle = UnityEngine::AssetBundle::LoadFromFile(DEFAULT_UI_PATH);
                 }catch(...){
                     getLogger().error("Can't load default ui");
                 }

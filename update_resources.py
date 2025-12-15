@@ -10,5 +10,4 @@ def update(input_file_path, output_file_path, variable_name):
 
         o.write("\n};")
 
-update("UnityUI\\Assets\\AssetBundlesAndroid\\defaultwidget", "src\\DefaultUI.inl", "default_ui")
 update("extra/HeartBeatBLEReader.dex", "src\\HeartBeatBLEDex.inl", "ble_dex")
