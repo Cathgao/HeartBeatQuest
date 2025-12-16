@@ -2,6 +2,7 @@
 #include "HMUI/CurvedTextMeshPro.hpp"
 #include "HMUI/InputFieldView.hpp"
 #include "HMUI/ViewController.hpp"
+#include "HMUI/CurvedCanvasSettings.hpp"
 #include "ModConfig.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 #include "UnityEngine/Color.hpp"
@@ -61,6 +62,9 @@ namespace SetthingUI{
             auto canvas = obj->AddComponent<UnityEngine::Canvas*>();
             canvas->set_renderMode(UnityEngine::RenderMode::WorldSpace);
             canvas->set_scaleFactor(0.001);
+            
+            obj->AddComponent<HMUI::CurvedCanvasSettings*>()->_radius = 0;
+
             auto crect = canvas->GetComponent<UnityEngine::RectTransform*>();
             crect->set_position({0, 1.5f, 3});
             crect->set_anchoredPosition({0.5f,0.5f});
