@@ -19,6 +19,7 @@
 #include "UnityEngine/Quaternion.hpp"
 
 #include "custom-types/shared/macros.hpp"
+#include "custom-types/shared/register.hpp"
 
 #include "ModConfig.hpp"
 
@@ -105,6 +106,8 @@ extern "C" void late_load() {
     getLogger().info("Loading HeartBeatQuest(" VERSION ","  GAME_VERSION ")");
 
     il2cpp_functions::Init();
+
+    custom_types::Register::AutoRegister();
 
     getLogger().info("init BSML");
     BSML::Init();
