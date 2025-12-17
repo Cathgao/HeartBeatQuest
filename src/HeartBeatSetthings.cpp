@@ -733,7 +733,13 @@ namespace SetthingUI{
                     ds->url_open_wanted = false;
                 }
                 //open the login url in the quest browser
+#if defined(GAME_VER_1_37_0)
+                static auto UnityEngine_Application_OpenURL = il2cpp_utils::resolve_icall<void, StringW>("UnityEngine.Application::OpenURL");
+                UnityEngine_Application_OpenURL(url);
+#else
                 UnityEngine::Application::OpenURL(url);
+
+#endif
             }
                 if(PairInBrowserBtn){
                     PairInBrowserBtn->set_interactable(!ds->IsSafePairing());
