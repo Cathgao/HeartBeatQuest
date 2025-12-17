@@ -11,6 +11,7 @@
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/RenderMode.hpp"
 #include "UnityEngine/RectTransform.hpp"
+#include "UnityEngine/Application.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-utils-methods.hpp"
 #include "beatsaber-hook/shared/utils/typedefs-string.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Settings.hpp"
@@ -732,8 +733,7 @@ namespace SetthingUI{
                     ds->url_open_wanted = false;
                 }
                 //open the login url in the quest browser
-                static auto UnityEngine_Application_OpenURL = il2cpp_utils::resolve_icall<void, StringW>("UnityEngine.Application::OpenURL");
-                UnityEngine_Application_OpenURL(url);
+                UnityEngine::Application::OpenURL(url);
             }
                 if(PairInBrowserBtn){
                     PairInBrowserBtn->set_interactable(!ds->IsSafePairing());
