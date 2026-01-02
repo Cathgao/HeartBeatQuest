@@ -47,10 +47,10 @@ I will describe how did I make the default prefab here, to make sure you missed 
 
 You can start with a empty unity 3d project.
 
-SampleScene is used to preview, it has a RootCanvas, and a Image called `energyGo` to simulate the game UI at the bottom. And energyGo added a `HeartController.cs` to simulate the mod does.
+SampleScene is used to preview, it has a RootCanvas, and a Image called `energyGo` to simulate the game UI at the bottom. And energyGo added a `HeartController.cs` to simulate what the mod does.
 ![alt text](image-1.png)
 
- When UI loaded, our ui will attach to the energyGO as the parent, so just create a canvas below the energyGO and change it `RectTransform` to makesure it's at the right place.
+ When UI loaded, our ui will be attached to the energyGO as the parent by the mod, so just create a canvas under the energyGO and change the `RectTransform` to make sure it is in the right place.
 
 ![alt text](image-2.png)
 
@@ -58,13 +58,13 @@ We can create a TextMeshPro text here to display the heartrate.
 
 ![alt text](image-3.png)
 
-The mod will search all `GameObject`, if they called `auto:heartrate`, it's content will be replaced to number. So rename it.
+The mod will search all `GameObject`, if they called `auto:heartrate`, it's content will be replaced to the heart rate number. So rename it.
 
 ![alt text](image-4.png)
 
 You can't change the Font, because the mod will reset the TMPs font to the game used font. If the mod not reset the font, all texts will be invisible for some reason idk. But you can use the font called `Teko-Medium SDF` to preview the effect in game, it's not a perfect preview, but can be used to design the text size.
 
-The mod will find every Animator in the prefab and control them. Do this with your Unity skills, we won't go into detail since this isn't a Unity tutorial.
+The mod will find every Animator in the prefab and control all of them. Do this with your Unity skills, we won't go into detail since this isn't a Unity tutorial.
 
 
 We could add more informathion to the scene. Create a empty GameObject called info. Disable it because we don't want it being rendered in the scene.
@@ -88,10 +88,10 @@ Change the AssetBundle option to make sure it will be packed to the output.
 
 You can set multiple prefabs to a same AssetBundle value, and they will be packed to a single file.
 
-Then use `Assets > Build AssetBundles` to export the asset bundle. Remember to add a suffix `.bundle`, the game will filter other files.
+Then use `Assets > Build AssetBundles` to export the asset bundle. Remember to add a suffix `.bundle` for the generated file manually, the game will filter other files.
 
 # About the `feature:xxx` object
 
-You don't have to do this but you are suggested to. This is for compatibility. For example, if your UI has a child info called `feature:abc`, the mod version that doesn't support the feature `abs` will shows a mod update warning to player when they are trying to load this UI.
+You don't have to do this but you are suggested to. This is for compatibility. For example, if your UI has a child info called `feature:abc`, the mod version that doesn't support the feature `abc` will shows a mod update warning to player when they are trying to load this UI.
 
 Nothing else will happen. Your UI will still be loaded in the old version mod. You can make it compatable to the old mod if you want, with your superb unity animator skill.
