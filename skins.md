@@ -10,4 +10,4 @@ The [skin](https://github.com/frto027/HeartBeatQuest-NyanCatSkin) will be avalia
 
 ## PR welcome
 
-Welcome to submit a pull request to add a link to your DIY user interface.
+Welcome to submit a pull request to add a link to your DIY user interface, so other players could find your awesome things.
