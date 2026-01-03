@@ -17,6 +17,10 @@ it is HIGHLY recommanded to use `Polar H10` or similar production as heart rate 
 
 The flash of the game UI reflects the frequency of device responses. You can use this to evaluate your device performance.
 
+# Mod Skins
+
+See [this](skins.md) file for more details.
+
 # Usage
 
 After you patch the mod(e.g. with [mbf](https://mbf.bsquest.xyz/), with or without `bluetooth` permission), you can configure it inside the game via a button on your left side. Change the data source and restart the game, and it works.

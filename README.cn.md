@@ -2,6 +2,10 @@
 
 在quest游戏中显示心率数据。本页面为简要使用方式，详细说明请参考英文Readme。
 
+# 模组皮肤
+
+请看[这个文件](skins.md)。
+
 # 蓝牙设备数据源
 
 1. 使用[mbf](https://mbf.bsquest.xyz/)安装这个模组，同时需要给游戏打`bluetooth`权限补丁。
