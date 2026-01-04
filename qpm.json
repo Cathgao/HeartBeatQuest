@@ -4,7 +4,7 @@
     "dependenciesDir": "extern",
     "info": {
         "name": "HeartBeatQuest",
-        "id": "HeartBeatQuest",
+        "id": "HeartBeatLanReceiver",
         "version": "0.3.7",
         "url": null,
         "additionalData": {
