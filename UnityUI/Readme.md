@@ -7,7 +7,20 @@
 
 # How it works
 
-The quest mod uses the prefab just as `HeartController.cs`. code says everything, read it if you need.
+## For beginners background
+
+The mod ui is designed to be an [AssetBundle](https://docs.unity3d.com/6000.3/Documentation/Manual/AssetBundlesIntro.html) with some [prefab](https://docs.unity3d.com/6000.3/Documentation/Manual/Prefabs.html) inside it. The mod load the prefab and mount it to the game UI when game start, and destroy it when sone play over. You can add nearly everything to your prefab if you want create a mod UI. But with some Unity limit.
+
+Some limit I know:
+- You can't add code to your UI, unity won't load it.
+- Shader is magic and likely not work. I'm not tested.
+- Font works or not? idk, maybe not.
+
+Generally, you should create a prefab and add one or more [animator](https://docs.unity3d.com/Manual/class-AnimatorController.html) and the mod will control it/them. You don't need code at all.
+
+## For pro
+
+The quest mod uses the prefab just as `HeartController.cs`. Code says everything, read it if you need.
 
 And with the following additional behavior:
 
