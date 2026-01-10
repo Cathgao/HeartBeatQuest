@@ -1,3 +1,5 @@
+#ifdef WITH_QOUNTERS
+
 #include "QountersDriver.hpp"
 #include "ModConfig.hpp"
 #include "UnityEngine/Color.hpp"
@@ -10,7 +12,6 @@
 #include <dlfcn.h>
 #include "metacore/shared/events.hpp"
 
-#ifdef WITH_QOUNTERS
 
 namespace HeartBeat {
 namespace Qounters {
