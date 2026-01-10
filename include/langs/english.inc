@@ -75,3 +75,5 @@ V(pulsoid_token, "Pulsoid Token")
 V(pulsoid_clear_token, "Clear and Reset")
 
 V(your_setthings_is_in_another_menu, "Thank you Player! But data-source config is in another menu!")
+
+V(ui_not_avaliable_in_qounter, "Heart UI not avaliable in qounters. Please add HeartRate text source at qounters.")

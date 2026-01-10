@@ -49,6 +49,10 @@ add_compile_definitions(MOD_ID=\"${MOD_ID}\")
 add_compile_definitions("GAME_VER_${TARGET_GAME_VERSION}")
 add_compile_definitions("GAME_VERSION=\"${TARGET_GAME_VERSION}\"")
 
+if(WITH_QOUNTERS)
+  add_compile_definitions(WITH_QOUNTERS)
+endif()
+
 # handle some custom commands
 option(WITH_REPLAY "Enable Replay mod support" OFF)
 if(WITH_REPLAY)

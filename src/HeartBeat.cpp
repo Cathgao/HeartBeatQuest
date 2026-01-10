@@ -1,4 +1,5 @@
 #include "ModConfig.hpp"
+#include "QountersDriver.hpp"
 #include "TMPro/TextAlignmentOptions.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 #include "TMPro/TextMeshPro.hpp"
@@ -52,6 +53,18 @@ namespace HeartBeat{
 
     }
     void HeartBeatObj::Update(){
+
+        #if WITH_QOUNTERS
+        if(isQountersMode){
+            HeartBeat::ApiInternal::Update();
+            int data;
+            if(HeartBeat::ApiInternal::GetData(&data))
+                HeartBeat::Qounters::DisplayData(data);
+            //there is no asset bundle UI for qounters, just return.
+            return;
+        }
+        #endif
+
         if(this->gameObject->activeInHierarchy == false)
             return;
         if(this->serverMessageDisplayer){

@@ -67,3 +67,5 @@ V(pulsoid_token, "Pulsoid令牌")
 V(pulsoid_clear_token, "清除并重置")
 
 V(your_setthings_is_in_another_menu, "谢谢你玩家! 但数据源设置在另一个菜单里!")
+
+V(ui_not_avaliable_in_qounter, "心率UI在Qounters启用时不支持！请在Qounters中设置HeartRate文本。")

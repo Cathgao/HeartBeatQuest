@@ -4,7 +4,9 @@
 #include "HeartBeatDataSource.hpp"
 #include "HeartBeatSetthings.hpp"
 #include "GlobalNamespace/CoreGameHUDController.hpp"
+#include "QountersDriver.hpp"
 #include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/zzzz__GameObject_def.hpp"
 #include "bsml/shared/BSML.hpp"
 #include "multi_version_compat.hpp"
 
@@ -20,6 +22,8 @@
 
 #include "custom-types/shared/macros.hpp"
 #include "custom-types/shared/register.hpp"
+
+#include "QountersDriver.hpp"
 
 #include "ModConfig.hpp"
 
@@ -62,6 +66,26 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
     if(MainMenuPreviewObject)
         MainMenuPreviewObject->set_active(false);
 
+    static int firstInitialize = true;
+    if(firstInitialize){
+        firstInitialize = false;
+        if(HeartBeat::dataSourceType == HeartBeat::DS_BLE){
+            HeartBeat::DataSource::getInstance<HeartBeat::HeartBeatBleDataSource>()->SetSelectedBleMac(getModConfig().SelectedBleMac.GetValue());
+        }
+    }
+
+    #ifdef WITH_QOUNTERS
+    if(HeartBeat::Qounters::Enabled()){
+        getLogger().info("Qounters enabled, will not load mod UI.Loading qounters feeder object");
+        HeartBeat::AssetBundleInstinateInformation result; // there is no asset bundle with qounters
+        result.gameObject = UnityEngine::GameObject::New_ctor();
+        auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>();
+        comp->loadedComponents = result;
+        comp->isQountersMode = true;
+        return;
+    }
+    #endif
+
     HeartBeat::assetBundleMgr.Init();
 
     std::string SelectedUI = getModConfig().SelectedUI.GetValue();
@@ -91,15 +115,10 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
         getLogger().error("The UI Can't loaded.");
         return;
     }
-    result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>()->loadedComponents = result;
+    auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>();
+    comp->loadedComponents = result;
+    comp->isQountersMode = false;
     getLogger().info("The UI has been created");
-    static int firstInitialize = true;
-    if(firstInitialize){
-        firstInitialize = false;
-        if(HeartBeat::dataSourceType == HeartBeat::DS_BLE){
-            HeartBeat::DataSource::getInstance<HeartBeat::HeartBeatBleDataSource>()->SetSelectedBleMac(getModConfig().SelectedBleMac.GetValue());
-        }
-    }
 }
 // Called later on in the game loading - a good time to install function hooks
 extern "C" void late_load() {
@@ -130,5 +149,9 @@ extern "C" void late_load() {
     getLogger().info("init recorder...");
     HeartBeat::Recorder::Init();
 
+    #ifdef WITH_QOUNTERS
+    getLogger().info("try init qounters...");
+    HeartBeat::Qounters::Init();
+    #endif
     getLogger().info("Done.");
 }

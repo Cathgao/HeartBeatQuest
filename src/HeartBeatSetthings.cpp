@@ -4,6 +4,7 @@
 #include "HMUI/ViewController.hpp"
 #include "HMUI/CurvedCanvasSettings.hpp"
 #include "ModConfig.hpp"
+#include "QountersDriver.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 #include "UnityEngine/Color.hpp"
 #include "UnityEngine/Vector2.hpp"
@@ -80,7 +81,9 @@ namespace SetthingUI{
 
             HeartBeat::AssetBundleInstinateInformation result;
             HeartBeat::assetBundleMgr.Instantiate(SelectedUI, canvas->get_transform(), result);
-            (MainMenuPreviewObjectComp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>())->loadedComponents = result;
+            MainMenuPreviewObjectComp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>();
+            MainMenuPreviewObjectComp->loadedComponents = result;
+            MainMenuPreviewObjectComp->isQountersMode = false;
 
             MainMenuPreviewObject = obj;
         }
@@ -104,6 +107,9 @@ namespace SetthingUI{
             BSML::Lite::CreateText(container->get_transform(),LANG->for_game, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
             #ifdef WITH_REPLAY
             BSML::Lite::CreateText(container->get_transform(),"build-feature: replay", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
+            #endif
+            #ifdef WITH_QOUNTERS
+            BSML::Lite::CreateText(container->get_transform(),"build-feature: qounters++", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
             #endif
             BSML::Lite::CreateToggle(container->get_transform(), LANG->enabled, getModConfig().Enabled.GetValue(), [](bool v){
                 getModConfig().Enabled.SetValue(v);
@@ -189,6 +195,13 @@ namespace SetthingUI{
                 LANG->max_heart, 0, 1, getModConfig().MaxHeart.GetValue(), [](float v){
                     getModConfig().MaxHeart.SetValue(v);
                 });
+
+
+            #ifdef WITH_QOUNTERS
+            if(HeartBeat::Qounters::Enabled()){
+                BSML::Lite::CreateText(container->get_transform(),LANG->ui_not_avaliable_in_qounter, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 10});
+            }
+            #endif
 
             std::vector<std::string_view> ui_s;
             for(auto& pair : HeartBeat::assetBundleMgr.loadedBundles){
