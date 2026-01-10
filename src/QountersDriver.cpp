@@ -124,13 +124,12 @@ bool hrRangeEnable(UnparsedJSON unparsed){
 
     int Maximum = getModConfig().MaxHeart.GetValue();
     float percent = ((float)qounters_hr) / Maximum;
-    if(opts.range__5 && percent < 0.5) return true;
-    if(opts.range_5_6 && percent >= 0.5 && percent < 0.6) return true;
-    if(opts.range_6_7 && percent >= 0.6 && percent < 0.7) return true;
-    if(opts.range_7_8 && percent >= 0.7 && percent < 0.8) return true;
-    if(opts.range_8_9 && percent >= 0.8 && percent < 0.9) return true;
-    if(opts.range_9_ && percent >= 0.9) return true;
-    return false;
+    if(percent < 0.5) return opts.range__5;
+    if(percent < 0.6) return opts.range_5_6;
+    if(percent < 0.7) return opts.range_6_7;
+    if(percent < 0.8) return opts.range_7_8;
+    if(percent < 0.9) return opts.range_8_9;
+    return opts.range_9_;
 }
 void hrRangeEnableUI(UnityEngine::GameObject* parent, UnparsedJSON unparsed){
     static HeartRateRangeEnableOption opts;
