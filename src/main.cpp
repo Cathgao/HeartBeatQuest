@@ -75,7 +75,7 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
     }
 
     #ifdef WITH_QOUNTERS
-    if(HeartBeat::Qounters::Enabled()){
+    if(HeartBeat::Qounters::Enabled() && !getModConfig().IgnoreQounters.GetValue()){
         getLogger().info("Qounters enabled, will not load mod UI.Loading qounters feeder object");
         HeartBeat::AssetBundleInstinateInformation result; // there is no asset bundle with qounters
         result.gameObject = UnityEngine::GameObject::New_ctor();

@@ -40,6 +40,8 @@ DECLARE_CONFIG(ModConfig){
     CONFIG_VALUE(PulsoidToken, std::string, "PulsoidToken", "00000000-0000-0000-0000-000000000000")
 
     CONFIG_VALUE(HypeRateWebSocketIdentity, std::string, "HypeRateWebsocketIdentity", "")
+
+    CONFIG_VALUE(IgnoreQounters, bool, "IgnoreQounters", false)
 #if defined(GAME_VER_1_28_0) || defined(GAME_VER_1_35_0) || defined(GAME_VER_1_37_0)
 );
 #else

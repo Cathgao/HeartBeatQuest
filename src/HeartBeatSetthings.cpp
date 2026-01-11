@@ -200,6 +200,12 @@ namespace SetthingUI{
             #ifdef WITH_QOUNTERS
             if(HeartBeat::Qounters::Enabled()){
                 BSML::Lite::CreateText(container->get_transform(),LANG->ui_not_avaliable_in_qounter, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 10});
+                BSML::Lite::AddHoverHint(
+                    BSML::Lite::CreateToggle(container->get_transform(), LANG->ignore_qounters, getModConfig().IgnoreQounters.GetValue(), [](bool v){
+                        getModConfig().IgnoreQounters.SetValue(v);
+                    }),
+                    LANG->ignore_qounters_hint
+                );
             }
             #endif
 
