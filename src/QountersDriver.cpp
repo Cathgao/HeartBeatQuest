@@ -82,17 +82,17 @@ float hrPercentSource(UnparsedJSON unparsed){
 
     if(opts.alignedTo5Range){
         /*
-        50% - 60% : 0
-        60% - 70% : 1
-        70% - 80% : 2
-        80% - 90% : 3
-        90% - 100%: 4
+        50% - 60% : 1
+        60% - 70% : 2
+        70% - 80% : 3
+        80% - 90% : 4
+        90% - 100%: 5
         */
-        int level = percent * 10 - 5;
+        int level = percent * 10 - 4;
         if(level < 0) level = 0;
-        if(level > 4) level = 4;
+        if(level > 5) level = 5;
 
-        percent = ((float)level)/4;
+        percent = ((float)level)/5;
     }
 
     return percent;
