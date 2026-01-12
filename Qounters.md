@@ -14,7 +14,7 @@ The qounters++ feature was automatically enabled when supported qounters++ mod i
 
 When qounters++ detected, the bundled UI, which is what you see without qounters++, will be disabled automatically.
 
-# Qounters support
+# Qounters++ support
 
 You should add the heart rate manually at qounters' configuration. The following sources are supported.
 
@@ -51,3 +51,9 @@ You can configure it to output true or false at each heart rate zone. This is us
 A color source called `HeartRateRangeColor` is added to qounters++.
 
 You can configure it to output different colors at each heart rate zone. This is useful when you want to change some UI elements' color as the heart rate zone.
+
+# Manual Compat
+
+If you disable qounters++ in the game menu, the HeartRate mod will not load UI in the game. You should manually enable the `Ignore Qounters++ mod` option in the HeartRate setthing menu, then this mod will works.
+
+Do NOT enable that option when you're using qounters.
