@@ -28,10 +28,10 @@ A float number source called `HeartRatePercent` is added to qounters++.
 
 The float value is calculated by your configured max heart rate. This is useful when you want to create some shape that indicates your heart rate zone.
 
-By default, it was aligned as the following value.
-HeartRate / MaxHeartRate | source value
+By default, it output a value that was aligned as the following value.
+HeartRate / MaxHeartRate | aligned output value
 --- | ---
-`<50%`| 0
+`<50%`| 0%
 `50%-60%`|20%
 `60%-70%`|40%
 `70%-80%`|60%
