@@ -1,12 +1,13 @@
 # Supported version
 
-This mod supported [Qounters++](https://github.com/Metalit/Qounters/tree/main).
+This mod supports [Qounters++](https://github.com/Metalit/Qounters/tree/main).
 
 The qounters feature was enabled at the following version.
 
-Game Version | HeartBeatQuest Version | Qounters version
---- | --- | ---
-1.40.8 | >= 0.3.8 | N/A
+Game Version | HeartBeatQuest Version | Qounters version | Comments
+--- | --- | --- | ---
+`1.40.8` | `>=0.3.8` | N/A
+`<1.40.8`| N/A | N/A | Qounters++ with API isn't avaliable in old games
 
 # Mod Compatability
 
