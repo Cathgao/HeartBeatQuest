@@ -28,6 +28,7 @@ HeartBeatOSCDataSource * oscDataSource;
 
 HeartBeatOSCDataSource::HeartBeatOSCDataSource(){
     Recorder::heartDeviceName = HEART_DEV_NAME_OSC;
+    selected_addr = getModConfig().OSCSelectedDevice.GetValue();
     this->CreateSocket();
 }
 

@@ -127,6 +127,7 @@ public:
         return selected_addr; 
     }
     const void SetSelectedAddr(const std::string& mac){
+        getModConfig().OSCSelectedDevice.SetValue(mac);
         std::lock_guard<std::mutex> g(mutex);
         this->selected_addr = mac;
     }

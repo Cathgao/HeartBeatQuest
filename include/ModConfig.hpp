@@ -34,6 +34,7 @@ DECLARE_CONFIG(ModConfig){
     CONFIG_VALUE(DataSourceType, int, "DataSourceType", 2);
 
     CONFIG_VALUE(OSCPort, int, "OSC Port", 9000);
+    CONFIG_VALUE(OSCSelectedDevice, std::string, "OSC Selected Device", "");
 
     CONFIG_VALUE(HypeRateId, std::string, "HypeRateID", "")
 
