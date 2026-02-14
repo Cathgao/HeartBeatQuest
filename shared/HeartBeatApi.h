@@ -19,8 +19,8 @@ struct HeartBeatApi{
     int __not_used__;
 
     /* 
-        call this at least once per frame, to change the result of GetData.
-        call this more than once in the same Update frame will be ignored.
+        call this at least once per frame to flush the result of GetData.
+        If this is called more than once per update-frame, the seconed or more calls will be ignored.
     */
     void (*Update)(void);
 
@@ -38,12 +38,15 @@ struct HeartBeatApi{
 
 
     /*
+        Do NOT use this api. This has been deprecated. If someone wants this please contact me.
+        For version 0.3.8 or later, the api call will be ignored.
+
         argument:
             Updater: a function pointer that act as the GetData function
 
         Provide your own data updater to heart mod.
 
-        Recorder will ignore the data provided by ALternateDataUpdater.
+        Recorder will ignore the data provided by AlternateDataUpdater.
 
         If the Updater is not nullptr, it will replace the internal GetData function.
         Then the heart mod will display heart rate provided by this Updater, instead of
