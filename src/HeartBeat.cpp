@@ -19,8 +19,7 @@
 #include "UnityEngine/Quaternion.hpp"
 
 #include "multi_version_compat.hpp"
-
-#include "HeartBeatApiInternal.hpp"
+#include "DataHub.hpp"
 
 #include "BeatLeaderRecorder.hpp"
 
@@ -74,9 +73,9 @@ namespace HeartBeat{
 
         #if WITH_QOUNTERS
         if(isQountersMode){
-            HeartBeat::ApiInternal::Update();
+            DataHub::getInstance()->Update();
             int data;
-            if(HeartBeat::ApiInternal::GetData(&data))
+            if(DataHub::getInstance()->GetData(data))
                 HeartBeat::Qounters::DisplayData(data);
             //there is no asset bundle UI for qounters, just return.
             return;
@@ -104,10 +103,10 @@ namespace HeartBeat{
         
         HeartBeat::SettingsUI::Update();
         
-        HeartBeat::ApiInternal::Update();
+        DataHub::getInstance()->Update();
 
         int data;
-        if(HeartBeat::ApiInternal::GetData(&data)){
+        if(DataHub::getInstance()->GetData(data)){
             int Maximum = getModConfig().MaxHeart.GetValue();
             float percent = ((float)data) / Maximum;
 

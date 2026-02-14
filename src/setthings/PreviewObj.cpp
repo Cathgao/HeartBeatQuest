@@ -58,7 +58,7 @@ void HeartBeat::MainMenuPreviewer::Reload(){
 }
 
 HeartBeat::MainMenuPreviewer * HeartBeat::MainMenuPreviewer::getInstance(){
-    HeartBeat::MainMenuPreviewer * instance = nullptr;
+    static HeartBeat::MainMenuPreviewer * instance = nullptr;
     if(!instance)
         instance = new HeartBeat::MainMenuPreviewer();
     return instance;
