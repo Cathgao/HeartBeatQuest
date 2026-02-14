@@ -1,8 +1,10 @@
 #include "main.hpp"
 #include "GlobalNamespace/CoreGameHUDController.hpp"
 #include "HeartBeat.hpp"
-#include "HeartBeatDataSource.hpp"
-#include "HeartBeatSetthings.hpp"
+#include "SettingsSnapshot.hpp"
+#include "data_sources/Bluetooth.hpp"
+#include "data_sources/DataSource.hpp"
+#include "settings/Settings.hpp"
 #include "GlobalNamespace/CoreGameHUDController.hpp"
 #include "QountersDriver.hpp"
 #include "UnityEngine/GameObject.hpp"
@@ -34,8 +36,6 @@
 static modloader::ModInfo modInfo = {MOD_ID, VERSION, 0}; // Stores the ID and version of our mod, and is sent to the modloader upon startup
 std::string modConfigFilePath = "unk";
 
-bool ModEnabled;
-
 // Called at the early stages of game loading
 extern "C" void setup(CModInfo& info) {
     info.id = MOD_ID;
@@ -48,9 +48,9 @@ extern "C" void setup(CModInfo& info) {
 
     getLogger().info("Completed setup!");
 
-    ModEnabled = getModConfig().Enabled.GetValue();
+    HeartBeat::SettingsSnapshot::getInstance();
 
-    if(ModEnabled){
+    if(HeartBeat::SettingsSnapshot::getInstance()->ModEnabled){
         HeartBeat::DataSource::getInstance();
     }
 }
@@ -59,18 +59,14 @@ Paper::ConstLoggerContext<21> & getLogger(){
     static Paper::ConstLoggerContext<21> logger = Paper::ConstLoggerContext("HeartBeatLanReceiver");
     return logger;
 }
-UnityEngine::GameObject* MainMenuPreviewObject = nullptr;
-HeartBeat::HeartBeatObj *MainMenuPreviewObjectComp = nullptr;
 MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initialize, void, GlobalNamespace::CoreGameHUDController * self, GlobalNamespace::CoreGameHUDController::InitData * data){
     GameplayCoreHook(self, data);
-    if(MainMenuPreviewObject)
-        MainMenuPreviewObject->set_active(false);
 
     static int firstInitialize = true;
     if(firstInitialize){
         firstInitialize = false;
-        if(HeartBeat::dataSourceType == HeartBeat::DS_BLE){
-            HeartBeat::DataSource::getInstance<HeartBeat::HeartBeatBleDataSource>()->SetSelectedBleMac(getModConfig().SelectedBleMac.GetValue());
+        if(HeartBeat::SettingsSnapshot::getInstance()->DataSourceType == HeartBeat::DS_BLE){
+            HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatBleDataSource>()->SetSelectedBleMac(getModConfig().SelectedBleMac.GetValue());
         }
     }
 
@@ -135,9 +131,9 @@ extern "C" void late_load() {
     I18N::Setup();
 
     getLogger().info("Installing ui...");
-    SetthingUI::Setup();
+    HeartBeat::SettingsUI::Setup();
 
-    if(ModEnabled == false){
+    if(HeartBeat::SettingsSnapshot::getInstance()->ModEnabled == false){
         getLogger().info("The mod is not enabled");
         return;
     }

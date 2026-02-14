@@ -1,5 +1,5 @@
 #include "BeatLeaderRecorder.hpp"
-#include "HeartBeatDataSource.hpp"
+#include "SettingsSnapshot.hpp"
 #include "conditional-dependencies/shared/main.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -244,7 +244,7 @@ MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInsta
     if(!needRecord)
         return;
 
-    if(dataSourceType == DS_RANDOM){
+    if(SettingsSnapshot::getInstance()->DataSourceType == DS_RANDOM){
         DisableRecord();
         getLogger().info("random datasource will not enable record.");
         return;

@@ -1,23 +1,16 @@
-#include "HeartBeatDataSource.hpp"
 #include <cstddef>
 #include <jni.h>
-#include <string>
-#include <utility>
-#include <vector>
 #include <cstdio>
 #include <cstring>
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "main.hpp"
 #include "scotland2/shared/modloader.h"
 #include "BeatLeaderRecorder.hpp"
-#include <sys/stat.h>
 #include "multi_version_compat.hpp"
 
-namespace HeartBeat{
-    DECLARE_DATA_SOURCE(HeartBeatBleDataSource)
-}
-
 #include "HeartBeatBLEDex.inl"
+
+#include "data_sources/Bluetooth.hpp"
+#include "ModConfig.hpp"
 
 HeartBeat::HeartBeatBleDataSource * bleDataSource;
 
@@ -216,7 +209,7 @@ void LoadJavaLibrary(){
 }
 
 
-HeartBeat::HeartBeatBleDataSource::HeartBeatBleDataSource(){
+HeartBeat::HeartBeatBleDataSource::HeartBeatBleDataSource():HeartBeat::DataSource(HeartBeat::DataSourceType::DS_BLE){
     bleDataSource = this;
     
     LoadJavaLibrary();

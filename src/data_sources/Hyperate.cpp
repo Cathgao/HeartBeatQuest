@@ -1,4 +1,3 @@
-#include "HeartBeatDataSource.hpp"
 #include <atomic>
 #include <cmath>
 #include <cstddef>
@@ -36,6 +35,10 @@
 #include <websocketpp/frame.hpp>
 
 #include <sys/system_properties.h>
+#include "data_sources/Hyperate.hpp"
+
+#include "data_sources/remote_config.hpp"
+#include "UIManager.hpp"
 /*
 
 You know you won't copy these code to get heart rate in other project
@@ -45,13 +48,11 @@ If you have similar needs, please contact HypeRate official, they are kind peopl
 */
 namespace HeartBeat{
 
-DECLARE_DATA_SOURCE(HeartBeatHypeRateDataSource)
-
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
 static client endpoint;
 
-HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource(){
+HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource():DataSource(DataSourceType::DS_HypeRate){
     Recorder::heartDeviceName = HEART_DEV_NAME_HYPERATE;
     this->CreateSocket();
 }
@@ -164,7 +165,7 @@ void HeartBeatHypeRateDataSource::CreateSocket(){
         }
 
         if(con == nullptr){
-            if(displayWanted && getModConfig().HypeRateId.GetValue().length() > 0){
+            if(UIManager::getInstance()->hasReader() && getModConfig().HypeRateId.GetValue().length() > 0){
                 websocketpp::lib::error_code ec;
                 con = endpoint.get_connection(WS_SERVER_HOST "/hyperate", ec);
                 con_opened = false;

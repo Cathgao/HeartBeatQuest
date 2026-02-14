@@ -1,4 +1,3 @@
-#include "HeartBeatDataSource.hpp"
 #include <atomic>
 #include <cmath>
 #include <cstddef>
@@ -25,6 +24,7 @@
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/document.h"
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/stringbuffer.h"
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/writer.h"
+#include "data_sources/DataSource.hpp"
 #include "i18n.hpp"
 #include "main.hpp"
 
@@ -37,15 +37,17 @@
 
 #include <curl/curl.h>
 
+#include "data_sources/Pulsoid.hpp"
+#include "data_sources/remote_config.hpp"
+#include "UIManager.hpp"
 namespace HeartBeat{
 
-DECLARE_DATA_SOURCE(HeartBeatPulsoidDataSource)
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
 static client endpoint;
 
-HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource(){
+HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource():DataSource(DataSourceType::DS_Pulsoid){
     Recorder::heartDeviceName = HEART_DEV_NAME_PULSOID;
     this->CreateSocket();
 }
@@ -249,7 +251,7 @@ void HeartBeatPulsoidDataSource::CreateSocket(){
                     }
             }
 
-            if(displayWanted && !safe_pair_wanted && getModConfig().PulsoidToken.GetValue() != "" && getModConfig().PulsoidToken.GetValue() != "00000000-0000-0000-0000-000000000000"){
+            if(UIManager::getInstance()->hasReader() && !safe_pair_wanted && getModConfig().PulsoidToken.GetValue() != "" && getModConfig().PulsoidToken.GetValue() != "00000000-0000-0000-0000-000000000000"){
                 websocketpp::lib::error_code ec;
                 std::string url = "ws://dev.pulsoid.net/api/v1/data/real_time?response_mode=text_plain_only_heart_rate&access_token=" + getModConfig().PulsoidToken.GetValue();
                 con = endpoint.get_connection(url, ec);

@@ -1,8 +1,8 @@
-#include "HeartBeatDataSource.hpp"
 #include "UnityEngine/Time.hpp"
 
 #include "../shared/HeartBeatApi.h"
 #include "BeatLeaderRecorder.hpp"
+#include "data_sources/DataSource.hpp"
 
 #include <cstddef>
 

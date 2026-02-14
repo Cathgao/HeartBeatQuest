@@ -55,8 +55,12 @@ DECLARE_CLASS_CODEGEN(HeartBeat, HeartBeatObj, UnityEngine::MonoBehaviour){
     DECLARE_INSTANCE_METHOD(void, Update);
 public:
     AssetBundleInstinateInformation loadedComponents;
-    HMUI::CurvedTextMeshPro * serverMessageDisplayer = nullptr;
     bool isQountersMode;
+
+    bool isAddedToUIManager = false;
+    
+    void addToUIManager();
+    void removeFromUIManager();
 #if defined(GAME_VER_1_28_0) || defined(GAME_VER_1_35_0) || defined(GAME_VER_1_37_0)
 );
 #else

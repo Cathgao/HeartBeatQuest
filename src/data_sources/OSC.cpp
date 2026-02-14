@@ -1,4 +1,3 @@
-#include "HeartBeatDataSource.hpp"
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -12,26 +11,25 @@
 #include <netinet/ip.h>
 
 #include <unistd.h>
-#include <utility>
-#include <vector>
 #include "ModConfig.hpp"
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "main.hpp"
-#include "scotland2/shared/modloader.h"
 #include "BeatLeaderRecorder.hpp"
+#include "data_sources/OSC.hpp"
 
 namespace HeartBeat{
 
-DECLARE_DATA_SOURCE(HeartBeatOSCDataSource)
-
 HeartBeatOSCDataSource * oscDataSource;
 
-HeartBeatOSCDataSource::HeartBeatOSCDataSource(){
+HeartBeatOSCDataSource::HeartBeatOSCDataSource():DataSource(DataSourceType::DS_OSC){
     Recorder::heartDeviceName = HEART_DEV_NAME_OSC;
     selected_addr = getModConfig().OSCSelectedDevice.GetValue();
     this->CreateSocket();
 }
-
+void HeartBeatOSCDataSource::SetSelectedAddr(const std::string& mac){
+        getModConfig().OSCSelectedDevice.SetValue(mac);
+        std::lock_guard<std::mutex> g(mutex);
+        this->selected_addr = mac;
+    }
 void HeartBeatOSCDataSource::CreateSocket(){
     this->recv_socket = socket(AF_INET, SOCK_DGRAM, 0);
     if(this->recv_socket == -1){

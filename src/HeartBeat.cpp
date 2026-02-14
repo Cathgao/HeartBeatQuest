@@ -1,14 +1,15 @@
 #include "ModConfig.hpp"
 #include "QountersDriver.hpp"
+#include "SettingsSnapshot.hpp"
 #include "TMPro/TextAlignmentOptions.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 #include "TMPro/TextMeshPro.hpp"
 #include "UnityEngine/Animator.hpp"
 #include "UnityEngine/Color.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Text.hpp"
+#include "data_sources/Hyperate.hpp"
 #include "main.hpp"
 #include "HeartBeat.hpp"
-#include "HeartBeatSetthings.hpp"
 
 #include "UnityEngine/Transform.hpp"
 #include "UnityEngine/RectTransform.hpp"
@@ -19,7 +20,6 @@
 
 #include "multi_version_compat.hpp"
 
-#include "HeartBeatDataSource.hpp"
 #include "HeartBeatApiInternal.hpp"
 
 #include "BeatLeaderRecorder.hpp"
@@ -27,10 +27,14 @@
 #include "UnityEngine/AssetBundle.hpp"
 #include "UnityEngine/Resources.hpp"
 #include "bsml/shared/Helpers/getters.hpp"
-
+#include "data_sources/DataSource.hpp"
+#include "settings/PreviewObj.hpp"
+#include "settings/Settings.hpp"
 #include "stdio.h"
 #include <cstddef>
 #include <mutex>
+#include "UIManager.hpp"
+
 DEFINE_TYPE(HeartBeat, HeartBeatObj);
 
 const char *HeartBeat::ui_features[] = {
@@ -40,13 +44,27 @@ const char *HeartBeat::ui_features[] = {
 };
 
 namespace HeartBeat{
+    
+
     void HeartBeatObj::Start(){
-        HeartBeat::DataSource::getInstance()->SetDisplayWanted(true);
+        addToUIManager();
+    }
+
+    void HeartBeatObj::addToUIManager(){
+        if(isAddedToUIManager)
+            return;
+        isAddedToUIManager = true;
+        UIManager::getInstance()->addReader();
+    }
+    void HeartBeatObj::removeFromUIManager(){
+        if(!isAddedToUIManager)
+            return;
+        isAddedToUIManager = false;
+        UIManager::getInstance()->decReader();
     }
 
     void HeartBeatObj::OnDestroy(){
-        getLogger().info("Destroy, we don't need heart in the future");
-        HeartBeat::DataSource::getInstance()->SetDisplayWanted(false);
+        removeFromUIManager();
 
         // we will disable replay here (when the UI inside the game scene is destroyed), because I don't want hook a scene unload function.
         HeartBeat::Recorder::replayStarted = false;
@@ -67,11 +85,11 @@ namespace HeartBeat{
 
         if(this->gameObject->activeInHierarchy == false)
             return;
-        if(this->serverMessageDisplayer){
-            if(dataSourceType == DS_HypeRate){
+        if(MainMenuPreviewer::getInstance()->serverMessageDisplayer){
+            if(SettingsSnapshot::getInstance()->DataSourceType == DS_HypeRate){
                 std::string message;
                 bool has_message = false;
-                auto * instance = DataSource::getInstance<HeartBeatHypeRateDataSource>();
+                auto * instance = DataSource::getInstance()->as<HeartBeatHypeRateDataSource>();
                 if(instance->has_message_from_server){
                     std::lock_guard<std::mutex> lock(instance->message_from_server_mutex);
                     if(instance->has_message_from_server){
@@ -80,16 +98,12 @@ namespace HeartBeat{
                     }
                 }
                 if(has_message)
-                this->serverMessageDisplayer->set_text(message);
+                MainMenuPreviewer::getInstance()->serverMessageDisplayer->set_text(message);
             }
         }
-        {
-            static int slow_down = 0;
-            if(slow_down++ > 20){
-                slow_down = 0;
-                SetthingUI::UpdateSetthingsUI();
-            }
-        }
+        
+        HeartBeat::SettingsUI::Update();
+        
         HeartBeat::ApiInternal::Update();
 
         int data;
@@ -113,7 +127,7 @@ namespace HeartBeat{
                 anmt->SetInteger("hr_10", (data/10)%10);
                 anmt->SetInteger("hr_100", (data/100)%10);
 
-                anmt->SetInteger("datasource", HeartBeat::dataSourceType);
+                anmt->SetInteger("datasource", HeartBeat::DataSource::getInstance()->dataSourceType);
             }
         }
     }
