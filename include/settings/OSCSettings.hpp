@@ -5,7 +5,7 @@
 namespace HeartBeat {
     
     class OSCSettings : public Settings {
-        BSML::CustomListTableData *osc_list;
+        BSML::CustomListTableData *osc_list = nullptr;
         std::vector<std::string> osc_addr;
 
         void UpdateOscScrollList();

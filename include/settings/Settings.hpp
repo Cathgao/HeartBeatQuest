@@ -20,7 +20,7 @@ namespace HeartBeat{
         bool m_isActive = false;
 
     protected:
-        HMUI::ViewController *controller;
+        HMUI::ViewController *controller = nullptr;
 
     public:
         Settings(const std::string menuTitle, const std::string buttonText, const std::string hoverHint)

@@ -10,7 +10,7 @@ namespace HeartBeat {
         MainSettings():Settings("HeartBeatQuest Main Config", LANG->heart_config, "<3") { }
         void CreateElements() override;
 
-        UnityEngine::UI::Button * private_public_btn;
+        UnityEngine::UI::Button * private_public_btn = nullptr;
 
         void UpdateContent();
 

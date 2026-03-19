@@ -5,7 +5,7 @@
 namespace HeartBeat {
     
     class BleSettings : public Settings {
-        BSML::CustomListTableData *ble_list;
+        BSML::CustomListTableData *ble_list = nullptr;
         std::vector<std::string> ble_mac;
 
         void UpdateSelectedBLEScrollList();

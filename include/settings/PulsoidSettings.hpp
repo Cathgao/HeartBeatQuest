@@ -5,12 +5,12 @@
 namespace HeartBeat {
     
     class PulsoidSettings : public Settings {
-        HMUI::CurvedTextMeshPro* tokenText;
+        HMUI::CurvedTextMeshPro* tokenText = nullptr;
         bool tokenTextIsDirty = false;
 
-        UnityEngine::UI::Button *PairInBrowserBtn, *BrowserCompleteBtn, *CancelBrowserPairBtn;
+        UnityEngine::UI::Button *PairInBrowserBtn = nullptr, *BrowserCompleteBtn = nullptr, *CancelBrowserPairBtn = nullptr;
 
-        HMUI::CurvedTextMeshPro* errMsgText;
+        HMUI::CurvedTextMeshPro* errMsgText = nullptr;
 
 
     public:
