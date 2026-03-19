@@ -11,18 +11,18 @@ void HeartBeat::BleSettings::CreateElements(){
 
     auto *scanBtnContainer = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
 
-    BSML::Lite::CreateUIButton(scanBtnContainer->get_transform(), "Start Scan", UnityEngine::Vector2{}, UnityEngine::Vector2{25, 8}, [this](){
+    BSML::Lite::CreateUIButton(scanBtnContainer->get_transform(), LANG->scan_start, UnityEngine::Vector2{}, UnityEngine::Vector2{25, 8}, [this](){
         bleDataSource->StartScan();
     });
-    BSML::Lite::CreateUIButton(scanBtnContainer->get_transform(), "Stop Scan", UnityEngine::Vector2{}, UnityEngine::Vector2{25, 8}, [this](){
+    BSML::Lite::CreateUIButton(scanBtnContainer->get_transform(), LANG->scan_stop, UnityEngine::Vector2{}, UnityEngine::Vector2{25, 8}, [this](){
         bleDataSource->StopScan();
     });
 
-    BSML::Lite::CreateUIButton(container->get_transform(), "Turn Location ON", UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8}, [this](){
+    BSML::Lite::CreateUIButton(container->get_transform(), LANG->turn_location_on, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8}, [this](){
         OpenWebpage("https://www.meta.com/help/quest/1202271140482151/");
     });
 
-    scanStatusText = BSML::Lite::CreateText(container->get_transform(), "Not Scanning", UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
+    scanStatusText = BSML::Lite::CreateText(container->get_transform(), LANG->no_scan, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
 
     ble_list = BSML::Lite::CreateScrollableList(container->get_transform(), {70,60}, [this](int idx){
         UpdateSelectedBLEValue(idx);
@@ -44,7 +44,7 @@ void HeartBeat::BleSettings::Update(){
     if(slow_down++ % 5 == 0){
         UpdateSelectedBLEScrollList();
     }
-    scanStatusText->set_text(bleDataSource->isAutoConnecting()? "Auto Connecting" : bleDataSource->isScanning() ? "Scanning" : "Not Scanning");
+    scanStatusText->set_text(bleDataSource->isAutoConnecting()? LANG->auto_scaning : bleDataSource->isScanning() ? LANG->scaning : LANG->no_scan);
 }
 void HeartBeat::BleSettings::UpdateSelectedBLEScrollList(){
     auto * i = bleDataSource;

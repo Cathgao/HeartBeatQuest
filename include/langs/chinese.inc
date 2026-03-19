@@ -21,6 +21,14 @@ V(heart_osc_senders, "OSC心率源")
 
 V(heart_osc_port, "OSC端口号: %d")
 
+V(scan_start, "开始扫描")
+V(scan_stop, "停止扫描")
+V(turn_location_on, "请打开位置服务")
+
+V(scaning, "正在扫描")
+V(auto_scaning, "正在自动扫描")
+V(no_scan, "扫描已停止")
+
 V(pairing, "正在配对，点击停止")
 V(not_pairing, "配对停止，点击开始")
 V(hiding_mac_addr, "MAC地址已隐藏，点击显示")

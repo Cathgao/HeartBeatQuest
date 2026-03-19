@@ -21,6 +21,14 @@ V(unsupported_feature_udpatre_mod, "UI unsupported, maybe update your mod")
 
 V(heart_osc_port, "OSC Port: %d")
 
+V(scan_start, "Start Scan")
+V(scan_stop, "Stop Scan")
+V(turn_location_on, "Please Turn Location ON")
+
+V(scaning, "Scaning")
+V(auto_scaning, "Auto scaning")
+V(no_scan, "Scan stopped")
+
 V(pairing, "Pairing.. click to stop.")
 V(not_pairing, "Not pairing.. click to start.")
 V(hiding_mac_addr, "hiding mac address, click to show.")
