@@ -1,5 +1,6 @@
 package top.zxff.nativeblereader;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -10,9 +11,16 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.ParcelUuid;
 import android.widget.Toast;
 
 import androidx.annotation.Discouraged;
@@ -23,7 +31,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -199,12 +209,69 @@ public class BleReader {
 
     /* mac -> DeviceStatus */
     HashMap<String, DeviceStatus> BleDevices = new HashMap<>();
-    public void BleStart(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                ActivityCompat.checkSelfPermission(context, "android.permission.BLUETOOTH_CONNECT") != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity)context, new String[]{"android.permission.BLUETOOTH_CONNECT"}, 1);
-            return;
+    @SuppressLint("InlinedApi")
+    private boolean testIfHavePermissions(boolean requirePermissions){
+        LinkedList<String> permissions = new LinkedList<>();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+            permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
+            permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.R &&ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED)
+            permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
+
+        if(permissions.isEmpty()){
+            return true;
         }
+        if(requirePermissions){
+            ActivityCompat.requestPermissions((Activity)context, permissions.toArray(new String[0]), 1);
+        }
+        return false;
+    }
+
+
+
+    private BluetoothLeScanner leScanner;
+
+    private boolean isScanning = false;
+
+    private Runnable autoConnectCanceler;
+    static class AutoConnectPattern {
+        public String name, mac;
+        public AutoConnectPattern(String name, String mac){
+            this.name = name;
+            this.mac = mac;
+        }
+    };
+    AutoConnectPattern autoConnectPattern;
+    private Handler handler;
+
+    private ScanCallback leScanCallback = new ScanCallback() {
+        @SuppressLint("MissingPermission")
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            super.onScanResult(callbackType, result);
+            if(!isScanning)
+                return;
+            BluetoothDevice device = result.getDevice();
+            if(!BleDevices.containsKey(device.getAddress())){
+                BleDevices.put(device.getAddress(),new DeviceStatus(device));
+            }
+            InformNativeDevice(device.getAddress(), device.getName().getBytes(StandardCharsets.UTF_8));
+        }
+    };
+
+    @SuppressLint("MissingPermission")
+    public void BleScanStart(){
+        if(!testIfHavePermissions(true))
+            return;
+
+        if(leScanner == null)
+            leScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+
         Set<BluetoothDevice> deviceSet = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
         for (BluetoothDevice bluetoothDevice : deviceSet) {
             if(!BleDevices.containsKey(bluetoothDevice.getAddress())){
@@ -213,8 +280,60 @@ public class BleReader {
             }
             InformNativeDevice(bluetoothDevice.getAddress(), bluetoothDevice.getName().getBytes(StandardCharsets.UTF_8));
         }
+
+
+        LinkedList<ScanFilter> filters = new LinkedList<>();
+        filters.add(new ScanFilter.Builder()
+                .setServiceUuid(new ParcelUuid(UUID.fromString(DeviceStatus.BluetoothGattCb.HEART_UUID)))
+                .build());
+        ScanSettings settings = new ScanSettings.Builder()
+                .build();
+        isScanning = true;
+        leScanner.startScan(filters, settings, leScanCallback);
     }
 
+    @SuppressLint("MissingPermission")
+    public void BleScanStop(){
+        if(autoConnectCanceler!=null){
+            handler.removeCallbacks(autoConnectCanceler);
+            autoConnectCanceler=null;
+        }
+        if(leScanner != null) {
+            leScanner.stopScan(leScanCallback);
+            isScanning = false;
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void AutoConnectStart(){
+        if(!testIfHavePermissions(false))
+            return;
+        if(autoConnectCanceler != null){
+            handler.removeCallbacks(autoConnectCanceler);
+        }
+        autoConnectCanceler = ()->{
+            autoConnectCanceler = null;
+            if(leScanner != null){
+                leScanner.stopScan(leScanCallback);
+                isScanning = false;
+            }
+        };
+        // we only search the device in 1 mins.
+        handler.postDelayed(autoConnectCanceler,1000 * 60);
+        BleScanStart();
+    }
+    public void AutoConnectSetPattern(String macAddress, String deviceName){
+        autoConnectPattern = new AutoConnectPattern(deviceName, macAddress);
+    }
+
+    void AutoConnectStop(){
+        if(autoConnectCanceler != null){
+            handler.removeCallbacks(autoConnectCanceler);
+            autoConnectCanceler = null;
+        }
+        if(isScanning)
+            BleScanStop();
+    }
     public boolean BleToggle(String macAddress, boolean selected){
         return BleDevices.containsKey(macAddress) && BleDevices.get(macAddress).Toggle(selected);
     }
