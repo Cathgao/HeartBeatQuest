@@ -2,7 +2,7 @@
 #include "ModConfig.hpp"
 #include "main.hpp"
 #include "settings/PulsoidSettings.hpp"
-#include "UnityEngine/Application.hpp"
+#include "settings/Settings.hpp"
 
 void HeartBeat::PulsoidSettings::CreateElements(){
                 // self->add_didDeactivateEvent(custom_types::MakeDelegate<HMUI::ViewController::DidDeactivateDelegate*>(std::function([](bool removedFromHierarchy, bool screenSystemDisabling){
@@ -103,13 +103,7 @@ void HeartBeat::PulsoidSettings::Update(){
             ds->url_open_wanted = false;
         }
         //open the login url in the quest browser
-#if defined(GAME_VER_1_37_0)
-        static auto UnityEngine_Application_OpenURL = il2cpp_utils::resolve_icall<void, StringW>("UnityEngine.Application::OpenURL");
-        UnityEngine_Application_OpenURL(url);
-#else
-        UnityEngine::Application::OpenURL(url);
-
-#endif
+        OpenWebpage(url);
     }
     if(PairInBrowserBtn){
         PairInBrowserBtn->set_interactable(!ds->IsSafePairing());

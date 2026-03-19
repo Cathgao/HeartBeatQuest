@@ -1,16 +1,28 @@
+#include "UnityEngine/Vector2.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Text.hpp"
 #include "data_sources/Bluetooth.hpp"
 #include "settings/BleSettings.hpp"
 #include "settings/Settings.hpp"
 
 void HeartBeat::BleSettings::CreateElements(){
-    auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
+    auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
+    bleDataSource=HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatBleDataSource>(); 
 
-    BSML::Lite::CreateUIButton(container->get_transform(), LANG->scan_devices, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8}, [this](){
-        auto instance=HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatBleDataSource>(); 
-        instance->ScanDevice();
-        UpdateSelectedBLEScrollList();
+    auto *scanBtnContainer = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
+
+    BSML::Lite::CreateUIButton(scanBtnContainer->get_transform(), "Start Scan", UnityEngine::Vector2{}, UnityEngine::Vector2{25, 8}, [this](){
+        bleDataSource->StartScan();
+    });
+    BSML::Lite::CreateUIButton(scanBtnContainer->get_transform(), "Stop Scan", UnityEngine::Vector2{}, UnityEngine::Vector2{25, 8}, [this](){
+        bleDataSource->StopScan();
     });
 
+    BSML::Lite::CreateUIButton(container->get_transform(), "Turn Location ON", UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8}, [this](){
+        OpenWebpage("https://www.meta.com/help/quest/1202271140482151/");
+    });
+
+    scanStatusText = BSML::Lite::CreateText(container->get_transform(), "Not Scanning", UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
 
     ble_list = BSML::Lite::CreateScrollableList(container->get_transform(), {70,60}, [this](int idx){
         UpdateSelectedBLEValue(idx);
@@ -19,10 +31,23 @@ void HeartBeat::BleSettings::CreateElements(){
     ble_list->tableView->set_selectionType(HMUI::TableViewSelectionType::Single);
     ble_mac.push_back("");
     UpdateSelectedBLEScrollList();
+}
 
+void HeartBeat::BleSettings::Open(){
+    // bleDataSource->StartScan();
+}
+void HeartBeat::BleSettings::Close(){
+    bleDataSource->StopScan();
+}
+void HeartBeat::BleSettings::Update(){
+    static int slow_down = 0;
+    if(slow_down++ % 5 == 0){
+        UpdateSelectedBLEScrollList();
+    }
+    scanStatusText->set_text(bleDataSource->isAutoConnecting()? "Auto Connecting" : bleDataSource->isScanning() ? "Scanning" : "Not Scanning");
 }
 void HeartBeat::BleSettings::UpdateSelectedBLEScrollList(){
-    auto * i = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatBleDataSource>();
+    auto * i = bleDataSource;
     bool any_data_changed = false;
     int the_selected = -1;
     {
@@ -77,6 +102,6 @@ void HeartBeat::BleSettings::UpdateSelectedBLEScrollList(){
     }
 }
 void HeartBeat::BleSettings::UpdateSelectedBLEValue(int idx){
-    HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatBleDataSource>()->SetSelectedBleMac(ble_mac[idx]);
+    bleDataSource->SetSelectedBleMac(ble_mac[idx]);
     UpdateSelectedBLEScrollList();
 }

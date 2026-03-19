@@ -48,7 +48,10 @@ typedef websocketpp::client<websocketpp::config::asio_client> client;
 static client endpoint;
 
 HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource():DataSource(DataSourceType::DS_Pulsoid){
-    Recorder::heartDeviceName = HEART_DEV_NAME_PULSOID;
+    {
+        std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
+        Recorder::heartDeviceName = HEART_DEV_NAME_PULSOID;
+    }
     this->CreateSocket();
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 #include <string>
 namespace HeartBeat{
 namespace Recorder{
@@ -18,6 +19,7 @@ bool BeatLeaderDetected();
 #define HEART_DEV_NAME_HYPERATE "<hyperate>"
 #define HEART_DEV_NAME_PULSOID "<pulsoid>"
 extern std::string heartDeviceName;
+extern std::mutex heartDeviceNameLock;
 
 extern bool replayStarted;
 }

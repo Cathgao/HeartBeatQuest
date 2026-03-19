@@ -13,7 +13,6 @@ namespace HeartBeat {
         UnityEngine::UI::Button * private_public_btn = nullptr;
 
         void UpdateContent();
-
     };
 
     

@@ -41,7 +41,6 @@ V(flash_duration_when_text_come, "数据抵达时的闪烁时长")
 V(flash_test, "闪烁测试")
 V(reset_to_default, "恢复默认")
 
-V(scan_devices,"扫描设备")
 V(data_source, "数据源(重启生效)")
 
 //BUG: can't translate text inside dropdown

@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <mutex>
 #include <string>
 #include <arpa/inet.h>
 #include <sys/endian.h>
@@ -53,6 +54,7 @@ struct RecordEntry{
 };
 std::vector<RecordEntry> recordData;
 std::string heartDeviceName = HEART_DEV_NAME_UNK;
+std::mutex heartDeviceNameLock;
 
 //this callback is called by beatleader when game end
 void RecordCallback(std::string name, int* length, void** data){
@@ -106,6 +108,7 @@ void RecordCallback(std::string name, int* length, void** data){
     }
 
     if(getModConfig().EnableRecord.GetValue() && getModConfig().RecordDevName.GetValue()){
+        std::lock_guard<std::mutex> g(heartDeviceNameLock);
         PushCppStr(heartDeviceName);
     }else{
         PushStr(HEART_DEV_NAME_HIDE);

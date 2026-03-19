@@ -53,7 +53,10 @@ typedef websocketpp::client<websocketpp::config::asio_client> client;
 static client endpoint;
 
 HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource():DataSource(DataSourceType::DS_HypeRate){
-    Recorder::heartDeviceName = HEART_DEV_NAME_HYPERATE;
+    {
+        std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
+        Recorder::heartDeviceName = HEART_DEV_NAME_HYPERATE;
+    }
     this->CreateSocket();
 }
 

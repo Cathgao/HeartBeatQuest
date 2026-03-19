@@ -47,7 +47,6 @@ V(reset_default_line_space, "Reset Default Line Space")
 
 V(reset_to_default, "Reset to default")
 
-V(scan_devices,"scan devices")
 V(data_source, "data source(need restart)")
 
 V(data_source_random, "random")

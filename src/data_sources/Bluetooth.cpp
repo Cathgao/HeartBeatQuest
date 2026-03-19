@@ -2,6 +2,7 @@
 #include <jni.h>
 #include <cstdio>
 #include <cstring>
+#include <mutex>
 #include "main.hpp"
 #include "scotland2/shared/modloader.h"
 #include "BeatLeaderRecorder.hpp"
@@ -16,9 +17,14 @@ HeartBeat::HeartBeatBleDataSource * bleDataSource;
 
 JNIEnv * env;
 jobject bleReader;
-jmethodID bleReader_BleStart;
 jmethodID bleReader_BleToggle;
-jmethodID bleReader_IdDeviceSelected;
+jmethodID bleReader_IsDeviceSelected;
+jmethodID bleReader_BleScanStart;
+jmethodID bleReader_BleScanStop;
+jmethodID bleReader_AutoConnectStart;
+jmethodID bleReader_AutoConnectStop;
+jmethodID bleReader_AutoConnectSetPattern;
+jmethodID bleReader_OpenSystemLocationSetthings;
 
 JNIEXPORT void JNICALL
 Java_top_zxff_nativeblereader_BleReader_OnDeviceData
@@ -28,7 +34,7 @@ Java_top_zxff_nativeblereader_BleReader_OnDeviceData
     bleDataSource->OnDataCome(chars, heartRate, energy);
     env->ReleaseStringUTFChars(macAddr, chars);
 }
-JNIEXPORT void JNICALL
+JNIEXPORT jboolean JNICALL
 Java_top_zxff_nativeblereader_BleReader_InformNativeDevice(JNIEnv *env, jobject thiz, jstring macAddr, jbyteArray name){
     //Add the ui or do something...
     //bleReader_BleStart call this function in java code
@@ -38,19 +44,30 @@ Java_top_zxff_nativeblereader_BleReader_InformNativeDevice(JNIEnv *env, jobject 
     jsize name_len = env->GetArrayLength(name);
     std::string name_str((char*)name_buff, (size_t)name_len);
 
-    bleDataSource->InformNativeDevice(macChar, name_str);
+    jboolean ret = bleDataSource->InformNativeDevice(macChar, name_str);
     env->ReleaseStringUTFChars(macAddr, macChar);
     env->ReleaseByteArrayElements(name, name_buff, 0);
+    return ret;
 }
 JNIEXPORT void JNICALL
 Java_top_zxff_nativeblereader_BleReader_OnEnergyReset
 (JNIEnv *env, jobject thiz){
     bleDataSource->OnEnergyReset();
 }
+JNIEXPORT void JNICALL
+Java_top_zxff_nativeblereader_BleReader_OnAutoConnectStatusChanged
+(JNIEnv *env, jobject thiz, jboolean autoConnecting){
+    bleDataSource->OnAutoConnectStatusChanged(autoConnecting);
+}
+JNIEXPORT void JNICALL
+Java_top_zxff_nativeblereader_BleReader_OnScanStatusChanged
+(JNIEnv *env, jobject thiz, jboolean isScanning){
+    bleDataSource->OnScanStatusChanged(isScanning);
+}
 
-void ScanDevices(){
+void StartScanDevice(){
     //also check permissions
-    env->CallVoidMethod(bleReader, bleReader_BleStart);
+    env->CallVoidMethod(bleReader, bleReader_BleScanStart);
     if(env->ExceptionCheck()){
         getLogger().error("Exception occurred in JNI");
         env->ExceptionDescribe();
@@ -59,6 +76,7 @@ void ScanDevices(){
 }
 
 bool ToggleDevice(std::string macAddr, jboolean selected){
+    getLogger().info("Toggle device to:|{}|", macAddr);
     auto ret = env->CallBooleanMethod(bleReader, bleReader_BleToggle, env->NewStringUTF(macAddr.c_str()),selected);
     if(env->ExceptionCheck()){
         getLogger().error("Exception occurred in JNI");
@@ -69,13 +87,53 @@ bool ToggleDevice(std::string macAddr, jboolean selected){
 }
 
 bool IsDeviceSelected(std::string macAddr){
-    auto ret = env->CallBooleanMethod(bleReader, bleReader_IdDeviceSelected, env->NewStringUTF(macAddr.c_str()));
-        if(env->ExceptionCheck()){
+    auto ret = env->CallBooleanMethod(bleReader, bleReader_IsDeviceSelected, env->NewStringUTF(macAddr.c_str()));
+    if(env->ExceptionCheck()){
         getLogger().error("Exception occurred in JNI");
         env->ExceptionDescribe();
         return false;
     }
     return ret;
+}
+void StopScanDevice(){
+    env->CallVoidMethod(bleReader, bleReader_BleScanStop);
+    if(env->ExceptionCheck()){
+        getLogger().error("Exception occurred in JNI");
+        env->ExceptionDescribe();
+        return;
+    }
+}
+void AutoConnectStart(){
+    env->CallVoidMethod(bleReader, bleReader_AutoConnectStart);
+    if(env->ExceptionCheck()){
+        getLogger().error("Exception occurred in JNI");
+        env->ExceptionDescribe();
+        return;
+    }
+}
+void AutoConnectStop(){
+    env->CallVoidMethod(bleReader, bleReader_AutoConnectStop);
+    if(env->ExceptionCheck()){
+        getLogger().error("Exception occurred in JNI");
+        env->ExceptionDescribe();
+        return;
+    }
+}
+void AutoConnectSetPattern(const std::string & macAddr, const std::string& devName){
+    env->CallVoidMethod(bleReader, bleReader_AutoConnectSetPattern, env->NewStringUTF(macAddr.c_str()), env->NewStringUTF(devName.c_str()));
+    if(env->ExceptionCheck()){
+        getLogger().error("Exception occurred in JNI");
+        env->ExceptionDescribe();
+        return;
+    }
+}
+void OpenSystemLocationSetthing(){
+    env->CallVoidMethod(bleReader, bleReader_OpenSystemLocationSetthings);
+    if(env->ExceptionCheck()){
+        getLogger().error("Exception occurred in JNI");
+        env->ExceptionDescribe();
+        return;
+    }
 }
 
 void LoadJavaLibrary(){
@@ -184,14 +242,22 @@ void LoadJavaLibrary(){
         return;
     }
     //find class method
-    bleReader_BleStart = env->GetMethodID(bleReaderClass, "BleStart", "()V");
     bleReader_BleToggle = env->GetMethodID(bleReaderClass, "BleToggle", "(Ljava/lang/String;Z)Z");
-    bleReader_IdDeviceSelected = env->GetMethodID(bleReaderClass, "IsDeviceSelected","(Ljava/lang/String;)Z");
+    bleReader_IsDeviceSelected = env->GetMethodID(bleReaderClass, "IsDeviceSelected","(Ljava/lang/String;)Z");
+    bleReader_BleScanStart = env->GetMethodID(bleReaderClass, "BleScanStart", "()V");
+    bleReader_BleScanStop = env->GetMethodID(bleReaderClass, "BleScanStop", "()V");
+    bleReader_AutoConnectStart = env->GetMethodID(bleReaderClass, "AutoConnectStart", "()V");
+    bleReader_AutoConnectStop = env->GetMethodID(bleReaderClass, "AutoConnectStop", "()V");
+    bleReader_AutoConnectSetPattern = env->GetMethodID(bleReaderClass, "AutoConnectSetPattern", "(Ljava/lang/String;Ljava/lang/String;)V");
+    bleReader_OpenSystemLocationSetthings = env->GetMethodID(bleReaderClass, "OpenSystemLocationSetthing", "()V");
+
 
     static const JNINativeMethod methods[] = {
         {"OnDeviceData", "(Ljava/lang/String;IJ)V", reinterpret_cast<void*>(Java_top_zxff_nativeblereader_BleReader_OnDeviceData)},
-        {"InformNativeDevice", "(Ljava/lang/String;[B)V", reinterpret_cast<void*>(Java_top_zxff_nativeblereader_BleReader_InformNativeDevice)},
+        {"InformNativeDevice", "(Ljava/lang/String;[B)Z", reinterpret_cast<void*>(Java_top_zxff_nativeblereader_BleReader_InformNativeDevice)},
         {"OnEnergyReset","()V",reinterpret_cast<void*>(Java_top_zxff_nativeblereader_BleReader_OnEnergyReset)},
+        {"OnAutoConnectStatusChanged","(Z)V",reinterpret_cast<void*>(Java_top_zxff_nativeblereader_BleReader_OnAutoConnectStatusChanged)},
+        {"OnScanStatusChanged","(Z)V",reinterpret_cast<void*>(Java_top_zxff_nativeblereader_BleReader_OnScanStatusChanged)},
     };
     int rc = env->RegisterNatives(bleReaderClass, methods, sizeof(methods)/sizeof(JNINativeMethod));
     if (rc != JNI_OK){
@@ -205,7 +271,15 @@ void LoadJavaLibrary(){
 
     CHECK_EXCEPTION();
 
-    getLogger().info("Java module loaded {} {} {}", (void*)bleReader_BleStart, (void*)bleReader_BleToggle, (void*)bleReader_IdDeviceSelected);
+    getLogger().info("Java module loaded {} {} {} {} {} {} {}", 
+        (void *)bleReader_BleToggle,
+        (void *)bleReader_IsDeviceSelected,
+        (void *)bleReader_BleScanStart,
+        (void *)bleReader_BleScanStop,
+        (void *)bleReader_AutoConnectStart,
+        (void *)bleReader_AutoConnectStop,
+        (void *)bleReader_AutoConnectSetPattern
+    );
 }
 
 
@@ -213,17 +287,21 @@ HeartBeat::HeartBeatBleDataSource::HeartBeatBleDataSource():HeartBeat::DataSourc
     bleDataSource = this;
     
     LoadJavaLibrary();
+    StartAutoScan();
 }
 
 void HeartBeat::HeartBeatBleDataSource::SetSelectedBleMac(const std::string mac){ 
     ToggleDevice(this->selected_mac, false);
-
-    this->selected_mac = mac;
+    {
+        std::lock_guard<std::mutex> g(this->selected_mac_lock);
+        this->selected_mac = mac;
+    }
     getModConfig().SelectedBleMac.SetValue(mac, true);
 
     ToggleDevice(this->selected_mac, true);
 
     auto it = avaliable_devices.find(this->selected_mac);
+    std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
     if(it != avaliable_devices.end()){
         Recorder::heartDeviceName = it->second.name;
     }else{
@@ -231,11 +309,22 @@ void HeartBeat::HeartBeatBleDataSource::SetSelectedBleMac(const std::string mac)
     }
 }
 
-void HeartBeat::HeartBeatBleDataSource::ScanDevice(){
+void HeartBeat::HeartBeatBleDataSource::StartScan(){
     avaliable_devices.clear();
-    ScanDevices();
+    StartScanDevice();
 }
-
+void HeartBeat::HeartBeatBleDataSource::StopScan(){
+    StopScanDevice();
+}
+void HeartBeat::HeartBeatBleDataSource::StartAutoScan(){
+    AutoConnectStart();
+}
+void HeartBeat::HeartBeatBleDataSource::SetAutoConnectPattern(const std::string& macAddr, const std::string& devName){
+    AutoConnectSetPattern(macAddr, devName);
+}
+void HeartBeat::HeartBeatBleDataSource::OpenSystemLocationSetthings(){
+    OpenSystemLocationSetthing();
+}
 bool HeartBeat::HeartBeatBleDataSource::GetData(int& heartbeat){
     heartbeat = this->heartbeat;
     if(has_new_data){
@@ -249,7 +338,7 @@ long long HeartBeat::HeartBeatBleDataSource::GetEnergy(){
     return this->energy.load() + this->persistent_energy.load();
 }
 
-void HeartBeat::HeartBeatBleDataSource::InformNativeDevice(const std::string& macAddr, const std::string& name){
+bool HeartBeat::HeartBeatBleDataSource::InformNativeDevice(const std::string& macAddr, const std::string& name){
     if(avaliable_devices.find(macAddr) == avaliable_devices.end()){
         avaliable_devices.insert({macAddr, {
             .name = name,
@@ -259,10 +348,24 @@ void HeartBeat::HeartBeatBleDataSource::InformNativeDevice(const std::string& ma
         }});
     }
 
-    if(macAddr == selected_mac){
-        //relink the device here
-        SetSelectedBleMac(macAddr);
+    bool ret;
+    {
+        std::lock_guard<std::mutex> g(this->selected_mac_lock);
+
+        ret = false;
+        if(selected_mac == "" && getModConfig().SelectedBleMac.GetValue() == macAddr){
+            selected_mac = macAddr;
+            ret = true;
+        }else if(selected_mac == macAddr){
+            ret = true;
+        }
+        
     }
+    if(ret){
+        Recorder::heartDeviceName = name;
+        return true;
+    }
+    return false;
 }
 void HeartBeat::HeartBeatBleDataSource::OnDataCome(const std::string& macAddr, int heartRate, long energy){
     this->heartbeat = heartRate;
@@ -272,4 +375,10 @@ void HeartBeat::HeartBeatBleDataSource::OnDataCome(const std::string& macAddr, i
 void HeartBeat::HeartBeatBleDataSource::OnEnergyReset(){
     this->persistent_energy.fetch_add(this->energy.load());
     this->energy.store(0);
+}
+void HeartBeat::HeartBeatBleDataSource::OnAutoConnectStatusChanged(bool autoConnecting){
+    this->is_auto_connecting = autoConnecting;
+}
+void HeartBeat::HeartBeatBleDataSource::OnScanStatusChanged(bool isScanning){
+    this->is_scanning = isScanning;
 }

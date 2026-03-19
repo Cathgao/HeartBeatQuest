@@ -1,5 +1,7 @@
 package top.zxff.nativeblereader;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -17,10 +19,13 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelUuid;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.annotation.Discouraged;
@@ -48,9 +53,12 @@ public class BleReader {
             .loadClass("top.zxff.nativeblereader.BleReader");
     }
 
-    public native void InformNativeDevice(String macAddr, byte[] deviceName);
+    public native boolean InformNativeDevice(String macAddr, byte[] deviceName);
     public native void OnDeviceData(String macAddr, int heartRate, long energy);
     public native void OnEnergyReset();
+
+    public native void OnAutoConnectStatusChanged(boolean autoConnecting);
+    public native void OnScanStatusChanged(boolean isScanning);
     public boolean IsDeviceSelected(String macAddr){
         return BleDevices.containsKey(macAddr) && BleDevices.get(macAddr).selected;
     }
@@ -62,6 +70,7 @@ public class BleReader {
         if(this.context == null){
             throw new RuntimeException("The context is nullptr");
         }
+        this.handler = new Handler(context.getMainLooper());
     }
 
     class DeviceStatus{
@@ -260,17 +269,37 @@ public class BleReader {
             if(!BleDevices.containsKey(device.getAddress())){
                 BleDevices.put(device.getAddress(),new DeviceStatus(device));
             }
-            InformNativeDevice(device.getAddress(), device.getName().getBytes(StandardCharsets.UTF_8));
+            String devName = device.getName();
+            if(InformNativeDevice(device.getAddress(), (devName == null ? "Unknown" : devName).getBytes(StandardCharsets.UTF_8))) {
+                BleDevices.get(device.getAddress()).Toggle(true);
+                BleScanStop();
+            }
         }
     };
 
     @SuppressLint("MissingPermission")
     public void BleScanStart(){
-        if(!testIfHavePermissions(true))
+        if(!testIfHavePermissions(true)){
+            System.out.println("No enough permission for bluetooth scan");
             return;
+        }
 
         if(leScanner == null)
             leScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+
+
+        LinkedList<ScanFilter> filters = new LinkedList<>();
+        filters.add(new ScanFilter.Builder()
+                .setServiceUuid(new ParcelUuid(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb")))
+                .build());
+        ScanSettings settings = new ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .build();
+        isScanning = true;
+        OnScanStatusChanged(true);
+        System.out.println("Start bluetooth scan");
+        leScanner.startScan(filters, settings, leScanCallback);
+
 
         Set<BluetoothDevice> deviceSet = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
         for (BluetoothDevice bluetoothDevice : deviceSet) {
@@ -278,18 +307,12 @@ public class BleReader {
                 BleDevices.put(bluetoothDevice.getAddress(),
                         new DeviceStatus(bluetoothDevice));
             }
-            InformNativeDevice(bluetoothDevice.getAddress(), bluetoothDevice.getName().getBytes(StandardCharsets.UTF_8));
+            if(InformNativeDevice(bluetoothDevice.getAddress(), bluetoothDevice.getName().getBytes(StandardCharsets.UTF_8))){
+                BleDevices.get((bluetoothDevice.getAddress())).Toggle(true);
+                BleScanStop();
+            }
         }
 
-
-        LinkedList<ScanFilter> filters = new LinkedList<>();
-        filters.add(new ScanFilter.Builder()
-                .setServiceUuid(new ParcelUuid(UUID.fromString(DeviceStatus.BluetoothGattCb.HEART_UUID)))
-                .build());
-        ScanSettings settings = new ScanSettings.Builder()
-                .build();
-        isScanning = true;
-        leScanner.startScan(filters, settings, leScanCallback);
     }
 
     @SuppressLint("MissingPermission")
@@ -297,10 +320,12 @@ public class BleReader {
         if(autoConnectCanceler!=null){
             handler.removeCallbacks(autoConnectCanceler);
             autoConnectCanceler=null;
+            OnAutoConnectStatusChanged(false);
         }
         if(leScanner != null) {
             leScanner.stopScan(leScanCallback);
             isScanning = false;
+            OnScanStatusChanged(false);
         }
     }
 
@@ -317,10 +342,13 @@ public class BleReader {
                 leScanner.stopScan(leScanCallback);
                 isScanning = false;
             }
+            OnAutoConnectStatusChanged(false);
+            OnScanStatusChanged(false);
         };
         // we only search the device in 1 mins.
-        handler.postDelayed(autoConnectCanceler,1000 * 60);
+        handler.postDelayed(autoConnectCanceler,1000 * 20);
         BleScanStart();
+        OnAutoConnectStatusChanged(true);
     }
     public void AutoConnectSetPattern(String macAddress, String deviceName){
         autoConnectPattern = new AutoConnectPattern(deviceName, macAddress);
@@ -330,12 +358,23 @@ public class BleReader {
         if(autoConnectCanceler != null){
             handler.removeCallbacks(autoConnectCanceler);
             autoConnectCanceler = null;
+            OnAutoConnectStatusChanged(false);
         }
         if(isScanning)
             BleScanStop();
     }
     public boolean BleToggle(String macAddress, boolean selected){
         return BleDevices.containsKey(macAddress) && BleDevices.get(macAddress).Toggle(selected);
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    public void OpenSystemLocationSetthing(){
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.meta.com/help/quest/1202271140482151/"));
+        // It is good practice to check if an activity can handle the intent
+        if (intent.resolveActivity(this.context.getPackageManager()) != null) {
+            this.context.startActivity(intent);
+        }
+
     }
 
     private static Context GetActivity(){

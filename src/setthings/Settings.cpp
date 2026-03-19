@@ -6,10 +6,20 @@
 #include "settings/MainSettings.hpp"
 #include "settings/OSCSettings.hpp"
 #include "settings/PulsoidSettings.hpp"
+#include "UnityEngine/Application.hpp"
 #include <vector>
 
 std::vector<HeartBeat::Settings*> HeartBeat::SettingsUI::settings;
 bool HeartBeat::private_ui = true;
+
+void HeartBeat::OpenWebpage(std::string url){
+    #if defined(GAME_VER_1_37_0)
+            static auto UnityEngine_Application_OpenURL = il2cpp_utils::resolve_icall<void, StringW>("UnityEngine.Application::OpenURL");
+            UnityEngine_Application_OpenURL(url);
+    #else
+            UnityEngine::Application::OpenURL(url);
+    #endif
+}
 
 void HeartBeat::SettingsUI::Setup(){
     auto mainSettings = new MainSettings();

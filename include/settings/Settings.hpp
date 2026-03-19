@@ -13,6 +13,8 @@ namespace HeartBeat{
 
     extern bool private_ui;
 
+    void OpenWebpage(std::string url);
+
     class Settings{
     private:
         std::string menuTitle, buttonText,hoverHint;
