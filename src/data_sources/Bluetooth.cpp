@@ -362,6 +362,7 @@ bool HeartBeat::HeartBeatBleDataSource::InformNativeDevice(const std::string& ma
         
     }
     if(ret){
+        std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
         Recorder::heartDeviceName = name;
         return true;
     }
