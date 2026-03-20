@@ -174,6 +174,8 @@ Same goes for `qpm s copy` and `qpm qmod zip`
 
 See [multibuild](./multibuild) directory to build for old game version.
 
+See [extra/Readme.md](extra/Readme.md) if you want compile the java code.
+
 ## Mod api
 
 ### Basic API Usage
