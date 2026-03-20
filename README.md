@@ -60,27 +60,33 @@ This mod can access Bluetooth directly. To use this, follow this instruction.
 The Bluetooth data source has minimum data latency, but may be less compatibility because it uses a generic BLE protocol to access Bluetooth devices. Your device should support heart rate broadcast via BLE protocol.
 
 > [!NOTE]
-> **PERMISSION REQUIRED**  
-> More accurately, mbf is not required, the mod requires the game has the following permission
->
->
->        android.permission.BLUETOOTH
->        android.permission.BLUETOOTH_CONNECT
-
-> [!NOTE]
-> **PERMISION REQUIRED FOR BLE**  
-> From HeartBeatQuest 0.3.8, BLE scan is fixed and supported, you need the following permission
->
->        android.permission.BLUETOOTH               (for old game version)
->        android.permission.BLUETOOTH_ADMIN         (for old game version)
->        android.permission.BLUETOOTH_CONNECT       (for latest game version)
->        android.permission.BLUETOOTH_SCAN          (for latest game version)
->        android.permission.ACCESS_FINE_LOCATION    (both needed)
-
-See [Meta's doc](https://www.meta.com/help/quest/1202271140482151/) to learn about how to enable location permissions for your device.
-
-> [!NOTE]
 > Bluetooth permission is not required if you don't use this data source.
+
+## Manual Manifest Patch
+
+If you can't patch with MBF, you need know the following things:
+
+### All in one setup
+
+This should works for all game versions.
+```
+android.permission.BLUETOOTH
+android.permission.BLUETOOTH_ADMIN
+android.permission.BLUETOOTH_SCAN
+android.permission.BLUETOOTH_CONNECT
+android.permission.ACCESS_FINE_LOCATION
+```
+And you MUST enable ACCURACY LOCATION for your Quest's system, follow [the meta's guide](https://www.meta.com/help/quest/1202271140482151). Read more about the mod's behavior [here](https://github.com/frto027/HeartBeatQuest/wiki/Enable-Location-Permission-for-your-Quest's-system).
+
+You can patch the game without Accuracy Location(ACCESS_FINE_LOCATION), see [here](https://github.com/frto027/HeartBeatQuest/wiki/Detailed-Bluetooth-permission) for more setup.
+
+### Old mod version setup
+
+Please refer to [Bluetooth permission for mod version <= 0.3.7](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-permission-earlier-than-0.3.7).
+
+The following setup is for mod version > 0.3.7(not released).
+
+
 
 ## HypeRate as the heart data source
 

@@ -25,6 +25,7 @@ jmethodID bleReader_AutoConnectStart;
 jmethodID bleReader_AutoConnectStop;
 jmethodID bleReader_AutoConnectSetPattern;
 jmethodID bleReader_OpenSystemLocationSetthings;
+jmethodID bleReader_getPermisionStatus;
 
 JNIEXPORT void JNICALL
 Java_top_zxff_nativeblereader_BleReader_OnDeviceData
@@ -134,6 +135,15 @@ void OpenSystemLocationSetthing(){
         env->ExceptionDescribe();
         return;
     }
+}
+int GetPermisionStatus(){
+    int ret = env->CallIntMethod(bleReader, bleReader_getPermisionStatus);
+    if(env->ExceptionCheck()){
+        getLogger().error("Exception occurred in JNI");
+        env->ExceptionDescribe();
+        return 0;
+    }
+    return ret;
 }
 
 void LoadJavaLibrary(){
@@ -250,6 +260,7 @@ void LoadJavaLibrary(){
     bleReader_AutoConnectStop = env->GetMethodID(bleReaderClass, "AutoConnectStop", "()V");
     bleReader_AutoConnectSetPattern = env->GetMethodID(bleReaderClass, "AutoConnectSetPattern", "(Ljava/lang/String;Ljava/lang/String;)V");
     bleReader_OpenSystemLocationSetthings = env->GetMethodID(bleReaderClass, "OpenSystemLocationSetthing", "()V");
+    bleReader_getPermisionStatus = env->GetMethodID(bleReaderClass, "getPermisionStatus", "()I");
 
 
     static const JNINativeMethod methods[] = {
@@ -288,6 +299,7 @@ HeartBeat::HeartBeatBleDataSource::HeartBeatBleDataSource():HeartBeat::DataSourc
     
     LoadJavaLibrary();
     StartAutoScan();
+    manifestPermission = (BluetoothManifestPermission)GetPermisionStatus();
 }
 
 void HeartBeat::HeartBeatBleDataSource::SetSelectedBleMac(const std::string mac){ 

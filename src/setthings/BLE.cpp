@@ -18,9 +18,21 @@ void HeartBeat::BleSettings::CreateElements(){
         bleDataSource->StopScan();
     });
 
-    BSML::Lite::CreateUIButton(container->get_transform(), LANG->turn_location_on, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8}, [this](){
-        OpenWebpage("https://www.meta.com/help/quest/1202271140482151/");
-    });
+    switch (bleDataSource->GetBleManifestPermissionStatus()) {
+        case BLE_MANI_PERM_UNKNOWN:
+            BSML::Lite::CreateText(container->get_transform(), LANG->ble_permission_unknown, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
+            break;
+        case BLE_MANI_PERM_BAD_BLUETOOTH_OR_LOCATION_MISSED:
+            BSML::Lite::CreateText(container->get_transform(), LANG->ble_permission_needed, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
+            break;
+        case BLE_MANI_PERM_GOOD_LOCATION_REQUIRED:
+            BSML::Lite::CreateUIButton(container->get_transform(), LANG->turn_location_on, UnityEngine::Vector2{}, UnityEngine::Vector2{70, 8}, [this](){
+                OpenWebpage("https://www.meta.com/help/quest/1202271140482151/");
+            });
+        case BLE_MANI_PERM_GOOD_NONEED_LOCATION:
+            // Fine permission manifest
+            break;
+    }
 
     scanStatusText = BSML::Lite::CreateText(container->get_transform(), LANG->no_scan, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
 

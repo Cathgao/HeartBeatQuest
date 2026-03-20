@@ -7,6 +7,13 @@
 
 namespace HeartBeat{
 
+enum BluetoothManifestPermission{
+    BLE_MANI_PERM_UNKNOWN = 0,
+    BLE_MANI_PERM_GOOD_LOCATION_REQUIRED = 1,
+    BLE_MANI_PERM_GOOD_NONEED_LOCATION = 2,
+    BLE_MANI_PERM_BAD_BLUETOOTH_OR_LOCATION_MISSED = 3,
+};
+
 struct HeartBeatBleDevice {
     std::string name;
     std::string mac;
@@ -24,6 +31,7 @@ private:
     std::atomic_llong persistent_energy = 0;
     bool is_auto_connecting = false;
     bool is_scanning = false;
+    BluetoothManifestPermission manifestPermission;
 public:
 
     HeartBeatBleDataSource();
@@ -45,6 +53,9 @@ public:
     }
     std::string& GetSelectedBleMac(){ return selected_mac; }
     void SetSelectedBleMac(const std::string mac);
+    BluetoothManifestPermission GetBleManifestPermissionStatus(){
+        return manifestPermission;
+    }
 
     std::map<std::string/*mac*/, HeartBeatBleDevice> avaliable_devices;
 

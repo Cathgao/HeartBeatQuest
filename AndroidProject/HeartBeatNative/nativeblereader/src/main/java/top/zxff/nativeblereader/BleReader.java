@@ -20,6 +20,7 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -66,12 +67,15 @@ public class BleReader {
 
 
     Context context;
+
+    PermissionHint permissionHint;
     public BleReader(){
         this.context = GetActivity();
         if(this.context == null){
             throw new RuntimeException("The context is nullptr");
         }
         this.handler = new Handler(context.getMainLooper());
+        permissionHint = getManifestStatus();
     }
 
     class DeviceStatus{
@@ -243,15 +247,90 @@ public class BleReader {
 
     }
 
+    enum PermissionHint{
+        UNKNOWN,
+        GOOD_LOCATION_REQUIRED,             // for both old game version and new game version
+        GOOD_NONEED_LOCATION,               // for manifest that have never_for_location flags
+        BAD_BLUETOOTH_OR_LOCATION_MISSED,
+    }
+
+    public int getPermisionStatus(){
+        switch (permissionHint){
+            case UNKNOWN:
+                return 0;
+            case GOOD_LOCATION_REQUIRED:
+                return 1;
+            case GOOD_NONEED_LOCATION:
+                return 2;
+            case BAD_BLUETOOTH_OR_LOCATION_MISSED:
+                return 3;
+        }
+        return 0;
+    }
+    PermissionHint getManifestStatus(){
+        try{
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            boolean perm1 = false, perm2 = false, location_perm = false, perm_flag = false;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+                for(int i=0;i<packageInfo.requestedPermissions.length;i++){
+                    String perm = packageInfo.requestedPermissions[i];
+                    if(Manifest.permission.BLUETOOTH_CONNECT.equals(perm)) {
+                        perm1 = true;
+                        if(0 != (packageInfo.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_NEVER_FOR_LOCATION)){
+                            perm_flag = true;
+                        }
+                    }
+                    if(Manifest.permission.BLUETOOTH_SCAN.equals(perm))
+                        perm2 = true;
+                    if(Manifest.permission.ACCESS_FINE_LOCATION.equals(perm))
+                        location_perm = true;
+                }
+                if(!perm1 || !perm2){
+                    return PermissionHint.BAD_BLUETOOTH_OR_LOCATION_MISSED;
+                }
+                if(perm_flag){
+                    return PermissionHint.GOOD_NONEED_LOCATION;
+                }
+                if(location_perm){
+                    return PermissionHint.GOOD_LOCATION_REQUIRED;
+                }
+                return PermissionHint.BAD_BLUETOOTH_OR_LOCATION_MISSED;
+            }else{
+                for(int i=0;i<packageInfo.requestedPermissions.length;i++){
+                    String perm = packageInfo.requestedPermissions[i];
+                    if(Manifest.permission.BLUETOOTH.equals(perm)) {
+                        perm1 = true;
+                    }
+                    if(Manifest.permission.BLUETOOTH_ADMIN.equals(perm))
+                        perm2 = true;
+                    if(Manifest.permission.ACCESS_FINE_LOCATION.equals(perm))
+                        location_perm = true;
+                }
+                if(!perm1 || !perm2 || !location_perm){
+                    return PermissionHint.BAD_BLUETOOTH_OR_LOCATION_MISSED;
+                }
+                return PermissionHint.GOOD_LOCATION_REQUIRED;
+            }
+        }catch (Exception e){
+            return PermissionHint.UNKNOWN;
+        }
+
+    }
+
     /* mac -> DeviceStatus */
     ConcurrentHashMap<String, DeviceStatus> BleDevices = new ConcurrentHashMap<>();
     @SuppressLint("InlinedApi")
     private boolean testIfHavePermissions(boolean requirePermissions){
         LinkedList<String> permissions = new LinkedList<>();
 
+        if(permissionHint == PermissionHint.BAD_BLUETOOTH_OR_LOCATION_MISSED)
+            return false;
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
             if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
                 permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+
             if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
                 permissions.add(Manifest.permission.BLUETOOTH_SCAN);
         }else{
@@ -263,12 +342,11 @@ public class BleReader {
 
         boolean ret = permissions.isEmpty();
 
-//        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
-            // It's not lower than version S, unless we have a permission flag for the BLUETOOTH_CONNECT in manifest
-            // we are request location permission for BLE scan, but it's optional
+        if(permissionHint == PermissionHint.GOOD_LOCATION_REQUIRED){
+            // this is optional if player only wants connect bounded devices, but we will add it.
             if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-//        }
+        }
 
         if(requirePermissions && !permissions.isEmpty()){
             ActivityCompat.requestPermissions((Activity)context, permissions.toArray(new String[0]), 1);

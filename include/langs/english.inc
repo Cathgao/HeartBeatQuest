@@ -23,11 +23,14 @@ V(heart_osc_port, "OSC Port: %d")
 
 V(scan_start, "Start Scan")
 V(scan_stop, "Stop Scan")
-V(turn_location_on, "Please Turn Location ON")
+V(turn_location_on, "Need Accuracy Location Perm")
 
 V(scaning, "Scaning")
 V(auto_scaning, "Auto scaning")
 V(no_scan, "Scan stopped")
+
+V(ble_permission_unknown, "Permission manifest check error")
+V(ble_permission_needed, "Bluetooth permission missing for game")
 
 V(pairing, "Pairing.. click to stop.")
 V(not_pairing, "Not pairing.. click to start.")

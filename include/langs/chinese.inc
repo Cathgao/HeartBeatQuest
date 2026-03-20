@@ -23,7 +23,10 @@ V(heart_osc_port, "OSC端口号: %d")
 
 V(scan_start, "开始扫描")
 V(scan_stop, "停止扫描")
-V(turn_location_on, "请打开位置服务")
+V(turn_location_on, "请打开精准位置服务")
+
+V(ble_permission_unknown, "权限清单获取错误")
+V(ble_permission_needed, "游戏蓝牙权限缺失")
 
 V(scaning, "正在扫描")
 V(auto_scaning, "正在自动扫描")
