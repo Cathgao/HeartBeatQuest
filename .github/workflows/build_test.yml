@@ -9,7 +9,6 @@ on:
       - 'CHANGELOG'
   pull_request:
     branches: [ "test" ]
-  workflow_call:
   workflow_dispatch:
   
 jobs:
