@@ -1,4 +1,4 @@
-name: qmod_build
+name: qmod_build_test
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
   pull_request:
     branches: [ "test" ]
   workflow_call:
+  workflow_dispatch:
   
 jobs:
   build:
