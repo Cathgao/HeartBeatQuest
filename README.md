@@ -71,11 +71,11 @@ The Bluetooth data source has minimum data latency, but may be less compatibilit
 > **PERMISION REQUIRED FOR BLE**  
 > From HeartBeatQuest 0.3.8, BLE scan is fixed and supported, you need the following permission
 >
->        android.permission.BLUETOOTH
->        android.permission.BLUETOOTH_CONNECT
->        android.permission.BLUETOOTH_SCAN
->        android.permission.ACCESS_COARSE_LOCATION
->        android.permission.ACCESS_FINE_LOCATION
+>        android.permission.BLUETOOTH               (for old game version)
+>        android.permission.BLUETOOTH_ADMIN         (for old game version)
+>        android.permission.BLUETOOTH_CONNECT       (for latest game version)
+>        android.permission.BLUETOOTH_SCAN          (for latest game version)
+>        android.permission.ACCESS_FINE_LOCATION    (both needed)
 
 See [Meta's doc](https://www.meta.com/help/quest/1202271140482151/) to learn about how to enable location permissions for your device.
 

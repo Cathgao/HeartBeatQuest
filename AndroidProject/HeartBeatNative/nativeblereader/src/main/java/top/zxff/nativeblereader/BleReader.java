@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import dalvik.system.PathClassLoader;
 
@@ -92,7 +93,7 @@ public class BleReader {
             if(selected){
                 //turn on
                 cb = new BluetoothGattCb();
-                cb.gatt = this.dev.connectGatt(context, true,cb);
+                cb.gatt = this.dev.connectGatt(context, true,cb, BluetoothDevice.TRANSPORT_LE);
             }else{
                 //turn off
                 cb.close();
@@ -106,11 +107,14 @@ public class BleReader {
             final static String HEART_UUID = "00002a37-0000-1000-8000-00805f9b34fb";
             final static String CONTROL_POINT_UUID = "00002a39-0000-1000-8000-00805f9b34fb";
             BluetoothGatt gatt;
+            int retry = 0;
             @SuppressLint("MissingPermission")
             public void close(){
                 serviceDiscovered = false;
-                this.gatt.close();
-                this.gatt = null;
+                synchronized (this){
+                    this.gatt.close();
+                    this.gatt = null;
+                }
             }
             /*
             Why we need this variable called useLatestHandleGatt:
@@ -122,35 +126,28 @@ public class BleReader {
              */
             boolean useLatestHandleGatt = false;
             @SuppressLint("MissingPermission")
-            private void handleGatt(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic){
-                if (HEART_UUID.equals(characteristic.getUuid().toString())) {
-                    int flag = characteristic.getProperties();
+            private void handleGatt(
+                    @NonNull BluetoothGatt gatt,
+                    @NonNull BluetoothGattCharacteristic characteristic,
+                    byte[] value) {
+                if (!HEART_UUID.equals(characteristic.getUuid().toString()))
+                    return;
+                if (value.length < 2)
+                    return;
 
-                    int format = -1;
-                    if ((flag & 0x01) != 0) {
-                        format = BluetoothGattCharacteristic.FORMAT_UINT16;
-                    } else {
-                        format = BluetoothGattCharacteristic.FORMAT_UINT8;
-                    }
-                    int heartRate = characteristic.getIntValue(format, 1);
-
-                    long energy = 0;
-                    if((flag & 0x8) != 0){
-                        //energy
-                        int offset = (flag & 1) + 2;
-                        energy = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, offset);
-                    }
-                    OnDeviceData(dev.getAddress(), heartRate, energy);
-                    if(energy > 10000){
-                        BluetoothGattCharacteristic control_point_cb = characteristic.getService()
-                                .getCharacteristic(UUID.fromString(CONTROL_POINT_UUID));
-                        if(control_point_cb != null){
-                            control_point_cb.setValue(new byte[]{1,1});//reset the energy
-                            control_point_cb.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                            gatt.writeCharacteristic(control_point_cb);
-                        }
-                    }
+                int flag = value[0] & 0xFF;
+                int heartRate;
+                if ((flag & 0x01) != 0) {
+                    if(value.length < 3)
+                        return;
+                    // Heart rate is UINT16
+                    heartRate = ((value[2] & 0xFF) << 8) | (value[1] & 0xFF);
+                } else {
+                    // Heart rate is UINT8
+                    heartRate = value[1] & 0xFF;
                 }
+
+                OnDeviceData(dev.getAddress(), heartRate, 0);
             }
 
             @Override
@@ -158,7 +155,7 @@ public class BleReader {
                 super.onCharacteristicChanged(gatt, characteristic);
                 if(useLatestHandleGatt)
                     return;
-                handleGatt(gatt, characteristic);
+                handleGatt(gatt, characteristic, characteristic.getValue());
             }
 
 
@@ -166,15 +163,47 @@ public class BleReader {
             public void onCharacteristicChanged(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value) {
                 super.onCharacteristicChanged(gatt, characteristic, value);
                 useLatestHandleGatt = true;
-                handleGatt(gatt, characteristic);
+                handleGatt(gatt, characteristic, value);
             }
 
             @SuppressLint("MissingPermission")
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 super.onConnectionStateChange(gatt, status, newState);
+                if (status != BluetoothGatt.GATT_SUCCESS){
+                    gatt.close();
+                    this.gatt = null;
+                    if(selected && this.retry < 3){
+                        this.retry++;
+                        handler.postDelayed(()->{
+                            if(DeviceStatus.this.cb != this)
+                                return;
+                            if(!selected)
+                                return;
+                            if(this.retry < 3){
+                                this.gatt = dev.connectGatt(context, true, this, BluetoothDevice.TRANSPORT_LE);
+                            }
+
+                        }, 1000);
+                    }
+                    return;
+                }
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    gatt.discoverServices();
+                    retry = 0;
+                    handler.postDelayed(gatt::discoverServices, 600);
+                }else if(newState == BluetoothProfile.STATE_DISCONNECTED){
+                    gatt.close();
+                    this.gatt = null;
+                    if(DeviceStatus.this.cb == this){
+                        handler.postDelayed(()->{
+                            if(DeviceStatus.this.cb != this)
+                                return;
+                            if(!selected)
+                                return;
+                            this.gatt = dev.connectGatt(context, true, this, BluetoothDevice.TRANSPORT_LE);
+                        }, 1000);
+
+                    }
                 }
             }
 
@@ -194,20 +223,18 @@ public class BleReader {
                 super.onServicesDiscovered(gatt, status);
                 if (gatt != this.gatt)
                     return;
+                if(status != BluetoothGatt.GATT_SUCCESS)
+                    return;
                 for (BluetoothGattService serv : gatt.getServices()) {
                     for (BluetoothGattCharacteristic ch : serv.getCharacteristics()) {
                         if (HEART_UUID.equals(ch.getUuid().toString())) {
                             gatt.setCharacteristicNotification(ch, true);
                             BluetoothGattDescriptor descriptor = ch.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            gatt.writeDescriptor(descriptor);
-                            serviceDiscovered = true;
-                        }
-                        if(CONTROL_POINT_UUID.equals(ch.getUuid().toString())){
-                            //for energy accumulator
-                            ch.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                            ch.setValue(new byte[]{1,1});
-                            gatt.writeCharacteristic(ch);
+                            if(descriptor != null){
+                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                gatt.writeDescriptor(descriptor);
+                                serviceDiscovered = true;
+                            }
                         }
                     }
                 }
@@ -217,28 +244,37 @@ public class BleReader {
     }
 
     /* mac -> DeviceStatus */
-    HashMap<String, DeviceStatus> BleDevices = new HashMap<>();
+    ConcurrentHashMap<String, DeviceStatus> BleDevices = new ConcurrentHashMap<>();
     @SuppressLint("InlinedApi")
     private boolean testIfHavePermissions(boolean requirePermissions){
         LinkedList<String> permissions = new LinkedList<>();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
-            permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
-            permissions.add(Manifest.permission.BLUETOOTH_SCAN);
-        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.R &&ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED)
-            permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
 
-        if(permissions.isEmpty()){
-            return true;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+                permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+            if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
+                permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+        }else{
+            if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED)
+                permissions.add(Manifest.permission.BLUETOOTH);
+            if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED)
+                permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
         }
-        if(requirePermissions){
+
+        boolean ret = permissions.isEmpty();
+
+//        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
+            // It's not lower than version S, unless we have a permission flag for the BLUETOOTH_CONNECT in manifest
+            // we are request location permission for BLE scan, but it's optional
+            if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//        }
+
+        if(requirePermissions && !permissions.isEmpty()){
             ActivityCompat.requestPermissions((Activity)context, permissions.toArray(new String[0]), 1);
         }
-        return false;
+
+        return ret;
     }
 
 
@@ -272,7 +308,7 @@ public class BleReader {
             String devName = device.getName();
             if(InformNativeDevice(device.getAddress(), (devName == null ? "Unknown" : devName).getBytes(StandardCharsets.UTF_8))) {
                 BleDevices.get(device.getAddress()).Toggle(true);
-                BleScanStop();
+                handler.postDelayed(()->BleScanStop(), 1000);
             }
         }
     };
@@ -307,9 +343,12 @@ public class BleReader {
                 BleDevices.put(bluetoothDevice.getAddress(),
                         new DeviceStatus(bluetoothDevice));
             }
-            if(InformNativeDevice(bluetoothDevice.getAddress(), bluetoothDevice.getName().getBytes(StandardCharsets.UTF_8))){
+            String devName = bluetoothDevice.getName();
+            if(devName == null)
+                devName = "Unknown";
+            if(InformNativeDevice(bluetoothDevice.getAddress(), devName.getBytes(StandardCharsets.UTF_8))){
                 BleDevices.get((bluetoothDevice.getAddress())).Toggle(true);
-                BleScanStop();
+                handler.postDelayed(()->BleScanStop(), 1000);
             }
         }
 
