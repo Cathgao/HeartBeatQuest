@@ -92,7 +92,7 @@ public class BleReader {
             if(selected){
                 //turn on
                 cb = new BluetoothGattCb();
-                cb.gatt = this.dev.connectGatt(context, false, cb, BluetoothDevice.TRANSPORT_LE);
+                cb.gatt = this.dev.connectGatt(context, false, cb, BluetoothDevice.TRANSPORT_AUTO);
             }else{
                 //turn off
                 cb.close();
