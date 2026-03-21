@@ -195,6 +195,13 @@ public class BleReader {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     retry = 0;
                     handler.postDelayed(gatt::discoverServices, 600);
+                    if(autoConnectCanceler != null){
+                        handler.postDelayed(()->{
+                            if(autoConnectCanceler != null)
+                                BleReader.this.BleScanStop();
+                        }, 700);
+
+                    }
                 }else if(newState == BluetoothProfile.STATE_DISCONNECTED){
                     gatt.close();
                     this.gatt = null;
@@ -386,7 +393,6 @@ public class BleReader {
             String devName = device.getName();
             if(InformNativeDevice(device.getAddress(), (devName == null ? "Unknown" : devName).getBytes(StandardCharsets.UTF_8))) {
                 BleDevices.get(device.getAddress()).Toggle(true);
-                handler.postDelayed(()->BleScanStop(), 1000);
             }
         }
     };
@@ -426,7 +432,6 @@ public class BleReader {
                 devName = "Unknown";
             if(InformNativeDevice(bluetoothDevice.getAddress(), devName.getBytes(StandardCharsets.UTF_8))){
                 BleDevices.get((bluetoothDevice.getAddress())).Toggle(true);
-                handler.postDelayed(()->BleScanStop(), 1000);
             }
         }
 
