@@ -132,6 +132,7 @@ void HeartBeat::MainSettings::CreateElements(){
                     MainMenuPreviewer::getInstance()->Reload();
                     
                     bool supported = true;
+                    bool need_advanced_ui = false;
                     {
                         HeartBeat::assetBundleMgr.Init();
                         auto it = HeartBeat::assetBundleMgr.loadedBundles.find(v);
@@ -139,9 +140,28 @@ void HeartBeat::MainSettings::CreateElements(){
                             auto & features = it->second.unsupported_features;
                             if(features.size() > 0)
                                 supported = false;
+                            auto & infos = it->second.infos;
+                            if(infos.contains("root")){
+                                auto & root = infos["root"];
+                                if(
+                                    root == "songProgressPanelGO" ||
+                                    root == "relativeScoreGo" ||
+                                    root == "immediateRankGo"
+                                ){
+                                    need_advanced_ui = true;
+                                }
+                            }
                         }
                     }
-                    feature_unsupport_hint_ui->set_text(supported ? "" : LANG->unsupported_feature_udpatre_mod);
+                    if(supported){
+                        if(need_advanced_ui){
+                            feature_unsupport_hint_ui->set_text(LANG->advance_ui_required);
+                        }else{
+                            feature_unsupport_hint_ui->set_text("");
+                        }
+                    }else{
+                        feature_unsupport_hint_ui->set_text(LANG->unsupported_feature_udpatre_mod);
+                    }
 
                 }
             }

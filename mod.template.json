@@ -20,6 +20,10 @@
             "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/HeartBeatQuest/defaultUI.bundle"
         },
         {
+            "name": "plaintext.bundle",
+            "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/HeartBeatQuest/UI/plaintext.bundle"
+        },
+        {
             "name": "nyancat.bundle",
             "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/HeartBeatQuest/UI/nyancat.bundle"
         }
