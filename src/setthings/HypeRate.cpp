@@ -5,7 +5,7 @@
     namespace HeartBeat{
 
         void HypeRateSettings::CreateElements(){
-            auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
+            auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
 
             hyperate_id = getModConfig().HypeRateId.GetValue();
             BSML::Lite::CreateText(container->get_transform(), LANG->hyperate_input_hint, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});

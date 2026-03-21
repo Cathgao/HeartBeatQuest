@@ -2,7 +2,7 @@
 #include "settings/OSCSettings.hpp"
 void HeartBeat::OSCSettings::CreateElements(){
     // Create a container that has a scroll bar
-    auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
+    auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
 
     osc_list = BSML::Lite::CreateScrollableList(container->get_transform(), {70,60}, [this](int idx){
         UpdateSelectedOscValue(idx);
