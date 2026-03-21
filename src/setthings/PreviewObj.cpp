@@ -3,6 +3,7 @@
 #include "ModConfig.hpp"
 #include "UnityEngine/RenderMode.hpp"
 #include "HMUI/CurvedCanvasSettings.hpp"
+#include "UnityEngine/Vector3.hpp"
 #include "main.hpp"
 #include "settings/PreviewObj.hpp"
 
@@ -37,8 +38,7 @@ void HeartBeat::MainMenuPreviewer::Reload(){
     obj->AddComponent<HMUI::CurvedCanvasSettings*>()->_radius = 0;
 
     auto crect = canvas->GetComponent<UnityEngine::RectTransform*>();
-    crect->set_position({0, 1.5f, 3});
-    crect->set_anchoredPosition({0.5f,0.5f});
+    crect->set_position({1, 1.5, 3});
     crect->set_localScale({0.01f,0.01f,0.01f});
 
     std::string SelectedUI = getModConfig().SelectedUI.GetValue();
