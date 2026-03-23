@@ -284,12 +284,13 @@ public class BleReader {
                     String perm = packageInfo.requestedPermissions[i];
                     if(Manifest.permission.BLUETOOTH_CONNECT.equals(perm)) {
                         perm1 = true;
+                    }
+                    if(Manifest.permission.BLUETOOTH_SCAN.equals(perm)){
+                        perm2 = true;
                         if(0 != (packageInfo.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_NEVER_FOR_LOCATION)){
                             perm_flag = true;
                         }
                     }
-                    if(Manifest.permission.BLUETOOTH_SCAN.equals(perm))
-                        perm2 = true;
                     if(Manifest.permission.ACCESS_FINE_LOCATION.equals(perm))
                         location_perm = true;
                 }
