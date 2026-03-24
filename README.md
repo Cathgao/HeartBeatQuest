@@ -66,7 +66,6 @@ If you can't patch with MBF, you need know the following things:
 This should works for all game versions.
 ```
 android.permission.BLUETOOTH
-android.permission.BLUETOOTH_ADMIN
 android.permission.BLUETOOTH_SCAN
 android.permission.BLUETOOTH_CONNECT
 android.permission.ACCESS_FINE_LOCATION
