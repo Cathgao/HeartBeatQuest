@@ -63,7 +63,8 @@ Then you can reselect your device to reconnect it.
 
 **Auto Reconnect**  
 From version `0.4.0`, the mod will auto scan devices in the first 20 seconds when game start if there's enough permission.
-If it find any device that has same mac address with last connect, the mod will try to auto connect that device.
+If it find any device that has same mac address with last connect, the mod will try to auto connect that device.  
+Scan will consume your quest's battery, so if your hr device is not avaliable in this time window, you need manually start scan in the device list.
 
 **Manual Permission Patch**  
 Please refer to [Bluetooth Permission Guide](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-Permission-Guide)
