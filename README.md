@@ -57,9 +57,8 @@ The Bluetooth data source has minimum data latency, but may be less compatibilit
 > [!NOTE]
 > Bluetooth permission is not required if you don't use this data source.
 
-## Manual Manifest Patch
-
-Please refer to [Bluetooth Permission Guide](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-Permission-Guide)
+> **Manual Permission Guide**  
+> Please refer to [Bluetooth Permission Guide](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-Permission-Guide)
 
 ## HypeRate as the heart data source
 
