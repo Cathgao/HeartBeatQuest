@@ -9,15 +9,8 @@
 
 [中文简要说明](README.cn.md)
 
-View your heart rate inside the BeatSaber quest game.  
+View your heart rate inside the BeatSaber quest game.
 
-# Recommended device
-
-This is not an advertisement, but...
-
-it is HIGHLY recommanded to use `Polar H10` or similar production as heart rate monitor. This device can measure heart rate in real time at a frequency of once per second with almost no latency. You'll love recording your heart rate with this device.
-
-The flash of the game UI reflects the frequency of device responses. You can use this to evaluate your device performance.
 
 # Mod Skins
 
