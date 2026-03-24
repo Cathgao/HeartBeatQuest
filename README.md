@@ -59,20 +59,7 @@ The Bluetooth data source has minimum data latency, but may be less compatibilit
 
 ## Manual Manifest Patch
 
-If you can't patch with MBF, you need know the following things:
-
-### All in one setup
-
-This should works for all game versions.
-```
-android.permission.BLUETOOTH
-android.permission.BLUETOOTH_SCAN
-android.permission.BLUETOOTH_CONNECT
-android.permission.ACCESS_FINE_LOCATION
-```
-And you MUST enable ACCURACY LOCATION for your Quest's system, follow [the meta's guide](https://www.meta.com/help/quest/1202271140482151). Read more about the mod's behavior [here](https://github.com/frto027/HeartBeatQuest/wiki/Enable-Location-Permission-for-your-Quest's-system).
-
-You can patch the game without Accuracy Location(ACCESS_FINE_LOCATION), see [here](https://github.com/frto027/HeartBeatQuest/wiki/Detailed-Bluetooth-permission) for more setup.
+Please refer to [Bluetooth Permission Guide](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-Permission-Guide)
 
 ### Old mod version setup
 
