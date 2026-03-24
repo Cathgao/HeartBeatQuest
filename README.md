@@ -61,14 +61,6 @@ The Bluetooth data source has minimum data latency, but may be less compatibilit
 
 Please refer to [Bluetooth Permission Guide](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-Permission-Guide)
 
-### Old mod version setup
-
-Please refer to [Bluetooth permission for mod version <= 0.3.7](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-permission-earlier-than-0.3.7).
-
-The following setup is for mod version > 0.3.7(not released).
-
-
-
 ## HypeRate as the heart data source
 
 This mod supports the [HypeRate](https://www.hyperate.io/) as the data source. Just install the mod and change the data source to HypeRate in the setthings menu, then restart the game. Input your hyperate ID in the HYPERATE menu and it will works. (Special thanks to HypeRate for providing API support)
