@@ -57,8 +57,16 @@ The Bluetooth data source has minimum data latency, but may be less compatibilit
 > [!NOTE]
 > Bluetooth permission is not required if you don't use this data source.
 
-> **Manual Permission Guide**  
-> Please refer to [Bluetooth Permission Guide](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-Permission-Guide)
+**Reconnect**
+In case you have trouble with your current connection. If you select `None` in the device list, your device will be disconnected.
+Then you can reselect your device to reconnect it.
+
+**Auto Reconnect**  
+From version `0.4.0`, the mod will auto scan devices in the first 20 seconds when game start if there's enough permission.
+If it find any device that has same mac address with last connect, the mod will try to auto connect that device.
+
+**Manual Permission Patch**  
+Please refer to [Bluetooth Permission Guide](https://github.com/frto027/HeartBeatQuest/wiki/Bluetooth-Permission-Guide)
 
 ## HypeRate as the heart data source
 
