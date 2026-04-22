@@ -65,7 +65,8 @@ public:
     void OnEnergyReset();
     void OnAutoConnectStatusChanged(bool autoConnecting);
     void OnScanStatusChanged(bool isScanning);
-};
 
+    static HeartBeatBleDataSource *bleDataSource;
+};
 
 }

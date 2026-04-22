@@ -5,6 +5,7 @@
 #include "SettingsSnapshot.hpp"
 #include "data_sources/Bluetooth.hpp"
 #include "data_sources/DataSource.hpp"
+#include "java/java.h"
 #include "settings/Settings.hpp"
 #include "GlobalNamespace/CoreGameHUDController.hpp"
 #include "QountersDriver.hpp"
@@ -34,6 +35,12 @@
 #include <cstddef>
 #include <mutex>
 #include "BeatLeaderRecorder.hpp"
+// Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
+#include "UnityEngine/GameObject.hpp"
+#include "scotland2/shared/loader.hpp"
+
+#include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
+#include "beatsaber-hook/shared/utils/hooking.hpp"
 
 static modloader::ModInfo modInfo = {MOD_ID, VERSION, 0}; // Stores the ID and version of our mod, and is sent to the modloader upon startup
 std::string modConfigFilePath = "unk";
@@ -53,6 +60,7 @@ extern "C" void setup(CModInfo& info) {
     HeartBeat::SettingsSnapshot::getInstance();
 
     if(HeartBeat::SettingsSnapshot::getInstance()->ModEnabled){
+        HeartBeat::LoadJavaLibraryIfNeeded();
         HeartBeat::DataSource::getInstance();
     }
 }
