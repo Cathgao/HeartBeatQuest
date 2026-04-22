@@ -58,7 +58,7 @@ foreach ($lib in $modJson.libraryFiles) {
     $filelist += $path
 }
 
-$filelist += "./build/libHeartBeatLanClientQuest.so"
+$filelist += "./build/libHeartBeatQuest.so"
 $filelist += "./extra/HeartBeatBLEReader.dex"
 
 $zip = $qmodName + ".zip"

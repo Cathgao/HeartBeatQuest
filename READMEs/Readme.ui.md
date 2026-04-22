@@ -7,7 +7,7 @@
 
 The color bar under the number indicates your heart zone.
 
-![alt text](../image.png)
+![alt text](./image.png)
 
 as a refer, here I lists what these color bar means.
 

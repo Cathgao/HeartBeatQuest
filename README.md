@@ -7,7 +7,7 @@
 > [!TIP]
 > This mod is for the quest platform. For PC platform you should use [HRCounter](https://github.com/qe201020335/HRCounter). 
 
-[中文简要说明](README.cn.md)
+[中文简要说明](./READMEs/README.cn.md)
 
 View your heart rate inside the BeatSaber quest game.
 

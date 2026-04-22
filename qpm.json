@@ -8,7 +8,7 @@
         "version": "0.4.0",
         "url": null,
         "additionalData": {
-            "overrideSoName": "libHeartBeatLanClientQuest.so",
+            "overrideSoName": "libHeartBeatQuest.so",
             "cmake": true
         }
     },
