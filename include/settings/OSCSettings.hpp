@@ -1,4 +1,5 @@
 #pragma once
+#include "HMUI/CurvedTextMeshPro.hpp"
 #include "settings/Settings.hpp"
 #include "i18n.hpp"
 
@@ -15,6 +16,8 @@ namespace HeartBeat {
         OSCSettings():Settings("OSC Source", LANG->heart_osc_senders, "<3") { }
         void CreateElements() override;
         void Update() override;
+
+        HMUI::CurvedTextMeshPro * mDnsNameText = nullptr;
     };
 
     

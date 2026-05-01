@@ -1,8 +1,25 @@
 #include "data_sources/OSC.hpp"
+#include "ModConfig.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Settings.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Text.hpp"
 #include "settings/OSCSettings.hpp"
 void HeartBeat::OSCSettings::CreateElements(){
     // Create a container that has a scroll bar
     auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
+
+    static char osc_port[4096];
+    sprintf(osc_port, LANG->heart_osc_port, getModConfig().OSCPort.GetValue());
+    BSML::Lite::CreateText(container->get_transform(),osc_port, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
+    mDnsNameText = BSML::Lite::CreateText(container->get_transform(), LANG->mdns_name_no);
+
+    BSML::Lite::CreateToggle(container->get_transform(), LANG->mdns_enable,getModConfig().OSC_MDNS_ENABLED.GetValue(), [this](bool value){
+        getModConfig().OSC_MDNS_ENABLED.SetValue(value);
+        if(value){
+            HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>()->StartMDns();
+        }else{
+            HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>()->StopMDns();
+        }
+    });
 
     osc_list = BSML::Lite::CreateScrollableList(container->get_transform(), {70,60}, [this](int idx){
         UpdateSelectedOscValue(idx);
@@ -64,4 +81,11 @@ void HeartBeat::OSCSettings::UpdateOscScrollList(){
 
 void HeartBeat::OSCSettings::Update(){
     UpdateOscScrollList();
+
+    static std::string myMdnsName = "";
+    std::string otherName = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>()->mDnsName;
+    if(myMdnsName != otherName){
+        myMdnsName = otherName;
+        mDnsNameText->set_text(LANG->mdns_name_title + myMdnsName);
+    }
 }

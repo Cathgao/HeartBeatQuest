@@ -48,7 +48,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import dalvik.system.PathClassLoader;
 
 public class BleReader {
-
+    @SuppressLint("StaticFieldLeak")
+    public static BleReader instance = null;
     @Discouraged(message = "this method should be rewritten in C++ with JNI to load this java code.")
     public static void LoadJavaLibrary(String path) throws ClassNotFoundException {
         new PathClassLoader(path,
@@ -71,12 +72,14 @@ public class BleReader {
 
     PermissionHint permissionHint;
     public BleReader(){
-        this.context = GetActivity();
+        this.context = ModHelper.GetActivity();
         if(this.context == null){
             throw new RuntimeException("The context is nullptr");
         }
         this.handler = new Handler(context.getMainLooper());
         permissionHint = getManifestStatus();
+
+        instance = this;
     }
 
     class DeviceStatus{
@@ -501,16 +504,5 @@ public class BleReader {
             this.context.startActivity(intent);
         }
 
-    }
-
-    private static Context GetActivity(){
-        try {
-            return (Context)Class
-                    .forName("com.unity3d.player.UnityPlayer")
-                    .getField("currentActivity")
-                    .get(null);
-        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

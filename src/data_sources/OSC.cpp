@@ -13,6 +13,7 @@
 
 #include <unistd.h>
 #include "ModConfig.hpp"
+#include "java/MDnsHelper.h"
 #include "main.hpp"
 #include "BeatLeaderRecorder.hpp"
 #include "data_sources/OSC.hpp"
@@ -28,6 +29,14 @@ HeartBeatOSCDataSource::HeartBeatOSCDataSource():DataSource(DataSourceType::DS_O
     }
     selected_addr = getModConfig().OSCSelectedDevice.GetValue();
     this->CreateSocket();
+
+    if(HeartBeat::MDnsHelper::osc_instance){
+        HeartBeat::MDnsHelper::osc_instance->CreateObject();
+        HeartBeat::MDnsHelper::osc_instance->SetManagerId(MDNS_ID_OSC);
+        if(getModConfig().OSC_MDNS_ENABLED.GetValue()){
+            StartMDns();
+        }
+    }
 }
 void HeartBeatOSCDataSource::SetSelectedAddr(const std::string& mac){
         getModConfig().OSCSelectedDevice.SetValue(mac);
@@ -183,4 +192,18 @@ bool HeartBeatOSCDataSource::GetData(int&heartbeat){
     return false;
 }
 
+void HeartBeatOSCDataSource::StartMDns(){
+    if(MDnsHelper::osc_instance){
+        MDnsHelper::osc_instance->SetMDnsName(getModConfig().OSC_MDNS_NAME.GetValue(), getModConfig().OSCPort.GetValue(), "_osc._udp.");
+    }
+}
+
+void HeartBeatOSCDataSource::StopMDns(){
+    if(MDnsHelper::osc_instance){
+        MDnsHelper::osc_instance->Stop();
+    }
+}
+void HeartBeatOSCDataSource::OnMDnsDevNameChanged(std::string name){
+    this->mDnsName = std::move(name);
+}
 }

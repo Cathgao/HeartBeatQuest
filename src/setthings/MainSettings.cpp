@@ -179,12 +179,6 @@ void HeartBeat::MainSettings::CreateElements(){
             UpdateContent();
         });
 
-        static char osc_port[4096];
-        if(SettingsSnapshot::getInstance()->DataSourceType == HeartBeat::DS_OSC){
-            sprintf(osc_port, LANG->heart_osc_port, getModConfig().OSCPort.GetValue());
-            BSML::Lite::CreateText(container->get_transform(),osc_port, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
-        }
-
         BSML::Lite::CreateText(container->get_transform(),LANG->your_setthings_is_in_another_menu, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 10});
 
         UpdateContent();

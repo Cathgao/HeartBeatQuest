@@ -1,5 +1,7 @@
 #include "java/java.h"
 #include "data_sources/DataSource.hpp"
+#include "java/MDnsHelper.h"
+#include "java/ModHelper.h"
 #include "main.hpp"
 #include "scotland2/shared/modloader.h"
 #include <jni.h>
@@ -13,7 +15,7 @@ HeartBeat::JavaSingleClassObject::JavaSingleClassObject(jobject SomeClassLoader,
         // We can't use env->FindClass("top.zxff.nativeblereader.BleReader") to find our class
         // Because we use a different class loader, which is a InMemoryDexClassLoader,
         //      and FindClass uses the classloader that ralated to the top of call stack
-        auto return_value_of_loadClass = env->CallObjectMethod(SomeClassLoader, LoadClassMethod, env->NewStringUTF("top.zxff.nativeblereader.BleReader"));
+        auto return_value_of_loadClass = env->CallObjectMethod(SomeClassLoader, LoadClassMethod, env->NewStringUTF(packageName));
         CheckException();
         ThisClass = static_cast<jclass>(return_value_of_loadClass);
         if(ThisClass == nullptr){
@@ -65,6 +67,7 @@ jmethodID HeartBeat::JavaSingleClassObject::GetMethodID(const char * methodName,
 bool HeartBeat::LoadJavaLibraryIfNeeded(){
     switch(HeartBeat::SettingsSnapshot::getInstance()->DataSourceType){
         case HeartBeat::DS_BLE:
+        case HeartBeat::DS_OSC:
             break;
         default:
             return false;
@@ -145,8 +148,18 @@ bool HeartBeat::LoadJavaLibraryIfNeeded(){
     auto LoadClassMethod = env->GetMethodID(SomeClassLoaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 
     try{
-        HeartBeat::BleReader::instance = new BleReader(SomeClassLoader, LoadClassMethod, env);
-        HeartBeat::BleReader::instance->RegisterNatives();
+
+        HeartBeat::JavaModHelper::instance = new JavaModHelper(SomeClassLoader, LoadClassMethod, env);
+
+        if(HeartBeat::SettingsSnapshot::getInstance()->DataSourceType == DS_OSC){
+            HeartBeat::MDnsHelper::osc_instance = new MDnsHelper(SomeClassLoader, LoadClassMethod, env);
+            HeartBeat::MDnsHelper::osc_instance->RegisterNatives();
+        }
+
+        if(HeartBeat::SettingsSnapshot::getInstance()->DataSourceType == DS_BLE){
+            HeartBeat::BleReader::instance = new BleReader(SomeClassLoader, LoadClassMethod, env);
+            HeartBeat::BleReader::instance->RegisterNatives();
+        }
     }catch(std::runtime_error err){
         getLogger().error("Exception in java {}", err.what());
         return false;

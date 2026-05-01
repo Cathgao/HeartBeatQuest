@@ -91,3 +91,7 @@ V(ignore_qounters, "Ignore Qounters++ mod")
 V(ignore_qounters_hint, "please enable this if Qounters++ is disabled. If enabled, Qounters++ may not work with this mod.")
 
 V(advance_ui_required, "Hint:Need enable Advanced HUD to see this UI")
+
+V(mdns_enable, "Enable mDNS")
+V(mdns_name_no, "mDns n/a")
+V(mdns_name_title, "mDns name:")

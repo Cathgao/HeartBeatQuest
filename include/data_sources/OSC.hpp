@@ -29,6 +29,12 @@ public:
         return selected_addr; 
     }
     void SetSelectedAddr(const std::string& mac);
+
+    std::string mDnsName = "";
+
+    void StartMDns();
+    void StopMDns();
+    void OnMDnsDevNameChanged(std::string name);
 private:
     //in background thread
     void parseOscMessage(char *&thebuff, ssize_t &sz);

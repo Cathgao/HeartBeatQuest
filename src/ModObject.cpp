@@ -2,6 +2,7 @@
 #include "UnityEngine/GameObject.hpp"
 #include "DataHub.hpp"
 #include "data_sources/DataSource.hpp"
+#include "java/ModHelper.h"
 #include "settings/Settings.hpp"
 #include <mutex>
 #include <queue>
@@ -58,6 +59,11 @@ void ModObject::OnDestroy(){
 }
 
 void ModObject::OnApplicationQuit(){
+
+    if(JavaModHelper::instance){
+        JavaModHelper::instance->OnModExit();
+    }
+
     terminateBackground();
 }
 
