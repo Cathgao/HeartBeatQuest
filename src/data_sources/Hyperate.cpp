@@ -76,6 +76,7 @@ HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource()
 void HeartBeatHypeRateDataSource::LateStart(){
   // setup websocket
   websocket.setUrl(WS_SERVER_HOST "/hyperate");
+  websocket.setPingInterval(15);
   ix::WebSocketHttpHeaders headers;
   headers["User-Agent"] = getModUserAgent();
   websocket.setExtraHeaders(headers);
@@ -106,7 +107,7 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
 // call thread: websocket thread
 void HeartBeatHypeRateDataSource::onWebSocketMessage(
     const ix::WebSocketMessagePtr &ptr) {
-      getLogger().info("Received message {}", (int)ptr->type);
+      // getLogger().info("Received message {}", (int)ptr->type);
 
     if (ptr->type == ix::WebSocketMessageType::Open){
       getLogger().info("websocket connection opened, send start message");
@@ -127,7 +128,7 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(
       dom.Accept(writer);
 
       std::string toSend = std::string("C") + buffer.GetString();
-      getLogger().info("Send package to server: {}", toSend);
+      // getLogger().info("Send package to server: {}", toSend);
 
       websocket.send(toSend);
       return;

@@ -44,14 +44,13 @@ HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource():DataSource(DataSourceTy
 
 void HeartBeatPulsoidDataSource::LateStart(){
     // setup websocket
-    websocket.setUrl(WS_SERVER_HOST "/hyperate");
     ix::WebSocketHttpHeaders headers;
     headers["User-Agent"] = getModUserAgent(true);
     websocket.setExtraHeaders(headers);
     websocket.setOnMessageCallback(
         std::bind(&HeartBeatPulsoidDataSource::onWebSocketMessage, this,
                     std::placeholders::_1));
-
+    websocket.setPingInterval(15);
 }
 
 void HeartBeatPulsoidDataSource::ResetConnection(){
@@ -109,6 +108,21 @@ void HeartBeatPulsoidDataSource::Update(){
             httpGetUrl(keep_alive_url.value());
         }
     }
+
+    static int counter = 0;
+    counter++;
+    if(counter % (60 * 20) == 0){
+        // check the socket connection
+        auto state = websocket.getReadyState();
+        if(!closed && state == ix::ReadyState::Closed){
+            // we need connect to socket
+            if(UIManager::getInstance()->hasReader()){
+                ResetConnection();
+            }
+        }
+    
+    }
+
 }
 
 void HeartBeatPulsoidDataSource::RequestSafePair(std::function<void(void)> ondone_unity, std::function<void(std::string /* reason */)> onfail_unity){
