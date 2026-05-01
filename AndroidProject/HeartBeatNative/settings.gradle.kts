@@ -14,5 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "HeartBeatNative"
-include(":app")
 include(":nativeblereader")

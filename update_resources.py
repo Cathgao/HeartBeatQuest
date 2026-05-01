@@ -10,4 +10,13 @@ def update(input_file_path, output_file_path, variable_name):
 
         o.write("\n};")
 
+from pathlib import Path
+import zipfile
+release_apk = Path("AndroidProject/HeartBeatNative/nativeblereader/build/outputs/apk/release/nativeblereader-release-unsigned.apk")
+if release_apk.exists():
+    print("release apk exists, use it")
+    with zipfile.ZipFile(release_apk) as apk:
+        data = apk.read("classes.dex")
+        with open("extra/HeartBeatBLEReader.dex", "wb") as f:
+            f.write(data)
 update("extra/HeartBeatBLEReader.dex", "src\\HeartBeatBLEDex.inl", "ble_dex")

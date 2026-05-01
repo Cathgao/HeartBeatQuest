@@ -12,6 +12,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -157,18 +158,18 @@ public class BleReader {
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                 super.onCharacteristicChanged(gatt, characteristic);
-                if(useLatestHandleGatt)
-                    return;
+//                if(useLatestHandleGatt)
+//                    return;
                 handleGatt(gatt, characteristic, characteristic.getValue());
             }
 
 
-            @Override
-            public void onCharacteristicChanged(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value) {
-                super.onCharacteristicChanged(gatt, characteristic, value);
-                useLatestHandleGatt = true;
-                handleGatt(gatt, characteristic, value);
-            }
+//            @Override
+//            public void onCharacteristicChanged(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value) {
+//                super.onCharacteristicChanged(gatt, characteristic, value);
+//                useLatestHandleGatt = true;
+//                handleGatt(gatt, characteristic, value);
+//            }
 
             @SuppressLint("MissingPermission")
             @Override
@@ -405,8 +406,10 @@ public class BleReader {
             return;
         }
 
-        if(leScanner == null)
-            leScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+        BluetoothManager mgr = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        if(leScanner == null){
+            leScanner = mgr.getAdapter().getBluetoothLeScanner();
+        }
 
 
         LinkedList<ScanFilter> filters = new LinkedList<>();
@@ -422,7 +425,7 @@ public class BleReader {
         leScanner.startScan(filters, settings, leScanCallback);
 
 
-        Set<BluetoothDevice> deviceSet = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
+        Set<BluetoothDevice> deviceSet = mgr.getAdapter().getBondedDevices();
         for (BluetoothDevice bluetoothDevice : deviceSet) {
             if(!BleDevices.containsKey(bluetoothDevice.getAddress())){
                 BleDevices.put(bluetoothDevice.getAddress(),
