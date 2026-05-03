@@ -12,7 +12,7 @@ void HeartBeat::PulsoidSettings::CreateElements(){
                 // })));
                 // devices_controller = self;
                 // Create a container that has a scroll bar
-                auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
+                auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
                 BSML::Lite::CreateUIButton(container->get_transform(), LANG->pulsoid_reconnect, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8}, [](){
                     HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatPulsoidDataSource>()->ResetConnection();
