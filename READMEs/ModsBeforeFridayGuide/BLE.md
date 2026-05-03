@@ -7,6 +7,7 @@ There are two way for MBF to patch the bluetooth permission. The first is setup 
 >If you just turn on Bluetooth permission, the mod will likely works but only for PAIRED bluetooth devices.  
 If you continue with this guide, the mod will be able to connect your hr device without a bluetooth pair. This is recommand setup. **Please unpair your heart rate device from quest OS if you follow this guide. No pair required.**
 
+If you just installed a new game, follow next section. If your game already installed, follow [this](#repatch-an-already-moded-game)
 
 ## Setup with a new game install
 
