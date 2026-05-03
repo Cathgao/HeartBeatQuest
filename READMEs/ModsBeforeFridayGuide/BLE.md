@@ -10,7 +10,7 @@ If you continue with this guide, the mod will be able to connect your hr device 
 
 ## Setup with a new game install
 
-Before you patch the game with MBF, you can enable the bluetooth permission toggle. Them MBF will patch the bluetooth for you.
+Before you patch the game with MBF, you can enable the bluetooth permission toggle. Then MBF will patch the bluetooth for you.
 
 ![alt text](image.png)
 
@@ -19,6 +19,9 @@ Turn on the bluetooth permission. And then Click the `Advanced Options` button.
 
 ![alt text](image-2.png)
 
+Continue read the next section.
+
+### Edit XML Guide
 
 Click `Edit XML`
 
@@ -53,7 +56,8 @@ You can setup the permission at here.
 
 ![alt text](image-8.png)
 
-Then you need click `Edit XML`. This process is same with the first setup. Please look at the guide above.
+Then you need click `Edit XML`. This process is same with the first setup. Please look at the guide above [Edit xml](#Edit-XML-Guide).
+
 
 After you complete the XML patch, click the `Repatch Game` button.
 
