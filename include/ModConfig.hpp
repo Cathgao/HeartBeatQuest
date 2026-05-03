@@ -35,7 +35,7 @@ DECLARE_CONFIG(ModConfig){
     CONFIG_VALUE(OSCSelectedDevice, std::string, "OSC Selected Device", "");
 
     CONFIG_VALUE(OSC_MDNS_ENABLED, bool, "Enable MDns for OSC", false);
-    CONFIG_VALUE(OSC_MDNS_NAME, std::string, "MDns name for osc", "heartbeatquest_osc");
+    CONFIG_VALUE(OSC_MDNS_NAME, std::string, "MDns name for osc", "osc.heartbeatquest.local");
 
     CONFIG_VALUE(HypeRateId, std::string, "HypeRateID", "")
 
