@@ -108,7 +108,7 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
     }
 
     websocket.start();
-    status = "Connect start";
+    status = LANG->hyperate_con_start;
     if(callback.has_value()){
         runInUnityThread(std::move(callback.value()));
     }
@@ -217,7 +217,7 @@ void HeartBeatHypeRateDataSource::handleServerPayload(const std::string &type,
         msg = msg.substr(0, 255) + ".....";
       }
       runInUnityThread([this, msg=std::move(msg)](){
-        status = "you have message";
+        status = LANG->hyperate_you_have_message;
         serverMessage = msg;
       });
     } else {

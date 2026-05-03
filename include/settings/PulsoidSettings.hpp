@@ -1,4 +1,5 @@
 #pragma once
+#include "HMUI/CurvedTextMeshPro.hpp"
 #include "settings/Settings.hpp"
 #include "i18n.hpp"
 
@@ -12,6 +13,7 @@ namespace HeartBeat {
 
         HMUI::CurvedTextMeshPro* errMsgText = nullptr;
 
+        HMUI::CurvedTextMeshPro* statusText = nullptr;
 
     public:
         PulsoidSettings():Settings("Pulsoid Connect", LANG->pulsoid, "<3") { }
@@ -25,6 +27,8 @@ namespace HeartBeat {
         void setButtonOpeningUrl();
         void setButtonPairing();
         void setButtonPairDone();
+
+        void Update() override;
     };
 
     

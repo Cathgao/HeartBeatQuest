@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DataSource.hpp"
+#include "NetStatus.hpp"
 #include "ixwebsocket/IXWebSocket.h"
 #include <memory>
 #include <optional>
@@ -28,6 +29,7 @@ class HeartBeatPulsoidDataSource:public DataSource{
         bool GetData(int& heartbeat) override;
 
         void Update() override;
+        void OnNewReader() override;
 
         void ResetConnection();
 
@@ -37,6 +39,8 @@ class HeartBeatPulsoidDataSource:public DataSource{
         void SafePairCancel();
 
         void LateStart() override;
+
+        NetworkStatus status;
     private:
         // execute in websocket thread
         void onWebSocketMessage(const ix::WebSocketMessagePtr& ptr);

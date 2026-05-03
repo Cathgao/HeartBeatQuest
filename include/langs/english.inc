@@ -17,11 +17,15 @@ V(hyperate_save_and_connect, "SAVE AND CONNECT")
 V(hyperate_input_hint, "https://app.hyperate.io/<color=\"green\">xxx</color><-input this")
 V(no_message_from_server, "")
 
+V(hyperate_con_start, "Connect start")
 V(hyperate_network_error, "Network error: ")
 V(hyperate_retry, "retry")
 V(hyperate_connected, "Connected.")
 V(hyperate_no_id, "No hyperate ID")
 V(hyperate_refused, "Refused by server")
+V(hyperate_you_have_message, "you have message")
+
+V(pulsoid_no_token, "No token")
 
 V(unsupported_feature_udpatre_mod, "UI unsupported, maybe update your mod")
 

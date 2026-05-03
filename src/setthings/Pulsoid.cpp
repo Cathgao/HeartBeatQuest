@@ -18,6 +18,8 @@ void HeartBeat::PulsoidSettings::CreateElements(){
                     HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatPulsoidDataSource>()->ResetConnection();
                 });
 
+                statusText = BSML::Lite::CreateText(container->get_transform(), "", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 1});
+
                 BSML::Lite::CreateText(container->get_transform(), LANG->pulsoid_input_hint, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
                 
                 {
@@ -133,6 +135,16 @@ void HeartBeat::PulsoidSettings::setButtonPairDone(){
     PairInBrowserBtn        ->set_interactable(true);
     BrowserCompleteBtn      ->set_interactable(false);
     CancelBrowserPairBtn    ->set_interactable(false);
+}
+
+void HeartBeat::PulsoidSettings::Update(){
+    auto str = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatPulsoidDataSource>()->status.str();
+    if(statusText->get_text() != str){
+        statusText->set_text(str);
+        statusText->ForceMeshUpdate(false, false);
+        auto r = statusText->get_rectTransform();
+        r->set_sizeDelta({r->get_sizeDelta().x, statusText->get_preferredHeight()});
+    }
 }
 
 void HeartBeat::PulsoidSettings::Close(){

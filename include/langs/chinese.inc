@@ -8,11 +8,15 @@ V(hyperate_reset, "重置")
 V(hyperate_save_and_connect, "保存并连接")
 V(hyperate_input_hint, "https://app.hyperate.io/<color=\"green\">xxx</color><-输入这个")
 
+V(hyperate_con_start, "开始连接")
 V(hyperate_network_error, "网络错误: ")
 V(hyperate_retry, "重试")
 V(hyperate_connected, "已连接")
 V(hyperate_no_id, "未填写 hyperate ID")
 V(hyperate_refused, "服务器拒绝服务")
+V(hyperate_you_have_message, "收到一条消息")
+
+V(pulsoid_no_token, "无可用token")
 
 V(no_message_from_server, "")
 

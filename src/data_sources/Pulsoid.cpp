@@ -21,6 +21,7 @@
 #include "ModConfig.hpp"
 #include "ModObject.hpp"
 #include "data_sources/DataSource.hpp"
+#include "i18n.hpp"
 #include "ixwebsocket/IXHttp.h"
 #include "ixwebsocket/IXWebSocketMessageType.h"
 #include "main.hpp"
@@ -29,13 +30,13 @@
 #include "data_sources/remote_config.hpp"
 #include "UIManager.hpp"
 #include "settings/Settings.hpp"
-
+#include "ModObject.hpp"
 
 namespace HeartBeat{
 
 
 
-HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource():DataSource(DataSourceType::DS_Pulsoid){
+HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource():DataSource(DataSourceType::DS_Pulsoid), status(""){
     Recorder::SetHeartDeviceName(HEART_DEV_NAME_PULSOID);
 }
 
@@ -53,8 +54,15 @@ void HeartBeatPulsoidDataSource::LateStart(){
 void HeartBeatPulsoidDataSource::ResetConnection(){
     runBackground([this](){
         websocket.stop();
-        if(getModConfig().PulsoidToken.GetValue() == getModConfig().PulsoidToken.GetDefaultValue())
+        if(getModConfig().PulsoidToken.GetValue() == getModConfig().PulsoidToken.GetDefaultValue()){
+            runInUnityThread([this](){
+                status = LANG->pulsoid_no_token;
+            });
             return ;
+        }
+        runInUnityThread([this](){
+            status = LANG->hyperate_con_start;
+        });
         websocket.setUrl("ws://dev.pulsoid.net/api/v1/data/real_time?response_mode=text_plain_only_heart_rate&access_token=" + getModConfig().PulsoidToken.GetValue());
         websocket.start();
         getLogger().info("websocket connection opened executed");
@@ -72,10 +80,24 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
         ss << "Wait time(ms): " << ptr->errorInfo.wait_time   << std::endl;
         ss << "HTTP Status: "   << ptr->errorInfo.http_status << std::endl;
         getLogger().error("Websocket error: \n{}", ss.str());
+
+        runInUnityThread([this, reason = ptr->errorInfo.reason, retry = ptr->errorInfo.retries](){
+          std::stringstream ss;
+          ss << LANG->hyperate_network_error << reason;
+          if(retry > 0){
+            ss << "\n" << LANG->hyperate_retry << "(" << retry << ")";
+          }
+          status = ss.str();
+        });
+
         return;
     }
 
-
+    if (ptr->type == ix::WebSocketMessageType::Open){
+        runInUnityThread([this](){
+            status = LANG->hyperate_connected;
+        });
+    }
     if(ptr->type != ix::WebSocketMessageType::Message)
         return;
     auto & payload = ptr->str;
@@ -96,6 +118,13 @@ bool HeartBeatPulsoidDataSource::GetData(int&heartbeat){
     return false;
 }
 
+void HeartBeatPulsoidDataSource::OnNewReader(){
+    auto state = websocket.getReadyState();
+    if(!closed && state == ix::ReadyState::Closed){
+        // we need connect to socket
+        ResetConnection();
+    }
+}
 
 void HeartBeatPulsoidDataSource::Update(){
     if(keep_alive_url.has_value() && keep_alive_total_request_count < 40){
@@ -117,7 +146,6 @@ void HeartBeatPulsoidDataSource::Update(){
                 ResetConnection();
             }
         }
-    
     }
 
 }
