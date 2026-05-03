@@ -16,11 +16,11 @@ Currently, there are 4 data sources can be used for this mod.  Brief Introductio
 After you change the data source in the mod config menu, you need **restart your game**.
 
 
-For doc about the ble(bluetooth) data source, refer to [Readme.ble.md](Readme.ble.md).
+[Bluetooth(ble) document](Readme.ble.md).
 
-For doc about the hyperate data source, refer to [Readme.hyperate.md](Readme.hyperate.md).
+[Hyperate document](Readme.hyperate.md).
 
-For doc about the osc data source, refer to [Readme.osc.md](Readme.osc.md).
+[OSC document](Readme.osc.md).
 
-For doc about the pulsoid data source, refer to [Readme.pulsoid.md](Readme.pulsoid.md).
+[Pulsoid document](Readme.pulsoid.md).
 

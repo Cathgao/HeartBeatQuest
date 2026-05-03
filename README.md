@@ -26,15 +26,17 @@ After you patch the mod(e.g. with [mbf](https://mbf.bsquest.xyz/), with or witho
 
 # Mod Document
 
-For doc about the data source config, refer to [Readme.datasource.md](READMEs/Readme.datasource.md).
+[Bluetooth permission guide for MBF](READMEs/ModsBeforeFridayGuide/BLE.md)
 
-For doc about the mod skin, refer to [Readme.skin.md](READMEs/Readme.skin.md).
+[Data source config document](READMEs/Readme.datasource.md).
 
-For doc about the collaboration mod, refer to [Readme.co-mods.md](READMEs/Readme.co-mods.md).
+[Mod skin document](READMEs/Readme.skin.md).
 
-For doc about make custom UI, refer to [Readme.ui.md](READMEs/Readme.ui.md).
+[collaboration mod document](READMEs/Readme.co-mods.md).
 
-For doc about mod development, refer to [Readme.develop](READMEs/Readme.develop.md).
+[costom ui document](READMEs/Readme.ui.md).
+
+[development document](READMEs/Readme.develop.md).
 
 
 # Other Information
