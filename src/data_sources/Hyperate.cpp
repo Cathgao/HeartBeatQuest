@@ -67,10 +67,7 @@ void HeartBeatHypeRateDataSource::Update(){
 
 HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource()
     : DataSource(DataSourceType::DS_HypeRate) {
-  {
-    std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
-    Recorder::heartDeviceName = HEART_DEV_NAME_HYPERATE;
-  }
+  Recorder::SetHeartDeviceName(HEART_DEV_NAME_HYPERATE);
 }
 
 void HeartBeatHypeRateDataSource::LateStart(){

@@ -56,6 +56,16 @@ std::vector<RecordEntry> recordData;
 std::string heartDeviceName = HEART_DEV_NAME_UNK;
 std::mutex heartDeviceNameLock;
 
+void SetHeartDeviceName(std::string name){
+    std::lock_guard<std::mutex> g(heartDeviceNameLock);
+    heartDeviceName = name;
+}
+std::string GetHeartDeviceName(){
+    std::lock_guard<std::mutex> g(heartDeviceNameLock);
+    return heartDeviceName;
+}
+
+
 //this callback is called by beatleader when game end
 void RecordCallback(std::string name, int* length, void** data){
     if(recordStarted == false)

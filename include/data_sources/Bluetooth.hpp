@@ -2,6 +2,7 @@
 
 #include "DataSource.hpp"
 #include <mutex>
+#include <optional>
 #include <string>
 #include <map>
 
@@ -24,8 +25,10 @@ struct HeartBeatBleDevice {
 
 class HeartBeatBleDataSource:public DataSource{
 private:
+
     std::string selected_mac = "";
     std::mutex selected_mac_lock;
+
     bool has_new_data;
     int heartbeat = 0;
     std::atomic_llong energy = 0;
@@ -52,8 +55,13 @@ public:
     bool isAutoConnecting(){
         return is_auto_connecting;
     }
-    std::string& GetSelectedBleMac(){ return selected_mac; }
-    void SetSelectedBleMac(const std::string mac);
+
+    
+    std::string& GetSelectedBleMac(){ 
+        std::lock_guard<std::mutex> g(selected_mac_lock);
+        return selected_mac; 
+    }
+    void SetSelectedBleMac(const std::string mac, std::optional<std::function<void(void)>> callback);
     BluetoothManifestPermission GetBleManifestPermissionStatus(){
         return manifestPermission;
     }
@@ -61,7 +69,7 @@ public:
     std::map<std::string/*mac*/, HeartBeatBleDevice> avaliable_devices;
 
     //called from java
-    bool InformNativeDevice(const std::string& macAddr, const std::string& name);
+    bool InformNativeDevice(std::string macAddr, std::string name);
     void OnDataCome(const std::string& macAddr, int heartRate, long energy);
     void OnEnergyReset();
     void OnAutoConnectStatusChanged(bool autoConnecting);

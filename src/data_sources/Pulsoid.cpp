@@ -36,10 +36,7 @@ namespace HeartBeat{
 
 
 HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource():DataSource(DataSourceType::DS_Pulsoid){
-    {
-        std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
-        Recorder::heartDeviceName = HEART_DEV_NAME_PULSOID;
-    }
+    Recorder::SetHeartDeviceName(HEART_DEV_NAME_PULSOID);
 }
 
 void HeartBeatPulsoidDataSource::LateStart(){

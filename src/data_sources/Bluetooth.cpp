@@ -4,6 +4,8 @@
 #include <cstring>
 #include <mutex>
 #include <stdexcept>
+#include "BackgroundThread.hpp"
+#include "ModObject.hpp"
 #include "main.hpp"
 #include "BeatLeaderRecorder.hpp"
 #include "multi_version_compat.hpp"
@@ -92,23 +94,26 @@ HeartBeat::HeartBeatBleDataSource::HeartBeatBleDataSource():HeartBeat::DataSourc
     manifestPermission = (BluetoothManifestPermission)GetPermisionStatus();
 }
 
-void HeartBeat::HeartBeatBleDataSource::SetSelectedBleMac(const std::string mac){ 
-    ToggleDevice(this->selected_mac, false);
-    {
-        std::lock_guard<std::mutex> g(this->selected_mac_lock);
-        this->selected_mac = mac;
-    }
-    getModConfig().SelectedBleMac.SetValue(mac, true);
+void HeartBeat::HeartBeatBleDataSource::SetSelectedBleMac(const std::string mac, std::optional<std::function<void(void)>> callback){
+    runInUnityThread([this, mac, callback](){
+        ToggleDevice(GetSelectedBleMac(), false);
+        {
+            std::lock_guard<std::mutex> g(selected_mac_lock);
+            selected_mac = mac;
+        }
+        getModConfig().SelectedBleMac.SetValue(mac, true);
+        ToggleDevice(mac, true);
 
-    ToggleDevice(this->selected_mac, true);
-
-    auto it = avaliable_devices.find(this->selected_mac);
-    std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
-    if(it != avaliable_devices.end()){
-        Recorder::heartDeviceName = it->second.name;
-    }else{
-        Recorder::heartDeviceName = HEART_DEV_NAME_UNK;
-    }
+        auto it = avaliable_devices.find(this->selected_mac);
+        if(it != avaliable_devices.end()){
+            Recorder::SetHeartDeviceName(it->second.name);
+        }else{
+            Recorder::SetHeartDeviceName(HEART_DEV_NAME_UNK);
+        }
+        if(callback.has_value()){
+            callback.value()();
+        }
+    });
 }
 
 void HeartBeat::HeartBeatBleDataSource::StartScan(){
@@ -140,35 +145,30 @@ long long HeartBeat::HeartBeatBleDataSource::GetEnergy(){
     return this->energy.load() + this->persistent_energy.load();
 }
 
-bool HeartBeat::HeartBeatBleDataSource::InformNativeDevice(const std::string& macAddr, const std::string& name){
-    if(avaliable_devices.find(macAddr) == avaliable_devices.end()){
-        avaliable_devices.insert({macAddr, {
-            .name = name,
-            .mac = macAddr,
-            .last_data = 0,
-            .last_data_time = 0
-        }});
-    }
-
-    bool ret;
-    {
-        std::lock_guard<std::mutex> g(this->selected_mac_lock);
-
-        ret = false;
-        if(selected_mac == "" && getModConfig().SelectedBleMac.GetValue() == macAddr){
-            selected_mac = macAddr;
-            ret = true;
-        }else if(selected_mac == macAddr){
-            ret = true;
+bool HeartBeat::HeartBeatBleDataSource::InformNativeDevice(std::string macAddr, std::string name){
+    runInUnityThread([this, macAddr, name](){
+        if(avaliable_devices.find(macAddr) == avaliable_devices.end()){
+            avaliable_devices.insert({macAddr, {
+                .name = name,
+                .mac = macAddr,
+                .last_data = 0,
+                .last_data_time = 0
+            }});
         }
-        
-    }
-    if(ret){
-        std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
-        Recorder::heartDeviceName = name;
+    });
+
+    std::string selected_mac = GetSelectedBleMac();
+
+    if(selected_mac == "" && getModConfig().SelectedBleMac.GetValue() == macAddr){
+        SetSelectedBleMac(macAddr, {});
+        Recorder::SetHeartDeviceName(name);
         return true;
+    }else if(selected_mac == macAddr){
+        Recorder::SetHeartDeviceName(name);
+        return true;
+    }else{
+        return false;
     }
-    return false;
 }
 void HeartBeat::HeartBeatBleDataSource::OnDataCome(const std::string& macAddr, int heartRate, long energy){
     this->heartbeat = heartRate;

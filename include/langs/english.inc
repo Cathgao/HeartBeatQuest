@@ -29,6 +29,10 @@ V(scaning, "Scaning")
 V(auto_scaning, "Auto scaning")
 V(no_scan, "Scan stopped")
 
+V(ble_none_selected, ">> None")
+V(ble_none_not_selected, "None")
+
+
 V(ble_permission_unknown, "Permission manifest check error")
 V(ble_permission_needed, "Bluetooth permission missing for game")
 V(ble_permission_paired_only, "Paired only，need more permission")

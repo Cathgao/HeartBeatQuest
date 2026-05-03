@@ -23,10 +23,7 @@ namespace HeartBeat{
 HeartBeatOSCDataSource * oscDataSource;
 
 HeartBeatOSCDataSource::HeartBeatOSCDataSource():DataSource(DataSourceType::DS_OSC){
-    {
-        std::lock_guard<std::mutex> g(Recorder::heartDeviceNameLock);
-        Recorder::heartDeviceName = HEART_DEV_NAME_OSC;
-    }
+    Recorder::SetHeartDeviceName(HEART_DEV_NAME_OSC);
     selected_addr = getModConfig().OSCSelectedDevice.GetValue();
     this->CreateSocket();
 

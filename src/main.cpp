@@ -76,7 +76,7 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
     if(firstInitialize){
         firstInitialize = false;
         if(HeartBeat::SettingsSnapshot::getInstance()->DataSourceType == HeartBeat::DS_BLE){
-            HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatBleDataSource>()->SetSelectedBleMac(getModConfig().SelectedBleMac.GetValue());
+            HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatBleDataSource>()->SetSelectedBleMac(getModConfig().SelectedBleMac.GetValue(), {});
         }
     }
 

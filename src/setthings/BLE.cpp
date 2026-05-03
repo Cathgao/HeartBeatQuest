@@ -1,9 +1,12 @@
+#include "ModObject.hpp"
 #include "UnityEngine/Vector2.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Text.hpp"
+#include "bsml/shared/BSML/Components/CustomListTableData.hpp"
 #include "data_sources/Bluetooth.hpp"
 #include "settings/BleSettings.hpp"
 #include "settings/Settings.hpp"
+#include <functional>
 
 void HeartBeat::BleSettings::CreateElements(){
     auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
@@ -44,7 +47,6 @@ void HeartBeat::BleSettings::CreateElements(){
     });
     ble_list->set_listStyle(BSML::CustomListTableData::ListStyle::Simple);
     ble_list->tableView->set_selectionType(HMUI::TableViewSelectionType::Single);
-    ble_mac.push_back("");
     UpdateSelectedBLEScrollList();
 }
 
@@ -61,62 +63,68 @@ void HeartBeat::BleSettings::Update(){
     }
     scanStatusText->set_text(bleDataSource->isAutoConnecting()? LANG->auto_scaning : bleDataSource->isScanning() ? LANG->scaning : LANG->no_scan);
 }
+
+DEFINE_TYPE(HeartBeat, BluetoothDeviceItem);
+HeartBeat::BluetoothDeviceItem* HeartBeat::BluetoothDeviceItem::construct(){
+    auto ret = BluetoothDeviceItem::New_ctor();
+    ret->text = "";
+    ret->subText = nullptr;
+    ret->icon = nullptr;
+    ret->m_private_ui = private_ui; 
+    return ret;
+}
+
+
 void HeartBeat::BleSettings::UpdateSelectedBLEScrollList(){
-    auto * i = bleDataSource;
-    bool any_data_changed = false;
-    int the_selected = -1;
-    {
-        std::set<std::string> already_in(ble_mac.begin(), ble_mac.end());
-        auto& devs = i->avaliable_devices;
+    bool changed = false;
 
-        for(auto it = devs.begin(), end = devs.end(); it != end; ++it){
-            if(already_in.count(it->first))
-                continue;
-            ble_mac.push_back(it->first);
-            already_in.insert(it->first);
-        }
+    std::string selected = bleDataSource->GetSelectedBleMac();
 
-        while(ble_list->data.size() > ble_mac.size()){
-            ble_list->data->RemoveAt(ble_list->data.size() - 1);
-            any_data_changed = true;
-        }
-        while(ble_list->data.size() < ble_mac.size()){
-            ble_list->data->Add(BSML::CustomCellInfo::construct(""));
-            any_data_changed = true;
-        }
-
-        for(int j=0;j<ble_mac.size();j++){
-            bool selected = (ble_mac[j] == i->GetSelectedBleMac());
-            std::string name;
-
-            if(ble_mac[j] == ""){
-                name = selected ? ">>None" : "  None";
-            }else{
-                auto it = devs.find(ble_mac[j]);
-                if(it != devs.end()){
-                    name = std::string(selected ? ">>" : "  ") + (it->second.name) + "(" + 
-                        (private_ui ? "XX-XX-XX-XX-XX-XX" : ble_mac[j])
-                        + ")";
-                }else{
-                    name = std::string(selected ? ">>" : "  ") + (LANG->unknown_left_quote) + ble_mac[j] + ")";
-                }
-            }
-            if(ble_list->data[j]->text != name){
-                ble_list->data[j]->text = name;
-                any_data_changed = true;
-            }
-            if(selected){
-                the_selected = j;
-            }
-        }
+    if(ble_list->data.size() == 0){
+        auto dev = BluetoothDeviceItem::construct();
+        dev->isNone = true;
+        ble_list->data.push_back(dev);
+        changed = true;
     }
-    if(any_data_changed)
+
+    int select_cell_idx = -1;
+    int index = 0;
+
+    BluetoothDeviceItem * noneItem = (BluetoothDeviceItem*)ble_list->data->get_Item(0);
+    if(selected == "")
+        select_cell_idx = 0;
+    changed |= noneItem->Update("", "", selected == "");
+
+    for(auto dev : bleDataSource->avaliable_devices){
+        BluetoothDeviceItem * listItem;
+        if(ble_list->data.size() <= index){
+            listItem = BluetoothDeviceItem::construct();
+            ble_list->data.push_back(listItem);
+            changed = true;
+        }else{
+            listItem = (BluetoothDeviceItem*)ble_list->data->get_Item(index);
+        }
+
+        bool isSelected = selected == dev.second.mac;
+        changed |= listItem->Update(dev.second.name, dev.second.mac, isSelected);
+        if(isSelected)
+            select_cell_idx = index;
+        index++;
+    }
+    if(index > ble_list->data.size()){
+        ble_list->data->RemoveRange(index, ble_list->data.size() - index);
+        changed = true;
+    }
+    if(changed){
         ble_list->tableView->ReloadData();
-    if(the_selected >= 0){
-        ble_list->tableView->SelectCellWithIdx(the_selected, false);
+    }
+
+    if(select_cell_idx >= 0){
+        ble_list->tableView->SelectCellWithIdx(select_cell_idx, false);
     }
 }
 void HeartBeat::BleSettings::UpdateSelectedBLEValue(int idx){
-    bleDataSource->SetSelectedBleMac(ble_mac[idx]);
-    UpdateSelectedBLEScrollList();
+    bleDataSource->SetSelectedBleMac(((BluetoothDeviceItem*)ble_list->data->get_Item(idx))->devMac,[this](){
+        runInUnityThread(std::bind(&BleSettings::UpdateSelectedBLEScrollList, this));
+    });
 }

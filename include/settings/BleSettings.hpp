@@ -8,7 +8,6 @@ namespace HeartBeat {
     
     class BleSettings : public Settings {
         BSML::CustomListTableData *ble_list = nullptr;
-        std::vector<std::string> ble_mac;
 
         HeartBeat::HeartBeatBleDataSource * bleDataSource = nullptr;
         HMUI::CurvedTextMeshPro * scanStatusText;
@@ -23,6 +22,38 @@ namespace HeartBeat {
         void Close() override;
         void Update() override;
     };
-
-    
 }
+
+DECLARE_CLASS_CODEGEN(HeartBeat, BluetoothDeviceItem, BSML::CustomCellInfo) {
+    DECLARE_DEFAULT_CTOR();
+public:
+    bool dirty = true;
+    bool selected = false;
+    std::string devName, devMac;
+    bool isNone = false;
+    bool m_private_ui;
+
+    bool Update(std::string devName, std::string devMac, bool selected){
+        if(isNone){
+            if(this->selected != selected || dirty){
+                this->selected = selected;
+                this->text = selected ? LANG->ble_none_selected: LANG->ble_none_not_selected;
+                dirty = false;
+                return true;
+            }else {
+                return false;
+            }
+        }
+        if(!dirty && this->selected == selected && this->devName == devName && this->devMac == devMac && this->m_private_ui == private_ui)
+            return false;
+        dirty = false;
+        this->selected = selected;
+        this->devName = devName;
+        this->devMac = devMac;
+        this->text = std::string(selected ? ">> " : "") + devName + "(" + (private_ui ? "XX-XX-XX-XX-XX-XX" : devMac) + ")";
+        return true;
+    }
+
+    static BluetoothDeviceItem* construct();
+};
+
