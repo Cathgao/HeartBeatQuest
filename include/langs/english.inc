@@ -17,6 +17,12 @@ V(hyperate_save_and_connect, "SAVE AND CONNECT")
 V(hyperate_input_hint, "https://app.hyperate.io/<color=\"green\">xxx</color><-input this")
 V(no_message_from_server, "")
 
+V(hyperate_network_error, "Network error: ")
+V(hyperate_retry, "retry")
+V(hyperate_connected, "Connected.")
+V(hyperate_no_id, "No hyperate ID")
+V(hyperate_refused, "Refused by server")
+
 V(unsupported_feature_udpatre_mod, "UI unsupported, maybe update your mod")
 
 V(heart_osc_port, "OSC Port: %d")

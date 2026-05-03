@@ -35,17 +35,22 @@
 
             }));
 
-            statusText = BSML::Lite::CreateText(container->get_transform(), LANG->no_message_from_server, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{100, 32});
-            statusText->set_autoSizeTextContainer(true);
-            serverMessageText = BSML::Lite::CreateText(container->get_transform(), LANG->no_message_from_server, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{100, 32});
-            serverMessageText->set_autoSizeTextContainer(true);
+            statusText = BSML::Lite::CreateText(container->get_transform(), LANG->no_message_from_server, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{100, 1});
+            serverMessageText = BSML::Lite::CreateText(container->get_transform(), LANG->no_message_from_server, 4, UnityEngine::Vector2{}, UnityEngine::Vector2{100, 1});
         }
 
         void HypeRateSettings::Update(){
             auto * instance = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatHypeRateDataSource>();
             statusText->set_text(instance->status.str());
+            statusText->ForceMeshUpdate(false, false);
+            auto t = statusText->get_rectTransform();
+            t->set_sizeDelta({t->get_sizeDelta().x, statusText->get_preferredHeight()});
+
             if(instance->serverMessage.has_value()){
                 serverMessageText->set_text(instance->serverMessage.value());
+                serverMessageText->ForceMeshUpdate(false, false);
+                t = serverMessageText->get_rectTransform();
+                t->set_sizeDelta({t->get_sizeDelta().x, serverMessageText->get_preferredHeight()});
             }
         }
 

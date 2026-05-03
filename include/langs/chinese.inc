@@ -8,6 +8,12 @@ V(hyperate_reset, "重置")
 V(hyperate_save_and_connect, "保存并连接")
 V(hyperate_input_hint, "https://app.hyperate.io/<color=\"green\">xxx</color><-输入这个")
 
+V(hyperate_network_error, "网络错误: ")
+V(hyperate_retry, "重试")
+V(hyperate_connected, "已连接")
+V(hyperate_no_id, "未填写 hyperate ID")
+V(hyperate_refused, "服务器拒绝服务")
+
 V(no_message_from_server, "")
 
 V(lang_name, "chinese")

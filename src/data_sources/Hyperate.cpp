@@ -74,7 +74,7 @@ void HeartBeatHypeRateDataSource::OnNewReader(){
 }
 
 HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource()
-    : DataSource(DataSourceType::DS_HypeRate), status("Mod Initialized") {
+    : DataSource(DataSourceType::DS_HypeRate), status("") {
   Recorder::SetHeartDeviceName(HEART_DEV_NAME_HYPERATE);
 }
 
@@ -98,9 +98,9 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
     if(closed || getModConfig().HypeRateId.GetValue() == "")
     {
       if(closed){
-        status = "Refused by server";
+        status = LANG->hyperate_refused;
       }else{
-        status = "No hyperate ID";
+        status = LANG->hyperate_no_id;
       }
       if(callback.has_value())
         runInUnityThread(std::move(callback.value()));
@@ -143,7 +143,7 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(
 
       websocket.send(toSend);
       runInUnityThread([this](){
-        status = "Connected.";
+        status = LANG->hyperate_connected;
       });
       return;
     }
@@ -159,9 +159,9 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(
         
         runInUnityThread([this, reason = ptr->errorInfo.reason, retry = ptr->errorInfo.retries](){
           std::stringstream ss;
-          ss << "Network error: " << reason;
+          ss << LANG->hyperate_network_error << reason;
           if(retry > 0){
-            ss << "(" << retry << ")";
+            ss << "\n" << LANG->hyperate_retry << "(" << retry << ")";
           }
           status = ss.str();
         });
