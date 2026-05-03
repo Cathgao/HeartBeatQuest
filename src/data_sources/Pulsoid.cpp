@@ -83,7 +83,7 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
 
         runInUnityThread([this, reason = ptr->errorInfo.reason, retry = ptr->errorInfo.retries](){
           std::stringstream ss;
-          ss << LANG->hyperate_network_error << reason;
+          ss << LANG->hyperate_network_error; // << reason; the token is inside the reason. so hide it
           if(retry > 0){
             ss << "\n" << LANG->hyperate_retry << "(" << retry << ")";
           }
