@@ -5,16 +5,12 @@
 #include "java/ModHelper.h"
 #include "settings/Settings.hpp"
 #include <mutex>
-#include <queue>
-#include "SettingsSnapshot.hpp"
 #include "BackgroundThread.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 DEFINE_TYPE(HeartBeat, ModObject);
 
 
 namespace HeartBeat {
-
-std::mutex runQueueLock;
-std::queue<std::function<void(void)>> runQueue;
 
 void InitModObject(){
     static std::once_flag initModObjFlag;
@@ -27,8 +23,7 @@ void InitModObject(){
 }
 
 void runInUnityThread(std::function<void ()> func){
-    std::lock_guard<std::mutex> g(runQueueLock);
-    runQueue.push(std::move(func));
+    BSML::MainThreadScheduler::Schedule(func);
 }
 
 void ModObject::Start(){
@@ -36,20 +31,7 @@ void ModObject::Start(){
 }
 
 void ModObject::Update(){
-    {
-        // run all events
-        std::unique_lock<std::mutex> lock(runQueueLock);
-        while(!runQueue.empty()){
-            auto func = std::move(runQueue.front());
-            runQueue.pop();
-            lock.unlock();
-            func();
-            lock.lock();
-        }
-    }        
-
     HeartBeat::SettingsUI::Update();
-        
     HeartBeat::DataHub::getInstance()->Update();
 }
 
