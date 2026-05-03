@@ -31,6 +31,7 @@ V(no_scan, "Scan stopped")
 
 V(ble_permission_unknown, "Permission manifest check error")
 V(ble_permission_needed, "Bluetooth permission missing for game")
+V(ble_permission_paired_only, "Paired only，need more permission")
 
 V(pairing, "Pairing.. click to stop.")
 V(not_pairing, "Not pairing.. click to start.")

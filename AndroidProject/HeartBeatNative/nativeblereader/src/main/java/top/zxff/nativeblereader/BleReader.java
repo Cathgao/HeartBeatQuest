@@ -263,6 +263,7 @@ public class BleReader {
         GOOD_LOCATION_REQUIRED,             // for both old game version and new game version
         GOOD_NONEED_LOCATION,               // for manifest that have never_for_location flags
         BAD_BLUETOOTH_OR_LOCATION_MISSED,
+        PAIRED_ONLY
     }
 
     public int getPermisionStatus(){
@@ -275,6 +276,8 @@ public class BleReader {
                 return 2;
             case BAD_BLUETOOTH_OR_LOCATION_MISSED:
                 return 3;
+            case PAIRED_ONLY:
+                return 4;
         }
         return 0;
     }
@@ -284,8 +287,11 @@ public class BleReader {
 
             boolean perm1 = false, perm2 = false, location_perm = false, perm_flag = false;
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+                boolean perm_bluetooth = false;
                 for(int i=0;i<packageInfo.requestedPermissions.length;i++){
                     String perm = packageInfo.requestedPermissions[i];
+                    if(Manifest.permission.BLUETOOTH.equals(perm))
+                        perm_bluetooth = true;
                     if(Manifest.permission.BLUETOOTH_CONNECT.equals(perm)) {
                         perm1 = true;
                     }
@@ -299,6 +305,8 @@ public class BleReader {
                         location_perm = true;
                 }
                 if(!perm1 || !perm2){
+                    if(perm_bluetooth && perm1)
+                        return PermissionHint.PAIRED_ONLY;
                     return PermissionHint.BAD_BLUETOOTH_OR_LOCATION_MISSED;
                 }
                 if(perm_flag){
@@ -343,8 +351,13 @@ public class BleReader {
             if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
                 permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
 
-            if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
-                permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+            if(permissionHint == PermissionHint.PAIRED_ONLY){
+                if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED)
+                    permissions.add(Manifest.permission.BLUETOOTH);
+            }else{
+                if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
+                    permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+            }
         }else{
             if(ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED)
                 permissions.add(Manifest.permission.BLUETOOTH);
@@ -408,25 +421,25 @@ public class BleReader {
             System.out.println("No enough permission for bluetooth scan");
             return;
         }
-
         BluetoothManager mgr = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        if(leScanner == null){
-            leScanner = mgr.getAdapter().getBluetoothLeScanner();
+        if(permissionHint != PermissionHint.PAIRED_ONLY){
+            if(leScanner == null){
+                leScanner = mgr.getAdapter().getBluetoothLeScanner();
+            }
+            LinkedList<ScanFilter> filters = new LinkedList<>();
+            filters.add(new ScanFilter.Builder()
+                    .setServiceUuid(new ParcelUuid(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb")))
+                    .build());
+            ScanSettings settings = new ScanSettings.Builder()
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    .build();
+            isScanning = true;
+            OnScanStatusChanged(true);
+            System.out.println("Start bluetooth scan");
+            leScanner.startScan(filters, settings, leScanCallback);
+        }else{
+            System.out.println("No bluetooth scan, paired only mode");
         }
-
-
-        LinkedList<ScanFilter> filters = new LinkedList<>();
-        filters.add(new ScanFilter.Builder()
-                .setServiceUuid(new ParcelUuid(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb")))
-                .build());
-        ScanSettings settings = new ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                .build();
-        isScanning = true;
-        OnScanStatusChanged(true);
-        System.out.println("Start bluetooth scan");
-        leScanner.startScan(filters, settings, leScanCallback);
-
 
         Set<BluetoothDevice> deviceSet = mgr.getAdapter().getBondedDevices();
         for (BluetoothDevice bluetoothDevice : deviceSet) {
@@ -477,7 +490,9 @@ public class BleReader {
         // we only search the device in 1 mins.
         handler.postDelayed(autoConnectCanceler,1000 * 20);
         BleScanStart();
-        OnAutoConnectStatusChanged(true);
+        if(permissionHint != PermissionHint.PAIRED_ONLY){
+            OnAutoConnectStatusChanged(true);
+        }
     }
     public void AutoConnectSetPattern(String macAddress, String deviceName){
         autoConnectPattern = new AutoConnectPattern(deviceName, macAddress);

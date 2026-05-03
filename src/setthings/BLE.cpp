@@ -32,6 +32,9 @@ void HeartBeat::BleSettings::CreateElements(){
         case BLE_MANI_PERM_GOOD_NONEED_LOCATION:
             // Fine permission manifest
             break;
+        case HeartBeat::BLE_MANI_PERM_PAIRED_ONLY:
+            BSML::Lite::CreateText(container->get_transform(), LANG->ble_permission_paired_only, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
+            break;
     }
 
     scanStatusText = BSML::Lite::CreateText(container->get_transform(), LANG->no_scan, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});

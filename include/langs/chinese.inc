@@ -27,6 +27,7 @@ V(turn_location_on, "请打开精准位置服务")
 
 V(ble_permission_unknown, "权限清单获取错误")
 V(ble_permission_needed, "游戏蓝牙权限缺失")
+V(ble_permission_paired_only, "仅配对设备，可能需要更多权限")
 
 V(scaning, "正在扫描")
 V(auto_scaning, "正在自动扫描")
