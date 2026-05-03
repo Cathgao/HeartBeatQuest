@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DataSource.hpp"
+#include "NetStatus.hpp"
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/document.h"
 #include "ixwebsocket/IXWebSocket.h"
 #include <functional>
@@ -21,15 +22,20 @@ class HeartBeatHypeRateDataSource:public DataSource{
 
         // this member should only be used in background thread
         ix::WebSocket websocket;
-    public:
+        public:
         HeartBeatHypeRateDataSource();
         bool GetData(int& heartbeat) override;
-            
+        
         void SetHyperateID(std::string id);
         void RestartSocket(std::optional<std::function<void(void)>> callback_unity = {});
-
+        
         void Update() override;
         void LateStart() override;
+        
+        void OnNewReader() override;
+
+        NetworkStatus status;
+        std::optional<std::string> serverMessage;
     private:
         // execute in websocket thread
         void onWebSocketMessage(const ix::WebSocketMessagePtr& ptr);

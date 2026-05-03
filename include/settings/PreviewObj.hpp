@@ -14,8 +14,6 @@ namespace HeartBeat {
         void Show();
         void Hide();
         void Reload();
-
-        HMUI::CurvedTextMeshPro * serverMessageDisplayer = nullptr;
     };
 
 }

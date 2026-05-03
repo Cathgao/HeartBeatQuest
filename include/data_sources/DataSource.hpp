@@ -26,6 +26,7 @@ public:
     virtual long long GetEnergy() { return 0; };
     virtual void Update() { };
 
+    virtual void OnNewReader() {};
     template<typename T>
     T * as(){
         return dynamic_cast<T*>(this);

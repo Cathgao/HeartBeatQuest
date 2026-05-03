@@ -9,6 +9,7 @@
 #include <mutex>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <sstream>
 #include <stdlib.h>
 #include <string>
 #include <sys/endian.h>
@@ -65,8 +66,15 @@ void HeartBeatHypeRateDataSource::Update(){
   }
 }
 
+void HeartBeatHypeRateDataSource::OnNewReader(){
+  auto state = websocket.getReadyState();
+  if(!closed && state == ix::ReadyState::Closed){
+      RestartSocket();
+  }
+}
+
 HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource()
-    : DataSource(DataSourceType::DS_HypeRate) {
+    : DataSource(DataSourceType::DS_HypeRate), status("Mod Initialized") {
   Recorder::SetHeartDeviceName(HEART_DEV_NAME_HYPERATE);
 }
 
@@ -80,21 +88,27 @@ void HeartBeatHypeRateDataSource::LateStart(){
   websocket.setOnMessageCallback(
       std::bind(&HeartBeatHypeRateDataSource::onWebSocketMessage, this,
                 std::placeholders::_1));
+  websocket.enableAutomaticReconnection();
 }
 
 void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void(void)>> callback) {
   runBackground([this, callback=std::move(callback)]() {
     websocket.stop();
 
-    if(getModConfig().HypeRateId.GetValue() == "")
+    if(closed || getModConfig().HypeRateId.GetValue() == "")
     {
+      if(closed){
+        status = "Refused by server";
+      }else{
+        status = "No hyperate ID";
+      }
       if(callback.has_value())
         runInUnityThread(std::move(callback.value()));
       return;
     }
 
     websocket.start();
-
+    status = "Connect start";
     if(callback.has_value()){
         runInUnityThread(std::move(callback.value()));
     }
@@ -128,6 +142,9 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(
       // getLogger().info("Send package to server: {}", toSend);
 
       websocket.send(toSend);
+      runInUnityThread([this](){
+        status = "Connected.";
+      });
       return;
     }
 
@@ -139,6 +156,15 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(
         ss << "Wait time(ms): " << ptr->errorInfo.wait_time   << std::endl;
         ss << "HTTP Status: "   << ptr->errorInfo.http_status << std::endl;
         getLogger().error("Websocket error: \n{}", ss.str());
+        
+        runInUnityThread([this, reason = ptr->errorInfo.reason, retry = ptr->errorInfo.retries](){
+          std::stringstream ss;
+          ss << "Network error: " << reason;
+          if(retry > 0){
+            ss << "(" << retry << ")";
+          }
+          status = ss.str();
+        });
         return;
     }
 
@@ -190,18 +216,13 @@ void HeartBeatHypeRateDataSource::handleServerPayload(const std::string &type,
       if(msg.length() > 255){
         msg = msg.substr(0, 255) + ".....";
       }
-      runInUnityThread([msg=std::move(msg)](){
-        auto displayer = MainMenuPreviewer::getInstance()->serverMessageDisplayer;
-        if(displayer){
-            displayer->set_text(msg);
-        }
+      runInUnityThread([this, msg=std::move(msg)](){
+        status = "you have message";
+        serverMessage = msg;
       });
     } else {
-        runInUnityThread([](){
-        auto displayer = MainMenuPreviewer::getInstance()->serverMessageDisplayer;
-        if(displayer){
-            displayer->set_text("invalid server message");
-        }
+      runInUnityThread([this](){
+          status = "Error: invalid server message";
       });
     }
 
