@@ -53,3 +53,9 @@ jobs:
         name: qmod.${{ matrix.game-version }}
         path: HeartBeatQuest*.qmod
         overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: ${{ matrix.game-version == '1.40.8' }}
+      with:
+        name: debug_so.${{ matrix.game-version }}
+        path: build/debug/libHeartBeatQuest.so
+        overwrite: true

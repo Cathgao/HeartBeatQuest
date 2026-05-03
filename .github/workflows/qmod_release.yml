@@ -25,6 +25,15 @@ jobs:
         path: qmods
         pattern: qmod.*
         merge-multiple: true
+    - name: Download debug symbol
+      uses: actions/download-artifact@v4
+      with:
+        path: debug_so
+        pattern: debug_so.*
+        merge-multiple: false
+    - name: compress symbol
+      run: |
+        tar zcvf qmods/debug_so.tgz ./debug_so
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
