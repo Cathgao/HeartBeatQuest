@@ -56,3 +56,4 @@ And thanks to everyone who has directly or indirectly supported this mod.
 * And other developers is BSMG Discord channel.
 * [Hyperate](https://www.hyperate.io) provide api support.
 * [Pulsoid](https://pulsoid.net/) provide api support. 
+* [IXWebsocket](https://github.com/machinezone/IXWebSocket) for websocketclient/httpclient.
