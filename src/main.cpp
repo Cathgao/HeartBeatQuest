@@ -7,27 +7,10 @@
 #include "data_sources/DataSource.hpp"
 #include "java/java.h"
 #include "settings/Settings.hpp"
-#include "GlobalNamespace/CoreGameHUDController.hpp"
 #include "QountersDriver.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/zzzz__GameObject_def.hpp"
-#include "bsml/shared/BSML.hpp"
-#include "multi_version_compat.hpp"
-
-#include "HMUI/HierarchyManager.hpp"
-
-#include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/MonoBehaviour.hpp"
-
-#include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
-
-#include "UnityEngine/Quaternion.hpp"
-
-#include "custom-types/shared/macros.hpp"
-#include "custom-types/shared/register.hpp"
-
-#include "QountersDriver.hpp"
 
 #include "ModConfig.hpp"
 
