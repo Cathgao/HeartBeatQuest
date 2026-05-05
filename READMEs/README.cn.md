@@ -1,55 +1,90 @@
-# HeartBeatQuest - Quest一体机BeatSaber模组
+# HeartBeatQuest - Quest 版 BeatSaber 心率模组
 
-在quest游戏中显示心率数据。本页面为简要使用方式，详细说明请参考英文Readme。
+<img src="../cover.png" align="right" width="300">
 
-# 模组皮肤
+[![QMOD BUILD](https://github.com/frto027/HeartBeatQuest/actions/workflows/qmod_build.yml/badge.svg)](https://github.com/frto027/HeartBeatQuest/actions/workflows/qmod_build.yml) ![GitHub Release](https://img.shields.io/github/v/release/frto027/HeartBeatQuest?include_prereleases)
 
-请看[这个文件](skins.md)。
+> [!TIP]
+> 本模组仅适用于 Quest 平台。PC 版请使用 [HRCounter](https://github.com/qe201020335/HRCounter)。
 
-# 蓝牙设备数据源
+在 Beat Saber 游戏内实时显示你的心率数据。
 
-1. 使用[mbf](https://mbf.bsquest.xyz/)安装这个模组，同时需要给游戏打`bluetooth`权限补丁。
-2. 在quest的蓝牙中，将BLE心率设备进行配对（需要设备使用蓝牙广播）。
-3. 打开游戏，在左侧的设备列表中选择你的设备。（第一次扫描设备会提示申请蓝牙权限）
+# 快速使用
 
-准确来说，这一模组需要游戏具有以下权限：
+使用 [MBF](https://mbf.bsquest.xyz/) 安装并打补丁（可选蓝牙权限），进入游戏后点击左侧按钮打开模组设置。选择数据源后重启游戏即可。
 
+> [!WARNING]
+> **QuestPatcher 中文版不支持蓝牙权限补丁。** 如需使用蓝牙数据源，请使用 MBF。
 
-        android.permission.BLUETOOTH
-        android.permission.BLUETOOTH_CONNECT
+> [!NOTE]
+> **心率录制**  
+> 如果检测到 BeatLeader-qmod，本模组会自动将心率数据写入 BeatLeader 的回放文件。可在模组设置中关闭此功能。
 
-# HypeRate数据源
+> [!TIP]
+> **功能建议**  
+> 欢迎在 Issues 中提出建议！
 
-此方式无需bluetooth权限。心率设备连接手机配置好[HypeRate](https://www.hyperate.io/)，在游戏左侧菜单选择HypeRate作为数据源后重启游戏，然后在HypeRate菜单中输入你的HypeRateID即可使用。
-此数据源通过cloudflare服务器进行数据转发。
+# 数据源
 
-# Pulsoid数据源
+## 蓝牙
 
-同HypeRate，你需要在手机上安装[Pulsoid](https://pulsoid.net/)的APP，然后在游戏中选择Pulsoid数据源，重启游戏后在数据源菜单中登录账号。由于此数据源是直连方式，可能网络状况不佳。
+直接连接你的 BLE 心率设备。延迟最低。
 
-# OSC数据源
+1. 在 [MBF](https://mbf.bsquest.xyz/) 中给游戏打上蓝牙权限补丁。
+2. 安装本模组。
+3. 按 [蓝牙权限指南](ModsBeforeFridayGuide/BLE.cn.md) 操作则**无需配对**；否则需在 Quest 系统蓝牙设置中配对心率设备。
+4. 打开游戏，扫描并选择设备。
 
-支持OSC协议，无需bluetooth权限。
+> [!NOTE]
+> 不使用蓝牙数据源则无需任何蓝牙权限。
 
-使用其它的OSC心率数据源，发送到你的quest设备9000端口。
+详细步骤：[蓝牙权限指南](ModsBeforeFridayGuide/BLE.cn.md)
 
-这个端口号会在模组设置菜单里显示，可以手动编辑模组的设置文件来修改。
+## HypeRate
 
-你也可以选择[这个apk](https://github.com/frto027/HeartbeatLanServer/releases/latest)。也可以把它装到quest上，然后发送至`127.0.0.1:9000`。
+无需蓝牙权限。在手机上安装 [HypeRate](https://www.hyperate.io/) APP，模组中选择 HypeRate 数据源并重启，然后在设置中输入你的 HypeRate ID 即可。
 
-# 备选方式（不要使用，除非其它方式不可用）
-<details>
-        
-> 可以使用一个安卓app来读取心率数据
+数据通过 Cloudflare 服务器转发。详见 [HypeRate 文档（英文）](Readme.hyperate.md)。
 
-把[这个apk](https://github.com/frto027/HeartbeatLanServer/releases/latest)安装到你的quest设备或者同局域网的安卓设备上。
+## Pulsoid
 
-</details>
+无需蓝牙权限。在手机上安装 [Pulsoid](https://pulsoid.net/) APP，模组中选择 Pulsoid 数据源并重启，然后在设置中登录账号或输入 Token。
 
-# 其它信息
+Pulsoid 为直连方式，网络状况可能影响使用。详见 [Pulsoid 文档（英文）](Readme.pulsoid.md)。
 
-有关模组原理以及自定义界面等信息，请参考英文readme文件。
+## OSC
 
-# 作者信息
+无需蓝牙权限。使用任意 OSC 心率发送端，发送到 Quest 设备的 9000 端口。
 
-本模组由frto027制作，基于的模板等组件信息详见[Readme](README.md)。
+支持 mDNS，可用 `osc.heartbeatquest.local` 代替 IP 地址。详见 [OSC 文档（英文）](Readme.osc.md)。
+
+# 文档
+
+| 文档 | 说明 |
+|------|------|
+| [数据源配置（英文）](Readme.datasource.md) | 各数据源详细介绍 |
+| [蓝牙权限指南](ModsBeforeFridayGuide/BLE.cn.md) | MBF 蓝牙权限打补丁步骤 |
+| [模组皮肤](Readme.skin.md) | 自定义皮肤下载 |
+| [联用模组（英文）](Readme.co-mods.md) | 与 BeatLeader、Replay 等模组的配合 |
+| [自定义 UI（英文）](Readme.ui.md) | 用 Unity AssetBundle 制作自己的界面 |
+| [开发文档（英文）](Readme.develop.md) | 编译、API 使用 |
+| [Qounters++ 支持（英文）](Qounters.md) | 在 Qounters++ 中显示心率 |
+
+# 其他信息
+
+回放数据格式、支持的游戏版本等请参考 [Wiki](https://github.com/frto027/HeartBeatQuest/wiki)。
+
+# 致谢
+
+本模组由 frto027 制作。
+
+感谢所有直接或间接支持本模组的人：
+
+* [zoller27osu](https://github.com/zoller27osu), [Sc2ad](https://github.com/Sc2ad), [jakibaki](https://github.com/jakibaki) — [beatsaber-hook](https://github.com/sc2ad/beatsaber-hook)
+* [raftario](https://github.com/raftario)
+* [Lauriethefish](https://github.com/Lauriethefish), [danrouse](https://github.com/danrouse), [Bobby Shmurner](https://github.com/BobbyShmurner) — 模版
+* NSGolova — [BeatLeader](https://github.com/BeatLeader/beatleader-qmod) 回放和 Web 回放支持
+* BSMG Discord 频道的其他开发者
+* [Hyperate](https://www.hyperate.io) — API 支持
+* [Pulsoid](https://pulsoid.net/) — API 支持
+* [IXWebSocket](https://github.com/machinezone/IXWebSocket) — WebSocket/HTTP 客户端

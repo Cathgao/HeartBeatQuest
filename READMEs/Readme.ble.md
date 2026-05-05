@@ -4,13 +4,13 @@ This mod can access Bluetooth directly. To use it, follow these steps:
 
 1. Patch the game with the `bluetooth` permission via [MBF](https://mbf.bsquest.xyz/) (the recommended way to mod Beat Saber).
 2. Install this mod via MBF.
-3. In your Quest's Bluetooth settings, pair your heart rate BLE device with your Quest.
+3. If you have configured the Bluetooth permission via the [MBF BLE Guide](ModsBeforeFridayGuide/BLE.md), pairing is **not required**. Otherwise, pair your heart rate BLE device in your Quest's Bluetooth settings.
 4. Open the game, scan, and select your device in the device list menu.
 
-The Bluetooth data source has minimal data latency, but may have less compatibility because it uses a generic BLE protocol. Your device should support heart rate broadcast over BLE.
+The Bluetooth data source has minimal data latency and uses a generic BLE protocol. Your device should support heart rate broadcast over BLE.
 
 > [!NOTE]
-> Bluetooth permission is not required if you don't use this data source.
+> Bluetooth permission is only required if you use this data source.
 
 **Reconnect**  
 If you have trouble with your current connection, select `None` in the device list to disconnect, then reselect your device to reconnect.
