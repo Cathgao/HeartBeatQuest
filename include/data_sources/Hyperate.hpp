@@ -18,8 +18,6 @@ private:
 
     void CreateSocket();
 
-    bool resetRequest = false;
-
     // this member should only be used in background thread
     ix::WebSocket websocket;
 

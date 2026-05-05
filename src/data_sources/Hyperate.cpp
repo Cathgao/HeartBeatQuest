@@ -1,4 +1,5 @@
 #include <atomic>
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -247,11 +248,13 @@ void HeartBeatHypeRateDataSource::handleHyperatePaylod(rapidjson::Document& d) {
     if (!hr_it->value.IsInt())
         return;
     this->the_heart = hr_it->value.GetInt();
+    std::atomic_thread_fence(std::memory_order_release);
     this->has_unread_heart_data = true;
 }
 
 bool HeartBeatHypeRateDataSource::GetData(int& heartbeat) {
     if (has_unread_heart_data) {
+        std::atomic_thread_fence(std::memory_order_acquire);
         has_unread_heart_data = false;
         heartbeat = the_heart;
         return true;

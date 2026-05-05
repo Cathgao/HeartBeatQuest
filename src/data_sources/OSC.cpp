@@ -1,3 +1,4 @@
+#include <atomic>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>

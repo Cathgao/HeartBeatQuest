@@ -15,8 +15,6 @@ private:
     volatile int the_heart;
     volatile bool has_unread_heart_data = false;
 
-    bool closed = false; // set to true to close the thread
-
     ix::WebSocket websocket;
 
     // only operate these in unity thread

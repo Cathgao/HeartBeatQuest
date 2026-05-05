@@ -1,3 +1,4 @@
+#include <atomic>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -49,6 +50,7 @@ void HeartBeatPulsoidDataSource::LateStart() {
     websocket.setOnMessageCallback(
         std::bind(&HeartBeatPulsoidDataSource::onWebSocketMessage, this, std::placeholders::_1));
     websocket.setPingInterval(15);
+    websocket.enableAutomaticReconnection();
 }
 
 void HeartBeatPulsoidDataSource::ResetConnection() {
@@ -98,6 +100,7 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
     auto& payload = ptr->str;
     if (payload.size() > 0 && payload.size() < 10) {
         the_heart = atoi(payload.c_str());
+        std::atomic_thread_fence(std::memory_order_release);
         has_unread_heart_data = true;
     }
 }
@@ -105,6 +108,7 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
 
 bool HeartBeatPulsoidDataSource::GetData(int& heartbeat) {
     if (has_unread_heart_data) {
+        std::atomic_thread_fence(std::memory_order_acquire);
         has_unread_heart_data = false;
         heartbeat = the_heart;
         return true;
@@ -114,7 +118,7 @@ bool HeartBeatPulsoidDataSource::GetData(int& heartbeat) {
 
 void HeartBeatPulsoidDataSource::OnNewReader() {
     auto state = websocket.getReadyState();
-    if (!closed && state == ix::ReadyState::Closed) {
+    if (state == ix::ReadyState::Closed) {
         // we need connect to socket
         ResetConnection();
     }
@@ -134,7 +138,7 @@ void HeartBeatPulsoidDataSource::Update() {
     if (counter % (60 * 20) == 0) {
         // check the socket connection
         auto state = websocket.getReadyState();
-        if (!closed && state == ix::ReadyState::Closed) {
+        if (state == ix::ReadyState::Closed) {
             // we need connect to socket
             if (UIManager::getInstance()->hasReader()) {
                 ResetConnection();
