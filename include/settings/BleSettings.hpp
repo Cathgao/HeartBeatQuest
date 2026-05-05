@@ -1,10 +1,11 @@
 #pragma once
 #include "HMUI/CurvedTextMeshPro.hpp"
-#include "data_sources/Bluetooth.hpp"
 #include "settings/Settings.hpp"
 #include "i18n.hpp"
 
 namespace HeartBeat {
+
+class HeartBeatBleDataSource;
 
 class BleSettings : public Settings {
     BSML::CustomListTableData* ble_list = nullptr;

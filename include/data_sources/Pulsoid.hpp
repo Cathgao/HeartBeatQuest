@@ -3,10 +3,8 @@
 #include "DataSource.hpp"
 #include "NetStatus.hpp"
 #include "ixwebsocket/IXWebSocket.h"
-#include <memory>
 #include <optional>
 #include <string>
-#include <mutex>
 
 namespace HeartBeat {
 
