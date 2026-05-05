@@ -1,7 +1,4 @@
-#include <cstddef>
 #include <jni.h>
-#include <cstdio>
-#include <cstring>
 #include <mutex>
 #include <stdexcept>
 #include "BackgroundThread.hpp"

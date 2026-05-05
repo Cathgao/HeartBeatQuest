@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DataSource.hpp"
+#include <atomic>
 #include <mutex>
 #include <optional>
 #include <string>

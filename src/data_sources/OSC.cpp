@@ -2,12 +2,11 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <mutex>
 #include <string>
 #include <sys/socket.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
-#include <netinet/ip.h>
 
 #include <unistd.h>
 #include "ModConfig.hpp"
@@ -159,6 +158,7 @@ void HeartBeatOSCDataSource::parseOscMessage(char*& thebuff, ssize_t& sz) {
         std::lock_guard<std::mutex> g(this->mutex);
         if (this->selected_addr == addr) {
             this->the_heart = heart_rate;
+            std::atomic_thread_fence(std::memory_order_release);
             this->has_unread_heart_data = true;
         }
         this->received_addresses.insert(addr);
@@ -183,6 +183,7 @@ void* HeartBeatOSCDataSource::ServerThread(void* self) {
 
 bool HeartBeatOSCDataSource::GetData(int& heartbeat) {
     if (has_unread_heart_data) {
+        std::atomic_thread_fence(std::memory_order_acquire);
         has_unread_heart_data = false;
         heartbeat = the_heart;
         return true;
