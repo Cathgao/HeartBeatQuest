@@ -10,7 +10,7 @@ There are two ways for MBF to patch Bluetooth permission. The first is to set up
 > If you follow this guide, the mod will be able to connect your HR device without pairing. This is the recommended setup.  
 > **Please unpair your heart rate device from your Quest's OS if you follow this guide. No pairing is needed.**
 
-If you're installing a fresh game, follow the next section. If your game is already modded, skip to [Repatching an Already Modded Game](#repatching-an-already-moded-game).
+If you're installing a fresh game, follow the next section. If your game is already modded, skip to [Repatching an Already Modded Game](#repatching-an-already-modded-game).
 
 ## Setup with a New Game Install
 
