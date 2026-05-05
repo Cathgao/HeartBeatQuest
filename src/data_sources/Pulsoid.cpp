@@ -1,21 +1,14 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdlib>
-#include <cstring>
 #include <functional>
 #include <jni.h>
 #include <memory>
 #include <mutex>
 #include <stdlib.h>
 #include <string>
-#include <sys/endian.h>
 #include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
 
-#include <unistd.h>
 #include "BackgroundThread.hpp"
 #include "BeatLeaderRecorder.hpp"
 #include "HttpClient.hpp"

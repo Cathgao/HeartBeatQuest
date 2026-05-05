@@ -1,21 +1,14 @@
 #include <atomic>
 #include <atomic>
 #include <cstddef>
-#include <cstdint>
-#include <cstdio>
 #include <cstring>
 #include <functional>
 #include <jni.h>
 #include <memory>
 #include <mutex>
-#include <netinet/in.h>
-#include <netinet/ip.h>
 #include <sstream>
 #include <stdlib.h>
 #include <string>
-#include <sys/endian.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 
 #include "BackgroundThread.hpp"
@@ -35,7 +28,6 @@
 
 
 #include "data_sources/Hyperate.hpp"
-#include <sys/system_properties.h>
 
 
 #include "UIManager.hpp"

@@ -2,12 +2,9 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <jni.h>
 #include <mutex>
 #include <string>
-#include <sys/endian.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>

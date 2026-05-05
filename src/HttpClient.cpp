@@ -6,7 +6,6 @@
 #include "ixwebsocket/IXHttp.h"
 #include "ixwebsocket/IXHttpClient.h"
 #include "main.hpp"
-#include <mutex>
 #include <sys/system_properties.h>
 
 
