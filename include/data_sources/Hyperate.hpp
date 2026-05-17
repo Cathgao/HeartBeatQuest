@@ -10,7 +10,7 @@
 namespace HeartBeat {
 
 class HeartBeatHypeRateDataSource : public DataSource {
-private:
+  private:
     volatile int the_heart;
     volatile bool has_unread_heart_data = false;
 
@@ -21,9 +21,9 @@ private:
     // this member should only be used in background thread
     ix::WebSocket websocket;
 
-public:
+  public:
     HeartBeatHypeRateDataSource();
-    bool GetData(int& heartbeat) override;
+    bool GetData(int &heartbeat) override;
 
     void SetHyperateID(std::string id);
     void RestartSocket(std::optional<std::function<void(void)>> callback_unity = {});
@@ -36,12 +36,11 @@ public:
     NetworkStatus status;
     std::optional<std::string> serverMessage;
 
-private:
+  private:
     // execute in websocket thread
-    void onWebSocketMessage(const ix::WebSocketMessagePtr& ptr);
-    void handleServerPayload(const std::string& type, rapidjson::Document& d);
-    void handleHyperatePaylod(rapidjson::Document& d);
+    void onWebSocketMessage(const ix::WebSocketMessagePtr &ptr);
+    void handleServerPayload(const std::string &type, rapidjson::Document &d);
+    void handleHyperatePaylod(rapidjson::Document &d);
 };
-
 
 } // namespace HeartBeat

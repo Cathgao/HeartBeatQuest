@@ -8,6 +8,6 @@
 namespace HeartBeat {
 
 std::string CheckHypeRateWebSocketIdentity();
-const char* getQuestDeviceName();
+const char *getQuestDeviceName();
 
 } // namespace HeartBeat

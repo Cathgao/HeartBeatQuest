@@ -8,13 +8,13 @@
 namespace HeartBeat {
 
 void HypeRateSettings::CreateElements() {
-    auto* container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
+    auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
     hyperate_id = getModConfig().HypeRateId.GetValue();
     BSML::Lite::CreateText(container->get_transform(), LANG->hyperate_input_hint, 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 4});
 
-    static HMUI::InputFieldView* hyperate_id_input;
+    static HMUI::InputFieldView *hyperate_id_input;
     hyperate_id_input = BSML::Lite::CreateStringSetting(container->get_transform(), "HypeRate ID", hyperate_id,
                                                         [this](StringW v) { hyperate_id = std::string(v); });
 
@@ -47,7 +47,7 @@ void HypeRateSettings::CreateElements() {
 }
 
 void HypeRateSettings::Update() {
-    auto* instance = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatHypeRateDataSource>();
+    auto *instance = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatHypeRateDataSource>();
     statusText->set_text(instance->status.str());
     statusText->ForceMeshUpdate(false, false);
     auto t = statusText->get_rectTransform();
@@ -62,12 +62,12 @@ void HypeRateSettings::Update() {
 }
 
 void HypeRateSettings::disableBtns() {
-    for (auto& b : buttons) {
+    for (auto &b : buttons) {
         b->set_interactable(false);
     }
 }
 void HypeRateSettings::enableBtns() {
-    for (auto& b : buttons) {
+    for (auto &b : buttons) {
         b->set_interactable(true);
     }
 }

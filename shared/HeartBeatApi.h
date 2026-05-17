@@ -24,7 +24,6 @@ struct HeartBeatApi {
     */
     void (*Update)(void);
 
-
     /*
         arguments:
             heartrate: the output of last updated heart rate value
@@ -34,8 +33,7 @@ struct HeartBeatApi {
 
         if the function returns 0, an old data will be assigned to heartrate.
     */
-    int (*GetData)(int* heartrate);
-
+    int (*GetData)(int *heartrate);
 
     /*
         Do NOT use this api. This has been deprecated. If someone wants this please contact me.
@@ -55,8 +53,7 @@ struct HeartBeatApi {
 
         If the Updater is nullptr, the physical data will be used.
     */
-    void (*SetAlternateDataUpdater)(int (*Updater)(int* heart_output));
-
+    void (*SetAlternateDataUpdater)(int (*Updater)(int *heart_output));
 
     void (*__not_used2__[20])(void);
 } __attribute__((packed, aligned(16)));
@@ -69,17 +66,15 @@ struct HeartBeatApi {
 namespace HeartBeat {
 #endif
 
-
-inline HeartBeatApi* GetHeartBeatApi() {
-    for (auto& mod : modloader::get_loaded()) {
+inline HeartBeatApi *GetHeartBeatApi() {
+    for (auto &mod : modloader::get_loaded()) {
         if (mod.info.id == "HeartBeatLanReceiver" || mod.info.id == "HeartBeatQuest") {
-            HeartBeatApi* api = (HeartBeatApi*)dlsym(mod.handle, "heartBeatApi");
+            HeartBeatApi *api = (HeartBeatApi *)dlsym(mod.handle, "heartBeatApi");
             return api;
         }
     }
     return nullptr;
 }
-
 
 #ifdef __cplusplus
 }

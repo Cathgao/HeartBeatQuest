@@ -6,10 +6,10 @@ namespace HeartBeat {
 struct MainMenuPreviewer {
     MainMenuPreviewer();
 
-    UnityEngine::GameObject* MainMenuPreviewObject = nullptr;
-    HeartBeat::HeartBeatObj* MainMenuPreviewObjectComp = nullptr;
+    UnityEngine::GameObject *MainMenuPreviewObject = nullptr;
+    HeartBeat::HeartBeatObj *MainMenuPreviewObjectComp = nullptr;
 
-    static MainMenuPreviewer* getInstance();
+    static MainMenuPreviewer *getInstance();
 
     void Show();
     void Hide();

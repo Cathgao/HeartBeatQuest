@@ -8,8 +8,7 @@
 #include "main.hpp"
 #include <sys/system_properties.h>
 
-
-const char* getQuestDeviceName() {
+const char *getQuestDeviceName() {
     static char model_string[PROP_VALUE_MAX + 1] = "unk";
     __system_property_get("ro.product.model", model_string);
     return model_string;
@@ -19,9 +18,9 @@ std::string HeartBeat::CheckHypeRateWebSocketIdentity() {
     std::string ret = getModConfig().HypeRateWebSocketIdentity.GetValue();
     if (ret == "") {
         char buff[33];
-        FILE* f = fopen("/dev/urandom", "rb");
+        FILE *f = fopen("/dev/urandom", "rb");
         bool handled = false;
-        const char* avaliable_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
+        const char *avaliable_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
         int char_len = strlen(avaliable_chars);
         if (f) {
             getLogger().info("HypeRate Websocket random identity generrated from /dev/urandom");
@@ -55,7 +54,6 @@ std::string HeartBeat::CheckHypeRateWebSocketIdentity() {
     return ret;
 }
 
-
 std::string HeartBeat::getModUserAgent(bool with_identity) {
     std::string identity = CheckHypeRateWebSocketIdentity();
 
@@ -71,7 +69,7 @@ std::string HeartBeat::getModUserAgent(bool with_identity) {
     return ss.str();
 }
 
-ix::HttpClient& HeartBeat::getHttpClient() {
+ix::HttpClient &HeartBeat::getHttpClient() {
     static ix::HttpClient client;
     // std::once_flag client_init;
     // std::call_once(client_init, [](){
@@ -82,11 +80,11 @@ ix::HttpClient& HeartBeat::getHttpClient() {
 
 void HeartBeat::httpGetUrl(std::string url, std::optional<std::function<void(ix::HttpResponsePtr)>> callback) {
     runBackground([url = std::move(url), callback]() {
-        auto& client = getHttpClient();
+        auto &client = getHttpClient();
         ix::HttpRequestArgsPtr args = client.createRequest();
         args->extraHeaders["User-Agent"] = getModUserAgent();
         args->connectTimeout = 15;
-        args->logger = [](const std::string& msg) { getLogger().info("{}", msg); };
+        args->logger = [](const std::string &msg) { getLogger().info("{}", msg); };
 
         ix::HttpResponsePtr out = client.get(url, args);
         if (callback.has_value()) {

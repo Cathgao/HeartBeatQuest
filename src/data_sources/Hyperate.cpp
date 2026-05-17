@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string>
 
-
 #include "BackgroundThread.hpp"
 #include "BeatLeaderRecorder.hpp"
 #include "HttpClient.hpp"
@@ -26,14 +25,11 @@
 #include "main.hpp"
 #include <unistd.h>
 
-
 #include "data_sources/Hyperate.hpp"
-
 
 #include "UIManager.hpp"
 #include "data_sources/remote_config.hpp"
 #include "settings/PreviewObj.hpp"
-
 
 /*
 
@@ -66,9 +62,7 @@ void HeartBeatHypeRateDataSource::OnNewReader() {
     }
 }
 
-HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource()
-    : DataSource(DataSourceType::DS_HypeRate)
-    , status("") {
+HeartBeatHypeRateDataSource::HeartBeatHypeRateDataSource() : DataSource(DataSourceType::DS_HypeRate), status("") {
     Recorder::SetHeartDeviceName(HEART_DEV_NAME_HYPERATE);
 }
 
@@ -108,7 +102,7 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
 }
 
 // call thread: websocket thread
-void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessagePtr& ptr) {
+void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessagePtr &ptr) {
     // getLogger().info("Received message {}", (int)ptr->type);
 
     if (ptr->type == ix::WebSocketMessageType::Open) {
@@ -154,12 +148,11 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
         return;
     }
 
-
     if (ptr->type == ix::WebSocketMessageType::Message) {
-        const std::string& payload = ptr->str;
+        const std::string &payload = ptr->str;
 
         if (payload.length() > 1 && payload[0] == 'S') {
-            const char* json_str = payload.c_str() + 1;
+            const char *json_str = payload.c_str() + 1;
             rapidjson::Document d;
             d.Parse(json_str);
             if (!d.IsObject())
@@ -176,7 +169,7 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
         }
 
         {
-            const char* json_str = payload.c_str();
+            const char *json_str = payload.c_str();
             rapidjson::Document d;
             d.Parse(json_str);
             if (!d.IsObject())
@@ -186,7 +179,7 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
     }
 }
 
-void HeartBeatHypeRateDataSource::handleServerPayload(const std::string& type, rapidjson::Document& d) {
+void HeartBeatHypeRateDataSource::handleServerPayload(const std::string &type, rapidjson::Document &d) {
     if (type == "message") {
         auto msg_it = d.FindMember("msg");
         auto actions_it = d.FindMember("actions");
@@ -208,9 +201,9 @@ void HeartBeatHypeRateDataSource::handleServerPayload(const std::string& type, r
         }
 
         if (actions_it != d.MemberEnd() && actions_it->value.IsArray()) {
-            for (auto& e : actions_it->value.GetArray()) {
+            for (auto &e : actions_it->value.GetArray()) {
                 if (e.IsString()) {
-                    const char* action = e.GetString();
+                    const char *action = e.GetString();
                     // do the action here
                     if (strcmp(action, "close") == 0) {
                         closed = true;
@@ -226,11 +219,11 @@ void HeartBeatHypeRateDataSource::handleServerPayload(const std::string& type, r
     }
 }
 
-void HeartBeatHypeRateDataSource::handleHyperatePaylod(rapidjson::Document& d) {
+void HeartBeatHypeRateDataSource::handleHyperatePaylod(rapidjson::Document &d) {
     auto it = d.FindMember("payload");
     if (it == d.MemberEnd())
         return;
-    auto& payload = it->value;
+    auto &payload = it->value;
 
     if (!payload.IsObject())
         return;
@@ -244,7 +237,7 @@ void HeartBeatHypeRateDataSource::handleHyperatePaylod(rapidjson::Document& d) {
     this->has_unread_heart_data = true;
 }
 
-bool HeartBeatHypeRateDataSource::GetData(int& heartbeat) {
+bool HeartBeatHypeRateDataSource::GetData(int &heartbeat) {
     if (has_unread_heart_data) {
         std::atomic_thread_fence(std::memory_order_acquire);
         has_unread_heart_data = false;

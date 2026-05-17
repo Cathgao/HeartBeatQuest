@@ -8,12 +8,9 @@ struct NetworkStatus {
 
     time_t createTime;
     std::string message;
-    NetworkStatus(std::string msg)
-        : message(msg) {
-        createTime = time(NULL);
-    }
+    NetworkStatus(std::string msg) : message(msg) { createTime = time(NULL); }
 
-    NetworkStatus& operator=(const std::string str) {
+    NetworkStatus &operator=(const std::string str) {
         std::lock_guard<std::mutex> g(mutex);
         message = str;
         createTime = time(NULL);

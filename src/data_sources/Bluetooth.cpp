@@ -11,7 +11,7 @@
 #include "data_sources/Bluetooth.hpp"
 #include "ModConfig.hpp"
 
-HeartBeat::HeartBeatBleDataSource* HeartBeat::HeartBeatBleDataSource::bleDataSource;
+HeartBeat::HeartBeatBleDataSource *HeartBeat::HeartBeatBleDataSource::bleDataSource;
 
 void StartScanDevice() {
     try {
@@ -60,7 +60,7 @@ void AutoConnectStop() {
         getLogger().error("Exception in java {}", err.what());
     }
 }
-void AutoConnectSetPattern(const std::string& macAddr, const std::string& devName) {
+void AutoConnectSetPattern(const std::string &macAddr, const std::string &devName) {
     try {
         return HeartBeat::BleReader::instance->autoConnectSetPattern(macAddr, devName);
     } catch (std::runtime_error err) {
@@ -83,8 +83,7 @@ int GetPermisionStatus() {
     }
 }
 
-HeartBeat::HeartBeatBleDataSource::HeartBeatBleDataSource()
-    : HeartBeat::DataSource(HeartBeat::DataSourceType::DS_BLE) {
+HeartBeat::HeartBeatBleDataSource::HeartBeatBleDataSource() : HeartBeat::DataSource(HeartBeat::DataSourceType::DS_BLE) {
     bleDataSource = this;
 
     HeartBeat::BleReader::instance->CreateObject();
@@ -119,19 +118,13 @@ void HeartBeat::HeartBeatBleDataSource::StartScan() {
     avaliable_devices.clear();
     StartScanDevice();
 }
-void HeartBeat::HeartBeatBleDataSource::StopScan() {
-    StopScanDevice();
-}
-void HeartBeat::HeartBeatBleDataSource::StartAutoScan() {
-    AutoConnectStart();
-}
-void HeartBeat::HeartBeatBleDataSource::SetAutoConnectPattern(const std::string& macAddr, const std::string& devName) {
+void HeartBeat::HeartBeatBleDataSource::StopScan() { StopScanDevice(); }
+void HeartBeat::HeartBeatBleDataSource::StartAutoScan() { AutoConnectStart(); }
+void HeartBeat::HeartBeatBleDataSource::SetAutoConnectPattern(const std::string &macAddr, const std::string &devName) {
     AutoConnectSetPattern(macAddr, devName);
 }
-void HeartBeat::HeartBeatBleDataSource::OpenSystemLocationSetthings() {
-    OpenSystemLocationSetthing();
-}
-bool HeartBeat::HeartBeatBleDataSource::GetData(int& heartbeat) {
+void HeartBeat::HeartBeatBleDataSource::OpenSystemLocationSetthings() { OpenSystemLocationSetthing(); }
+bool HeartBeat::HeartBeatBleDataSource::GetData(int &heartbeat) {
     heartbeat = this->heartbeat;
     if (has_new_data) {
         has_new_data = false;
@@ -164,7 +157,7 @@ bool HeartBeat::HeartBeatBleDataSource::InformNativeDevice(std::string macAddr, 
         return false;
     }
 }
-void HeartBeat::HeartBeatBleDataSource::OnDataCome(const std::string& macAddr, int heartRate, long energy) {
+void HeartBeat::HeartBeatBleDataSource::OnDataCome(const std::string &macAddr, int heartRate, long energy) {
     this->heartbeat = heartRate;
     this->has_new_data = true;
     this->energy.store(energy); // energy is not work, idk how to read the data from java code. just forget it.
@@ -176,6 +169,4 @@ void HeartBeat::HeartBeatBleDataSource::OnEnergyReset() {
 void HeartBeat::HeartBeatBleDataSource::OnAutoConnectStatusChanged(bool autoConnecting) {
     this->is_auto_connecting = autoConnecting;
 }
-void HeartBeat::HeartBeatBleDataSource::OnScanStatusChanged(bool isScanning) {
-    this->is_scanning = isScanning;
-}
+void HeartBeat::HeartBeatBleDataSource::OnScanStatusChanged(bool isScanning) { this->is_scanning = isScanning; }

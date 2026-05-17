@@ -8,26 +8,25 @@ namespace HeartBeat {
 
 bool LoadJavaLibraryIfNeeded();
 
-
 class JavaSingleClassObject {
-private:
+  private:
     jclass ThisClass;
     jmethodID ctor;
 
-public:
+  public:
     jobject ThisObj = nullptr;
-    JavaSingleClassObject(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv* env, const char* packageName);
+    JavaSingleClassObject(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv *env, const char *packageName);
 
     void CreateObject();
 
     void RegisterNatives();
 
-protected:
-    JNIEnv* env;
+  protected:
+    JNIEnv *env;
     bool created = false;
 
     std::vector<JNINativeMethod> nativeMethods;
-    jmethodID GetMethodID(const char* methodName, const char* signature);
+    jmethodID GetMethodID(const char *methodName, const char *signature);
     void CheckException();
     bool CheckExceptionSafe();
 };

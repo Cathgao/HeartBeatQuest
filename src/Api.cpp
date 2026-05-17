@@ -2,11 +2,9 @@
 #include "HeartBeatApi.h"
 #include "main.hpp"
 
-static void Update() {
-    HeartBeat::DataHub::getInstance()->Update();
-}
+static void Update() { HeartBeat::DataHub::getInstance()->Update(); }
 
-static int GetData(int* heartbeat) {
+static int GetData(int *heartbeat) {
     int data;
     auto ret = HeartBeat::DataHub::getInstance()->GetData(data);
     if (heartbeat) {

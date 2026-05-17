@@ -9,7 +9,7 @@
 #include "UnityEngine/Application.hpp"
 #include <vector>
 
-std::vector<HeartBeat::Settings*> HeartBeat::SettingsUI::settings;
+std::vector<HeartBeat::Settings *> HeartBeat::SettingsUI::settings;
 bool HeartBeat::private_ui = true;
 
 void HeartBeat::OpenWebpage(std::string url) {
@@ -27,24 +27,23 @@ void HeartBeat::SettingsUI::Setup() {
     mainSettings->Register();
     HeartBeat::SettingsUI::settings.push_back(mainSettings);
 
-
-    Settings* dataSourceSettings = nullptr;
+    Settings *dataSourceSettings = nullptr;
 
     switch (SettingsSnapshot::getInstance()->DataSourceType) {
-        case HeartBeat::DataSourceType::DS_BLE:
-            dataSourceSettings = new BleSettings();
-            break;
-        case HeartBeat::DataSourceType::DS_HypeRate:
-            dataSourceSettings = new HypeRateSettings();
-            break;
-        case HeartBeat::DataSourceType::DS_Pulsoid:
-            dataSourceSettings = new PulsoidSettings();
-            break;
-        case HeartBeat::DataSourceType::DS_OSC:
-            dataSourceSettings = new OSCSettings();
-            break;
-        default:
-            break;
+    case HeartBeat::DataSourceType::DS_BLE:
+        dataSourceSettings = new BleSettings();
+        break;
+    case HeartBeat::DataSourceType::DS_HypeRate:
+        dataSourceSettings = new HypeRateSettings();
+        break;
+    case HeartBeat::DataSourceType::DS_Pulsoid:
+        dataSourceSettings = new PulsoidSettings();
+        break;
+    case HeartBeat::DataSourceType::DS_OSC:
+        dataSourceSettings = new OSCSettings();
+        break;
+    default:
+        break;
     }
     if (dataSourceSettings) {
         dataSourceSettings->Register();

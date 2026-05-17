@@ -63,9 +63,8 @@ std::string GetHeartDeviceName() {
     return heartDeviceName;
 }
 
-
 // this callback is called by beatleader when game end
-void RecordCallback(std::string name, int* length, void** data) {
+void RecordCallback(std::string name, int *length, void **data) {
     if (recordStarted == false)
         return;
     recordStarted = false;
@@ -76,27 +75,27 @@ void RecordCallback(std::string name, int* length, void** data) {
 
     auto PushUInt32 = [](unsigned int x) {
         x = htole32(x);
-        uint8_t* d = (uint8_t*)&x;
+        uint8_t *d = (uint8_t *)&x;
         datas.push_back(d[0]);
         datas.push_back(d[1]);
         datas.push_back(d[2]);
         datas.push_back(d[3]);
     };
     auto PushFloat = [](float x) {
-        uint8_t* d = (uint8_t*)&x;
+        uint8_t *d = (uint8_t *)&x;
         datas.push_back(d[0]);
         datas.push_back(d[1]);
         datas.push_back(d[2]);
         datas.push_back(d[3]);
     };
-    auto PushStr = [&](const char* str) {
+    auto PushStr = [&](const char *str) {
         size_t len = strlen(str);
         PushUInt32(len);
         for (int i = 0; i < len; i++) {
             datas.push_back(str[i]);
         }
     };
-    auto PushCppStr = [&](const std::string& str) {
+    auto PushCppStr = [&](const std::string &str) {
         size_t len = str.size();
         PushUInt32(len);
         for (int i = 0; i < len; i++) {
@@ -123,7 +122,7 @@ void RecordCallback(std::string name, int* length, void** data) {
     }
 
     // v_bs is build variant, not the actual game version.
-    const char* hrAgent = "HeartBeatQuest/" VERSION " (bs_" GAME_VERSION ")";
+    const char *hrAgent = "HeartBeatQuest/" VERSION " (bs_" GAME_VERSION ")";
 
     PushStr(hrAgent);
 
@@ -138,7 +137,7 @@ void RecordCallback(std::string name, int* length, void** data) {
 // ReplayCallbackShouldCleanData = true;
 
 // this callback is called by replay mod
-void ReplayCallback(const char* buff, size_t length, std::string sourceName) {
+void ReplayCallback(const char *buff, size_t length, std::string sourceName) {
     recordStarted = false; // just make sure we have no bugs, it's already true here.
 
     // if(ReplayCallbackShouldCleanData){
@@ -156,8 +155,8 @@ void ReplayCallback(const char* buff, size_t length, std::string sourceName) {
 
     // feed the recordData
     int i = 0;
-    auto GetUInt32 = [&](unsigned int& x) {
-        uint8_t* d = (uint8_t*)&x;
+    auto GetUInt32 = [&](unsigned int &x) {
+        uint8_t *d = (uint8_t *)&x;
         if (i + 4 >= length)
             return false;
         d[0] = buff[i++];
@@ -167,8 +166,8 @@ void ReplayCallback(const char* buff, size_t length, std::string sourceName) {
         x = le32toh(x);
         return true;
     };
-    auto GetFloat = [&](float& x) {
-        uint8_t* d = (uint8_t*)&x;
+    auto GetFloat = [&](float &x) {
+        uint8_t *d = (uint8_t *)&x;
         if (i + 4 >= length)
             return false;
         d[0] = buff[i++];
@@ -177,7 +176,7 @@ void ReplayCallback(const char* buff, size_t length, std::string sourceName) {
         d[3] = buff[i++];
         return true;
     };
-    auto GetStr = [&](std::string& ret) {
+    auto GetStr = [&](std::string &ret) {
         unsigned int len;
         if (!GetUInt32(len))
             return false;
@@ -215,22 +214,21 @@ void ReplayCallback(const char* buff, size_t length, std::string sourceName) {
     }
     getLogger().info("{}: {} heart rate data loaded.", sourceName, recordData.size());
 
-
     // actually we don't care about it
     //  std::string devName;
     //  if(!GetStr(devName))
     //      return;
 }
 
-GlobalNamespace::AudioTimeSyncController* audioTimeSyncController = NULL;
+GlobalNamespace::AudioTimeSyncController *audioTimeSyncController = NULL;
 MAKE_HOOK_MATCH(ScoreControllerStart, &GlobalNamespace::ScoreController::Start, void,
-                GlobalNamespace::ScoreController* self) {
+                GlobalNamespace::ScoreController *self) {
     ScoreControllerStart(self);
     audioTimeSyncController = self->_audioTimeSyncController;
 }
 
 MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInstaller::InstallBindings, void,
-                GlobalNamespace::GameplayCoreInstaller* self) {
+                GlobalNamespace::GameplayCoreInstaller *self) {
     SinglePlayerInstallBindings(self);
 
     // ReplayCallbackShouldCleanData = true;
@@ -267,7 +265,6 @@ MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInsta
         return;
     }
 
-
     if (!(getModConfig().EnableRecord.GetValue())) {
         DisableRecord();
         getLogger().info("the player doesn't enable record, don't start record.");
@@ -282,25 +279,25 @@ MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInsta
 }
 
 MAKE_HOOK_MATCH(LevelPause, &GlobalNamespace::PauseMenuManager::ShowMenu, void,
-                GlobalNamespace::PauseMenuManager* self) {
+                GlobalNamespace::PauseMenuManager *self) {
     LevelPause(self);
     isPaused = true;
 }
 
 MAKE_HOOK_MATCH(LevelUnpause, &GlobalNamespace::PauseMenuManager::HandleResumeFromPauseAnimationDidFinish, void,
-                GlobalNamespace::PauseMenuManager* self) {
+                GlobalNamespace::PauseMenuManager *self) {
     LevelUnpause(self);
     isPaused = false;
 }
 
 bool BeatLeaderDetected() {
-    return !!CondDeps::FindUnsafe<void, std::string, std::function<void(std::string, int*, void**)>>(
+    return !!CondDeps::FindUnsafe<void, std::string, std::function<void(std::string, int *, void **)>>(
         "bl", "AddReplayCustomDataProvider");
 }
 
 void Init() {
     auto AddReplayCustomDataProvider =
-        CondDeps::FindUnsafe<void, std::string, std::function<void(std::string, int*, void**)>>(
+        CondDeps::FindUnsafe<void, std::string, std::function<void(std::string, int *, void **)>>(
             "bl", "AddReplayCustomDataProvider");
 
     if (AddReplayCustomDataProvider.has_value()) {
@@ -311,13 +308,13 @@ void Init() {
 
 #ifdef WITH_REPLAY
     auto AddReplayCustomDataCallback =
-        CondDeps::FindUnsafe<void, std::string, std::function<void(const char*, size_t)>>(
+        CondDeps::FindUnsafe<void, std::string, std::function<void(const char *, size_t)>>(
             "replay", "AddReplayCustomDataCallback");
     if (AddReplayCustomDataCallback.has_value()) {
         getLogger().info("Replay mod is detected, enable replay support");
         needReplay = true;
         AddReplayCustomDataCallback.value()(
-            "HeartBeatQuest", [](const char* buff, size_t length) { ReplayCallback(buff, length, "HeartBeatQuest"); });
+            "HeartBeatQuest", [](const char *buff, size_t length) { ReplayCallback(buff, length, "HeartBeatQuest"); });
         // currently, compat with HRCounter is not considered because it doesn't support record
         // AddReplayCustomDataCallback.value()("HeartBeatQuest", [](const char *buff, size_t length){
         //     ReplayCallback(buff, length, "HRCounter");
@@ -335,7 +332,6 @@ void Init() {
     }
 }
 
-
 void RecordDataIfNeeded(int heartrate) {
     if (needRecord && audioTimeSyncController && recordStarted && !isPaused) {
         float_t now = audioTimeSyncController->songTime;
@@ -348,10 +344,8 @@ void RecordDataIfNeeded(int heartrate) {
     }
 }
 
-bool isReplaying() {
-    return replayStarted;
-}
-bool ReplayGetData(int& heartrate) {
+bool isReplaying() { return replayStarted; }
+bool ReplayGetData(int &heartrate) {
     // auto beg_time = now_ms();
 
     auto isInSection = [](int index) {

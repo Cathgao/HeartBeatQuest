@@ -12,7 +12,6 @@
 #include <dlfcn.h>
 #include "metacore/shared/events.hpp"
 
-
 namespace HeartBeat {
 namespace Qounters {
 
@@ -27,7 +26,7 @@ void (*Events_RegisterToEvent)(::Qounters::Types::Sources sourceType, std::strin
 void (*Editor_SetColorOptions)(int actionId, UnparsedJSON options) = nullptr;
 void (*SetEnableOptions)(int actionId, UnparsedJSON options) = nullptr;
 
-BSML::ColorSetting* (*CreateColorPicker)(UnityEngine::GameObject* parent, std::string name, UnityEngine::Color value,
+BSML::ColorSetting *(*CreateColorPicker)(UnityEngine::GameObject *parent, std::string name, UnityEngine::Color value,
                                          std::function<void(UnityEngine::Color)> onChange,
                                          std::function<void()> onClose);
 
@@ -51,7 +50,7 @@ std::string hrTextSource(UnparsedJSON unparsed) {
     return buff;
 }
 
-void hrTextSourceUI(UnityEngine::GameObject* parent, UnparsedJSON unparsed) {
+void hrTextSourceUI(UnityEngine::GameObject *parent, UnparsedJSON unparsed) {
     static HeartRateTextOption opts;
     opts = unparsed.Parse<HeartRateTextOption>();
     BSML::Lite::CreateToggle(parent, "Heart Icon Before Text", opts.heartBeforeText, [](bool v) {
@@ -68,9 +67,7 @@ void hrTextSourceUI(UnityEngine::GameObject* parent, UnparsedJSON unparsed) {
     });
 }
 
-DECLARE_JSON_STRUCT(HeartRatePercentOption) {
-    VALUE_DEFAULT(bool, alignedTo5Range, true);
-};
+DECLARE_JSON_STRUCT(HeartRatePercentOption) { VALUE_DEFAULT(bool, alignedTo5Range, true); };
 
 float hrPercentSource(UnparsedJSON unparsed) {
     static HeartRatePercentOption opts;
@@ -99,7 +96,7 @@ float hrPercentSource(UnparsedJSON unparsed) {
     return percent;
 }
 
-void hrPercentSourceUI(UnityEngine::GameObject* parent, UnparsedJSON unparsed) {
+void hrPercentSourceUI(UnityEngine::GameObject *parent, UnparsedJSON unparsed) {
     static HeartRatePercentOption opts;
     opts = unparsed.Parse<HeartRatePercentOption>();
     BSML::Lite::CreateToggle(parent, "Align to 5 level range", opts.alignedTo5Range, [](bool v) {
@@ -137,7 +134,7 @@ bool hrRangeEnable(UnparsedJSON unparsed) {
         return opts.range_8_9;
     return opts.range_9_;
 }
-void hrRangeEnableUI(UnityEngine::GameObject* parent, UnparsedJSON unparsed) {
+void hrRangeEnableUI(UnityEngine::GameObject *parent, UnparsedJSON unparsed) {
     static HeartRateRangeEnableOption opts;
     opts = unparsed.Parse<HeartRateRangeEnableOption>();
     BSML::Lite::CreateToggle(parent, "Enable if range lower than 50%", opts.range__5, [](bool v) {
@@ -206,11 +203,11 @@ UnityEngine::Color hrRangeColor(UnparsedJSON unparsed) {
     return opts.range_9_;
 }
 
-void hrRangeColorUI(UnityEngine::GameObject* parent, UnparsedJSON unparsed) {
+void hrRangeColorUI(UnityEngine::GameObject *parent, UnparsedJSON unparsed) {
     static HeartRateRangeColorOption opts;
     opts = unparsed.Parse<HeartRateRangeColorOption>();
 
-    BSML::ColorSetting* sptr;
+    BSML::ColorSetting *sptr;
     sptr = CreateColorPicker(
         parent, "Color when lower than 50%", opts.range__5,
         [](UnityEngine::Color val) {
@@ -267,7 +264,6 @@ void hrRangeColorUI(UnityEngine::GameObject* parent, UnparsedJSON unparsed) {
     BSML::Lite::AddHoverHint(sptr, "Pickup a color");
 }
 
-
 void DisplayData(int heartrate) {
     qounters_hr = heartrate;
     MetaCore::Events::Broadcast(METACORE_EVENT_MOD, METACORE_EVENT_ID);
@@ -276,12 +272,12 @@ void DisplayData(int heartrate) {
 static bool enabled = false;
 
 void Init() {
-    for (auto& mod : modloader::get_loaded()) {
+    for (auto &mod : modloader::get_loaded()) {
         if (mod.info.id == "Qounters++" && mod.info.version.starts_with("1.1.")) {
-            auto texts = (::Qounters::Sources::TextsTy*)dlsym(mod.handle, "_ZN8Qounters7Sources5textsE");
-            auto shapes = (::Qounters::Sources::ShapesTy*)dlsym(mod.handle, "_ZN8Qounters7Sources6shapesE");
-            auto colors = (::Qounters::Sources::ColorsTy*)dlsym(mod.handle, "_ZN8Qounters7Sources6colorsE");
-            auto enables = (::Qounters::Sources::EnablesTy*)dlsym(mod.handle, "_ZN8Qounters7Sources7enablesE");
+            auto texts = (::Qounters::Sources::TextsTy *)dlsym(mod.handle, "_ZN8Qounters7Sources5textsE");
+            auto shapes = (::Qounters::Sources::ShapesTy *)dlsym(mod.handle, "_ZN8Qounters7Sources6shapesE");
+            auto colors = (::Qounters::Sources::ColorsTy *)dlsym(mod.handle, "_ZN8Qounters7Sources6colorsE");
+            auto enables = (::Qounters::Sources::EnablesTy *)dlsym(mod.handle, "_ZN8Qounters7Sources7enablesE");
 
             Editor_FinalizeAction =
                 (decltype(Editor_FinalizeAction))dlsym(mod.handle, "_ZN8Qounters3API14FinalizeActionEv");
@@ -299,7 +295,6 @@ void Init() {
                 mod.handle,
                 "_ZN8Qounters3API17CreateColorPickerEPN11UnityEngine10GameObjectENSt6__ndk112basic_stringIcNS4_11char_"
                 "traitsIcEENS4_9allocatorIcEEEENS1_5ColorENS4_8functionIFvSB_EEENSC_IFvvEEE");
-
 
             if (texts && Events_RegisterToEvent && Editor_FinalizeAction && Editor_GetActionId &&
                 Editor_SetSourceOptions && Editor_SetColorOptions) {
@@ -332,9 +327,7 @@ void Init() {
     getLogger().info("Qounters not detected.");
 }
 
-bool Enabled() {
-    return enabled;
-}
+bool Enabled() { return enabled; }
 
 } // namespace Qounters
 } // namespace HeartBeat

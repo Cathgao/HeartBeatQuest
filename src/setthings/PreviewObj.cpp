@@ -32,13 +32,13 @@ void HeartBeat::MainMenuPreviewer::Reload() {
     HeartBeat::assetBundleMgr.Init();
     auto obj = UnityEngine::GameObject::New_ctor();
     UnityEngine::Object::DontDestroyOnLoad(obj);
-    auto canvas = obj->AddComponent<UnityEngine::Canvas*>();
+    auto canvas = obj->AddComponent<UnityEngine::Canvas *>();
     canvas->set_renderMode(UnityEngine::RenderMode::WorldSpace);
     canvas->set_scaleFactor(0.001);
 
-    obj->AddComponent<HMUI::CurvedCanvasSettings*>()->_radius = 0;
+    obj->AddComponent<HMUI::CurvedCanvasSettings *>()->_radius = 0;
 
-    auto crect = canvas->GetComponent<UnityEngine::RectTransform*>();
+    auto crect = canvas->GetComponent<UnityEngine::RectTransform *>();
     crect->set_position({1, 1.5, 3});
     crect->set_localScale({0.01f, 0.01f, 0.01f});
 
@@ -51,15 +51,15 @@ void HeartBeat::MainMenuPreviewer::Reload() {
 
     HeartBeat::AssetBundleInstinateInformation result;
     HeartBeat::assetBundleMgr.Instantiate(SelectedUI, canvas->get_transform(), result);
-    MainMenuPreviewObjectComp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>();
+    MainMenuPreviewObjectComp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
     MainMenuPreviewObjectComp->loadedComponents = result;
     MainMenuPreviewObjectComp->isQountersMode = false;
 
     MainMenuPreviewObject = obj;
 }
 
-HeartBeat::MainMenuPreviewer* HeartBeat::MainMenuPreviewer::getInstance() {
-    static HeartBeat::MainMenuPreviewer* instance = nullptr;
+HeartBeat::MainMenuPreviewer *HeartBeat::MainMenuPreviewer::getInstance() {
+    static HeartBeat::MainMenuPreviewer *instance = nullptr;
     if (!instance)
         instance = new HeartBeat::MainMenuPreviewer();
     return instance;

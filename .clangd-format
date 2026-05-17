@@ -1,5 +1,0 @@
-# .clang-format
-BasedOnStyle: Google   # or LLVM, Microsoft, Mozilla, WebKit, GNU
-IndentWidth: 4
-TabWidth: 4
-SortIncludes: Never

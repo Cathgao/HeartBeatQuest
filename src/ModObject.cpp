@@ -9,7 +9,6 @@
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
 DEFINE_TYPE(HeartBeat, ModObject);
 
-
 namespace HeartBeat {
 
 void InitModObject() {
@@ -17,24 +16,19 @@ void InitModObject() {
     std::call_once(initModObjFlag, []() {
         auto obj = UnityEngine::GameObject::New_ctor();
         obj->set_name("HeartBeatQuestModLifeCycleObject");
-        obj->AddComponent<ModObject*>();
+        obj->AddComponent<ModObject *>();
         DataSource::getInstance()->LateStart();
     });
 }
 
-void runInUnityThread(std::function<void()> func) {
-    BSML::MainThreadScheduler::Schedule(func);
-}
+void runInUnityThread(std::function<void()> func) { BSML::MainThreadScheduler::Schedule(func); }
 
-void ModObject::Start() {
-    UnityEngine::GameObject::DontDestroyOnLoad(gameObject);
-}
+void ModObject::Start() { UnityEngine::GameObject::DontDestroyOnLoad(gameObject); }
 
 void ModObject::Update() {
     HeartBeat::SettingsUI::Update();
     HeartBeat::DataHub::getInstance()->Update();
 }
-
 
 void ModObject::OnDestroy() {}
 

@@ -9,7 +9,7 @@
 namespace HeartBeat {
 
 class HeartBeatPulsoidDataSource : public DataSource {
-private:
+  private:
     volatile int the_heart;
     volatile bool has_unread_heart_data = false;
 
@@ -21,9 +21,9 @@ private:
     std::optional<std::string> keep_alive_url = {};
     std::optional<std::string> token_url = {};
 
-public:
+  public:
     HeartBeatPulsoidDataSource();
-    bool GetData(int& heartbeat) override;
+    bool GetData(int &heartbeat) override;
 
     void Update() override;
     void OnNewReader() override;
@@ -42,10 +42,9 @@ public:
 
     NetworkStatus status;
 
-private:
+  private:
     // execute in websocket thread
-    void onWebSocketMessage(const ix::WebSocketMessagePtr& ptr);
+    void onWebSocketMessage(const ix::WebSocketMessagePtr &ptr);
 };
-
 
 } // namespace HeartBeat

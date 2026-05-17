@@ -11,27 +11,24 @@ enum DataSourceType {
     DS_Pulsoid,
 };
 
-
 bool IsDatasourceAbleToRecord();
 
 class DataSource {
-public:
+  public:
     const DataSourceType dataSourceType;
 
-    DataSource(DataSourceType ty)
-        : dataSourceType(ty) {}
+    DataSource(DataSourceType ty) : dataSourceType(ty) {}
 
     virtual void LateStart() {};
 
-    virtual bool GetData(int& heartbeat) = 0;
+    virtual bool GetData(int &heartbeat) = 0;
     virtual long long GetEnergy() { return 0; };
     virtual void Update() {};
 
     virtual void OnNewReader() {};
-    template <typename T> T* as() { return dynamic_cast<T*>(this); }
+    template <typename T> T *as() { return dynamic_cast<T *>(this); }
 
-    static DataSource* getInstance();
+    static DataSource *getInstance();
 };
-
 
 }; // namespace HeartBeat

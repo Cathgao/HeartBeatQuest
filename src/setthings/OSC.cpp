@@ -5,7 +5,7 @@
 #include "settings/OSCSettings.hpp"
 void HeartBeat::OSCSettings::CreateElements() {
     // Create a container that has a scroll bar
-    auto* container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
+    auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
 
     static char osc_port[4096];
     sprintf(osc_port, LANG->heart_osc_port, getModConfig().OSCPort.GetValue());
@@ -35,12 +35,12 @@ void HeartBeat::OSCSettings::UpdateSelectedOscValue(int idx) {
     UpdateOscScrollList();
 }
 void HeartBeat::OSCSettings::UpdateOscScrollList() {
-    auto* i = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>();
+    auto *i = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>();
     bool any_data_changed = false;
     int the_selected = -1;
     {
         std::set<std::string> already_in(osc_addr.begin(), osc_addr.end());
-        auto& devs = i->received_addresses;
+        auto &devs = i->received_addresses;
 
         for (auto it = devs.begin(), end = devs.end(); it != end; ++it) {
             if (already_in.count(*it))

@@ -5,11 +5,11 @@
 namespace HeartBeat {
 
 class JavaModHelper : public JavaSingleClassObject {
-private:
+  private:
     jmethodID m_onModExit;
 
-public:
-    JavaModHelper(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv* env)
+  public:
+    JavaModHelper(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv *env)
         : JavaSingleClassObject(SomeClassLoader, LoadClassMethod, env, "top.zxff.nativeblereader.ModHelper") {
         m_onModExit = GetMethodID("OnModExit", "()V");
     }
@@ -19,7 +19,7 @@ public:
         CheckException();
     }
 
-    static JavaModHelper* instance;
+    static JavaModHelper *instance;
 };
 
 } // namespace HeartBeat

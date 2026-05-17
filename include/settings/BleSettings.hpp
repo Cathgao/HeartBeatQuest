@@ -8,16 +8,15 @@ namespace HeartBeat {
 class HeartBeatBleDataSource;
 
 class BleSettings : public Settings {
-    BSML::CustomListTableData* ble_list = nullptr;
+    BSML::CustomListTableData *ble_list = nullptr;
 
-    HeartBeat::HeartBeatBleDataSource* bleDataSource = nullptr;
-    HMUI::CurvedTextMeshPro* scanStatusText;
+    HeartBeat::HeartBeatBleDataSource *bleDataSource = nullptr;
+    HMUI::CurvedTextMeshPro *scanStatusText;
     void UpdateSelectedBLEScrollList();
     void UpdateSelectedBLEValue(int idx);
 
-public:
-    BleSettings()
-        : Settings("Bluetooth Device", LANG->heart_devices, "<3") {}
+  public:
+    BleSettings() : Settings("Bluetooth Device", LANG->heart_devices, "<3") {}
     void CreateElements() override;
 
     void Open() override;

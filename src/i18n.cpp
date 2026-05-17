@@ -2,7 +2,7 @@
 #include "ModConfig.hpp"
 #include "main.hpp"
 
-Lang* LANG;
+Lang *LANG;
 
 namespace I18N {
 void Setup() {

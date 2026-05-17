@@ -13,7 +13,7 @@ void HeartBeat::PulsoidSettings::CreateElements() {
     // })));
     // devices_controller = self;
     // Create a container that has a scroll bar
-    auto* container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
+    auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
     BSML::Lite::CreateUIButton(
         container->get_transform(), LANG->pulsoid_reconnect, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8},
@@ -26,7 +26,7 @@ void HeartBeat::PulsoidSettings::CreateElements() {
                            UnityEngine::Vector2{50, 4});
 
     {
-        auto* pair_container = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
+        auto *pair_container = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
         PairInBrowserBtn = BSML::Lite::CreateUIButton(
             pair_container->get_transform(), LANG->pulsoid_connect, UnityEngine::Vector2{}, UnityEngine::Vector2{20, 8},
             [this]() {

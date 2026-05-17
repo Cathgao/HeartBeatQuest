@@ -9,10 +9,9 @@
 #include <map>
 #include "UnityEngine/Animator.hpp"
 
-
 namespace HeartBeat {
 
-extern const char* ui_features[];
+extern const char *ui_features[];
 
 struct AssetUI {
     std::optional<std::string> filePath;
@@ -23,9 +22,9 @@ struct AssetUI {
 };
 
 struct AssetBundleInstinateInformation {
-    std::vector<TMPro::TMP_Text*> heartrateTexts;
-    std::vector<UnityEngine::Animator*> animators;
-    UnityEngine::GameObject* gameObject;
+    std::vector<TMPro::TMP_Text *> heartrateTexts;
+    std::vector<UnityEngine::Animator *> animators;
+    UnityEngine::GameObject *gameObject;
 };
 struct AssetBundleManager {
     bool initialized = false;
@@ -33,7 +32,7 @@ struct AssetBundleManager {
     std::map<std::string, AssetUI> loadedBundles;
     void Init();
 
-    bool Instantiate(std::string name, UnityEngine::Transform* parent, AssetBundleInstinateInformation& result);
+    bool Instantiate(std::string name, UnityEngine::Transform *parent, AssetBundleInstinateInformation &result);
 
     static std::set<std::string> GetFeatures(std::string feature);
 };
@@ -41,7 +40,6 @@ struct AssetBundleManager {
 extern AssetBundleManager assetBundleMgr;
 
 } // namespace HeartBeat
-
 
 // parameters are (namespace, class name, parent class, contents)
 // clang-format off

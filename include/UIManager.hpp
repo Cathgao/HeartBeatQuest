@@ -2,10 +2,10 @@
 #include "data_sources/DataSource.hpp"
 namespace HeartBeat {
 class UIManager {
-private:
+  private:
     int readerCount = 0;
 
-public:
+  public:
     void addReader() {
         if (readerCount == 0)
             DataSource::getInstance()->OnNewReader();
@@ -14,6 +14,6 @@ public:
     void decReader() { readerCount--; }
     bool hasReader() { return !!readerCount; }
 
-    static UIManager* getInstance();
+    static UIManager *getInstance();
 };
 } // namespace HeartBeat

@@ -14,8 +14,7 @@ std::atomic_int HeartBeat::Settings::active_setthings_ui_count = 0;
 void HeartBeat::MainSettings::CreateElements() {
     HeartBeat::assetBundleMgr.Init();
     // Create a container that has a scroll bar
-    auto* container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
-
+    auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
     BSML::Lite::CreateText(container->get_transform(), LANG->mod_version, 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 4});
@@ -69,7 +68,6 @@ void HeartBeat::MainSettings::CreateElements() {
                                    getLogger().debug("{} selected.", value);
                                });
 
-
     if (HeartBeat::Recorder::BeatLeaderDetected()) {
         BSML::Lite::CreateToggle(container->get_transform(), LANG->enable_record,
                                  getModConfig().EnableRecord.GetValue(),
@@ -83,7 +81,7 @@ void HeartBeat::MainSettings::CreateElements() {
     }
 
     // the age is just used to provide a default value for maxheart
-    static BSML::IncrementSetting* MaxHeartIncr;
+    static BSML::IncrementSetting *MaxHeartIncr;
     BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG->age, 0, 1, getModConfig().Age.GetValue(),
                                        [](float v) {
                                            getModConfig().Age.SetValue(v);
@@ -94,7 +92,6 @@ void HeartBeat::MainSettings::CreateElements() {
     MaxHeartIncr = BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG->max_heart, 0, 1,
                                                       getModConfig().MaxHeart.GetValue(),
                                                       [](float v) { getModConfig().MaxHeart.SetValue(v); });
-
 
 #ifdef WITH_QOUNTERS
     if (HeartBeat::Qounters::Enabled()) {
@@ -108,11 +105,11 @@ void HeartBeat::MainSettings::CreateElements() {
 #endif
 
     std::vector<std::string_view> ui_s;
-    for (auto& pair : HeartBeat::assetBundleMgr.loadedBundles) {
+    for (auto &pair : HeartBeat::assetBundleMgr.loadedBundles) {
         ui_s.push_back(pair.first);
     }
 
-    static HMUI::CurvedTextMeshPro* feature_unsupport_hint_ui;
+    static HMUI::CurvedTextMeshPro *feature_unsupport_hint_ui;
 
     BSML::Lite::CreateDropdown(container->get_transform(), LANG->select_ui, getModConfig().SelectedUI.GetValue(), ui_s,
                                [](StringW v) {
@@ -127,12 +124,12 @@ void HeartBeat::MainSettings::CreateElements() {
                                            HeartBeat::assetBundleMgr.Init();
                                            auto it = HeartBeat::assetBundleMgr.loadedBundles.find(v);
                                            if (it != HeartBeat::assetBundleMgr.loadedBundles.end()) {
-                                               auto& features = it->second.unsupported_features;
+                                               auto &features = it->second.unsupported_features;
                                                if (features.size() > 0)
                                                    supported = false;
-                                               auto& infos = it->second.infos;
+                                               auto &infos = it->second.infos;
                                                if (infos.contains("root")) {
-                                                   auto& root = infos["root"];
+                                                   auto &root = infos["root"];
                                                    if (root == "songProgressPanelGO" || root == "relativeScoreGo" ||
                                                        root == "immediateRankGo") {
                                                        need_advanced_ui = true;
@@ -155,7 +152,6 @@ void HeartBeat::MainSettings::CreateElements() {
     feature_unsupport_hint_ui =
         BSML::Lite::CreateText(container->get_transform(), "", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     feature_unsupport_hint_ui->set_color(UnityEngine::Color::get_red());
-
 
     private_public_btn = BSML::Lite::CreateUIButton(container->get_transform(), LANG->waiting, UnityEngine::Vector2{},
                                                     UnityEngine::Vector2{50, 8}, [this]() {

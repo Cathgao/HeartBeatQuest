@@ -8,7 +8,7 @@ void Init();
 void RecordDataIfNeeded(int heartrate);
 
 bool isReplaying();
-bool ReplayGetData(int& heartrate);
+bool ReplayGetData(int &heartrate);
 
 bool BeatLeaderDetected();
 

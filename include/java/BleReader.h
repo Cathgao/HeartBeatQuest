@@ -6,7 +6,7 @@
 namespace HeartBeat {
 
 class BleReader : public JavaSingleClassObject {
-private:
+  private:
     // clang-format off
     jmethodID
         m_bleToggle,
@@ -20,16 +20,16 @@ private:
         m_getPermisionStatus
         ;
     // clang-format on
-public:
-    BleReader(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv* env)
+  public:
+    BleReader(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv *env)
         : JavaSingleClassObject(SomeClassLoader, LoadClassMethod, env, "top.zxff.nativeblereader.BleReader") {
-        nativeMethods.emplace_back("OnDeviceData", "(Ljava/lang/String;IJ)V", reinterpret_cast<void*>(OnDeviceData));
+        nativeMethods.emplace_back("OnDeviceData", "(Ljava/lang/String;IJ)V", reinterpret_cast<void *>(OnDeviceData));
         nativeMethods.emplace_back("InformNativeDevice", "(Ljava/lang/String;[B)Z",
-                                   reinterpret_cast<void*>(InformNativeDevice));
-        nativeMethods.emplace_back("OnEnergyReset", "()V", reinterpret_cast<void*>(OnEnergyReset));
+                                   reinterpret_cast<void *>(InformNativeDevice));
+        nativeMethods.emplace_back("OnEnergyReset", "()V", reinterpret_cast<void *>(OnEnergyReset));
         nativeMethods.emplace_back("OnAutoConnectStatusChanged", "(Z)V",
-                                   reinterpret_cast<void*>(OnAutoConnectStatusChanged));
-        nativeMethods.emplace_back("OnScanStatusChanged", "(Z)V", reinterpret_cast<void*>(OnScanStatusChanged));
+                                   reinterpret_cast<void *>(OnAutoConnectStatusChanged));
+        nativeMethods.emplace_back("OnScanStatusChanged", "(Z)V", reinterpret_cast<void *>(OnScanStatusChanged));
 
         m_bleToggle = GetMethodID("BleToggle", "(Ljava/lang/String;Z)Z");
         m_isDeviceSelected = GetMethodID("IsDeviceSelected", "(Ljava/lang/String;)Z");
@@ -68,7 +68,7 @@ public:
         env->CallVoidMethod(ThisObj, m_autoConnectStop);
         CheckException();
     }
-    void autoConnectSetPattern(const std::string& macAddr, const std::string& devName) {
+    void autoConnectSetPattern(const std::string &macAddr, const std::string &devName) {
         env->CallVoidMethod(ThisObj, m_autoConnectSetPattern, env->NewStringUTF(macAddr.c_str()),
                             env->NewStringUTF(devName.c_str()));
         CheckException();
@@ -83,14 +83,14 @@ public:
         return ret;
     }
 
-    static JNIEXPORT void JNICALL OnDeviceData(JNIEnv* env, jobject thiz, jstring macAddr, jint heartRate,
+    static JNIEXPORT void JNICALL OnDeviceData(JNIEnv *env, jobject thiz, jstring macAddr, jint heartRate,
                                                jlong energy);
-    static JNIEXPORT jboolean JNICALL InformNativeDevice(JNIEnv* env, jobject thiz, jstring macAddr, jbyteArray name);
-    static JNIEXPORT void JNICALL OnEnergyReset(JNIEnv* env, jobject thiz);
-    static JNIEXPORT void JNICALL OnAutoConnectStatusChanged(JNIEnv* env, jobject thiz, jboolean autoConnecting);
-    static JNIEXPORT void JNICALL OnScanStatusChanged(JNIEnv* env, jobject thiz, jboolean isScanning);
+    static JNIEXPORT jboolean JNICALL InformNativeDevice(JNIEnv *env, jobject thiz, jstring macAddr, jbyteArray name);
+    static JNIEXPORT void JNICALL OnEnergyReset(JNIEnv *env, jobject thiz);
+    static JNIEXPORT void JNICALL OnAutoConnectStatusChanged(JNIEnv *env, jobject thiz, jboolean autoConnecting);
+    static JNIEXPORT void JNICALL OnScanStatusChanged(JNIEnv *env, jobject thiz, jboolean isScanning);
 
-    static BleReader* instance;
+    static BleReader *instance;
 };
 
 } // namespace HeartBeat

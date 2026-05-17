@@ -30,13 +30,13 @@ void DataHub::Update() {
     }
 }
 
-bool DataHub::GetData(int& heartrate) {
+bool DataHub::GetData(int &heartrate) {
     heartrate = data;
     return hasNewData;
 }
 
-DataHub* DataHub::getInstance() {
-    static DataHub* instance = nullptr;
+DataHub *DataHub::getInstance() {
+    static DataHub *instance = nullptr;
     if (!instance)
         instance = new DataHub();
     return instance;

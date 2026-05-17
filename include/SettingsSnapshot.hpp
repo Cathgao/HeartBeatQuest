@@ -8,6 +8,6 @@ struct SettingsSnapshot {
     bool ModEnabled;
     HeartBeat::DataSourceType DataSourceType;
 
-    static SettingsSnapshot* getInstance();
+    static SettingsSnapshot *getInstance();
 };
 } // namespace HeartBeat

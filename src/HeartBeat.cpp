@@ -46,10 +46,7 @@ const char *HeartBeat::ui_features[] = {
 
 namespace HeartBeat {
 
-
-void HeartBeatObj::Start() {
-    addToUIManager();
-}
+void HeartBeatObj::Start() { addToUIManager(); }
 
 void HeartBeatObj::addToUIManager() {
     if (isAddedToUIManager)
@@ -92,7 +89,6 @@ void HeartBeatObj::Update() {
         int Maximum = getModConfig().MaxHeart.GetValue();
         float percent = ((float)data) / Maximum;
 
-
         char buff[256];
         sprintf(buff, "%d", data);
         for (auto text : loadedComponents.heartrateTexts)
@@ -119,8 +115,8 @@ void HeartBeatObj::Update() {
 namespace HeartBeat {
 AssetBundleManager assetBundleMgr;
 
-void FixPrefab(UnityEngine::Transform* transform) {
-    auto tm = transform->GetComponent<TMPro::TMP_Text*>();
+void FixPrefab(UnityEngine::Transform *transform) {
+    auto tm = transform->GetComponent<TMPro::TMP_Text *>();
     if (tm) {
         tm->set_font(BSML::Helpers::GetMainTextFont());
         tm->set_fontSharedMaterial(BSML::Helpers::GetMainUIFontMaterial());
@@ -135,7 +131,7 @@ void AssetBundleManager::Init() {
         return;
     initialized = true;
 
-    auto LoadAssetBundle = [this](UnityEngine::AssetBundle* bundle, std::optional<std::string> filepath) {
+    auto LoadAssetBundle = [this](UnityEngine::AssetBundle *bundle, std::optional<std::string> filepath) {
         auto assetNamesUnity = bundle->GetAllAssetNames();
         std::vector<std::string> assetPaths = {assetNamesUnity->begin(), assetNamesUnity->end()};
         for (auto assetPath : assetPaths) {
@@ -145,7 +141,7 @@ void AssetBundleManager::Init() {
 #else
             SafePtrUnity<UnityEngine::GameObject>
 #endif
-                gameObject = bundle->LoadAsset<UnityEngine::GameObject*>(assetPath);
+                gameObject = bundle->LoadAsset<UnityEngine::GameObject *>(assetPath);
             if (gameObject) {
                 auto info = gameObject->get_transform()->Find("info");
                 if (!info)
@@ -175,7 +171,7 @@ void AssetBundleManager::Init() {
                     name = infos["name"];
                 if (loadedBundles.contains(name)) {
                     size_t malloc_size = name.size() + 10;
-                    char* buff = (char*)malloc(malloc_size);
+                    char *buff = (char *)malloc(malloc_size);
                     for (int i = 2; i < 100; i++) {
                         sprintf(buff, "%s %d", name.c_str(), i);
                         if (!loadedBundles.contains(buff))
@@ -194,7 +190,7 @@ void AssetBundleManager::Init() {
                     unsupported_features = GetFeatures(infos["feature"]);
                 }
 
-                for (const char** feature = ui_features; *feature; feature++) {
+                for (const char **feature = ui_features; *feature; feature++) {
                     auto it = unsupported_features.find(*feature);
                     if (it != unsupported_features.end()) {
                         supported_features.insert(*feature);
@@ -204,7 +200,7 @@ void AssetBundleManager::Init() {
                 getLogger().info("Loaded UI, asset name: '{}'", name);
                 if (unsupported_features.size() > 0) {
                     getLogger().info("  {} features are unsupported.", unsupported_features.size());
-                    for (auto& feature : unsupported_features) {
+                    for (auto &feature : unsupported_features) {
                         getLogger().info("    feature unsupported: {}", feature);
                     }
                 }
@@ -219,7 +215,7 @@ void AssetBundleManager::Init() {
     try {
         auto bundle = UnityEngine::AssetBundle::LoadFromFile(DEFAULT_UI_PATH);
         LoadAssetBundle(bundle, {});
-        getLogger().info("Unload bundle {}", (void*)bundle);
+        getLogger().info("Unload bundle {}", (void *)bundle);
         bundle->Unload(true);
         getLogger().info("done");
     } catch (...) {
@@ -227,7 +223,7 @@ void AssetBundleManager::Init() {
     }
     getLogger().info("Start loading bundles from directory");
     if (std::filesystem::is_directory(ASSET_UI_PATH)) {
-        for (auto& entry : std::filesystem::directory_iterator(ASSET_UI_PATH)) {
+        for (auto &entry : std::filesystem::directory_iterator(ASSET_UI_PATH)) {
             getLogger().info("Handling {}", entry.path().c_str());
             if (entry.is_regular_file() && entry.path().has_extension() && entry.path().extension() == ".bundle") {
                 try {
@@ -243,15 +239,15 @@ void AssetBundleManager::Init() {
     getLogger().info("directory load over");
 }
 
-void HandleTransformsInBundle(AssetBundleInstinateInformation& result, UnityEngine::Transform* transform) {
+void HandleTransformsInBundle(AssetBundleInstinateInformation &result, UnityEngine::Transform *transform) {
     {
-        auto tm = transform->GetComponent<TMPro::TMP_Text*>();
+        auto tm = transform->GetComponent<TMPro::TMP_Text *>();
         if (tm) {
             if (transform->get_name()->Equals("auto:heartrate")) {
                 result.heartrateTexts.push_back(tm);
             }
         }
-        auto anmt = transform->GetComponent<UnityEngine::Animator*>();
+        auto anmt = transform->GetComponent<UnityEngine::Animator *>();
         if (anmt) {
             result.animators.push_back(anmt);
         }
@@ -261,13 +257,13 @@ void HandleTransformsInBundle(AssetBundleInstinateInformation& result, UnityEngi
     }
 }
 
-bool AssetBundleManager::Instantiate(std::string name, UnityEngine::Transform* parent,
-                                     AssetBundleInstinateInformation& result) {
+bool AssetBundleManager::Instantiate(std::string name, UnityEngine::Transform *parent,
+                                     AssetBundleInstinateInformation &result) {
     if (!loadedBundles.contains(name))
         return false;
-    auto& assetUI = loadedBundles[name];
+    auto &assetUI = loadedBundles[name];
 
-    UnityEngine::AssetBundle* bundle = nullptr;
+    UnityEngine::AssetBundle *bundle = nullptr;
     {
         if (assetUI.filePath.has_value()) {
             try {
@@ -290,7 +286,7 @@ bool AssetBundleManager::Instantiate(std::string name, UnityEngine::Transform* p
         return false;
     }
 
-    UnityEngine::GameObject* prefab = bundle->LoadAsset<UnityEngine::GameObject*>(assetUI.AssetPath);
+    UnityEngine::GameObject *prefab = bundle->LoadAsset<UnityEngine::GameObject *>(assetUI.AssetPath);
     if (prefab == nullptr) {
         getLogger().error("Can't load prefab {}", assetUI.AssetPath);
         bundle->Unload(true);

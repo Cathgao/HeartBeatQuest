@@ -25,7 +25,7 @@ struct HeartBeatBleDevice {
 };
 
 class HeartBeatBleDataSource : public DataSource {
-private:
+  private:
     std::string selected_mac = "";
     std::mutex selected_mac_lock;
 
@@ -37,23 +37,22 @@ private:
     bool is_scanning = false;
     BluetoothManifestPermission manifestPermission;
 
-public:
+  public:
     HeartBeatBleDataSource();
-    bool GetData(int& heartbeat) override;
+    bool GetData(int &heartbeat) override;
     long long GetEnergy() override;
 
     void StartScan();
     void StopScan();
     void StartAutoScan();
-    void SetAutoConnectPattern(const std::string& macAddr, const std::string& devName);
+    void SetAutoConnectPattern(const std::string &macAddr, const std::string &devName);
 
     void OpenSystemLocationSetthings();
 
     bool isScanning() { return is_scanning; }
     bool isAutoConnecting() { return is_auto_connecting; }
 
-
-    std::string& GetSelectedBleMac() {
+    std::string &GetSelectedBleMac() {
         std::lock_guard<std::mutex> g(selected_mac_lock);
         return selected_mac;
     }
@@ -64,12 +63,12 @@ public:
 
     // called from java
     bool InformNativeDevice(std::string macAddr, std::string name);
-    void OnDataCome(const std::string& macAddr, int heartRate, long energy);
+    void OnDataCome(const std::string &macAddr, int heartRate, long energy);
     void OnEnergyReset();
     void OnAutoConnectStatusChanged(bool autoConnecting);
     void OnScanStatusChanged(bool isScanning);
 
-    static HeartBeatBleDataSource* bleDataSource;
+    static HeartBeatBleDataSource *bleDataSource;
 };
 
 } // namespace HeartBeat

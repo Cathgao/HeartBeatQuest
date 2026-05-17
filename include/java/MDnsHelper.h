@@ -14,7 +14,7 @@ enum MDnsIdSource{
 // clang-format on
 
 class MDnsHelper : public JavaSingleClassObject {
-private:
+  private:
     // clang-format off
     jmethodID
         m_SetManagerId,
@@ -22,14 +22,15 @@ private:
         m_Stop
         ;
     // clang-format on
-public:
-    MDnsHelper(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv* env)
+  public:
+    MDnsHelper(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv *env)
         : JavaSingleClassObject(SomeClassLoader, LoadClassMethod, env, "top.zxff.nativeblereader.MDnsHelper") {
         m_SetManagerId = GetMethodID("SetManagerId", "(I)V");
         m_SetMdnsName = GetMethodID("SetMdnsName", "(Ljava/lang/String;ILjava/lang/String;)V");
         m_Stop = GetMethodID("Stop", "()V");
 
-        nativeMethods.emplace_back("InformRegName", "(ILjava/lang/String;)Z", reinterpret_cast<void*>(OnInformRegName));
+        nativeMethods.emplace_back("InformRegName", "(ILjava/lang/String;)Z",
+                                   reinterpret_cast<void *>(OnInformRegName));
     }
 
     void SetManagerId(jint id) {
@@ -47,9 +48,9 @@ public:
         CheckException();
     }
 
-    static JNIEXPORT void JNICALL OnInformRegName(JNIEnv* env, jobject thiz, jint id, jstring devName);
+    static JNIEXPORT void JNICALL OnInformRegName(JNIEnv *env, jobject thiz, jint id, jstring devName);
 
-    static MDnsHelper* osc_instance;
+    static MDnsHelper *osc_instance;
 };
 
 } // namespace HeartBeat

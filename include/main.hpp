@@ -6,6 +6,6 @@
 namespace HeartBeat {
 class HeartBeatObj;
 }
-Paper::ConstLoggerContext<21>& getLogger();
+Paper::ConstLoggerContext<21> &getLogger();
 
 extern std::string modConfigFilePath;

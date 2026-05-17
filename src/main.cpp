@@ -31,7 +31,7 @@ static modloader::ModInfo modInfo = {MOD_ID, VERSION, 0}; // Stores the ID and v
 std::string modConfigFilePath = "unk";
 
 // Called at the early stages of game loading
-extern "C" void setup(CModInfo& info) {
+extern "C" void setup(CModInfo &info) {
     info.id = MOD_ID;
     info.version = VERSION;
     modInfo.assign(info);
@@ -50,12 +50,12 @@ extern "C" void setup(CModInfo& info) {
     }
 }
 
-Paper::ConstLoggerContext<21>& getLogger() {
+Paper::ConstLoggerContext<21> &getLogger() {
     static Paper::ConstLoggerContext<21> logger = Paper::ConstLoggerContext("HeartBeatLanReceiver");
     return logger;
 }
 MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initialize, void,
-                GlobalNamespace::CoreGameHUDController* self, GlobalNamespace::CoreGameHUDController::InitData* data) {
+                GlobalNamespace::CoreGameHUDController *self, GlobalNamespace::CoreGameHUDController::InitData *data) {
     GameplayCoreHook(self, data);
 
     static int firstInitialize = true;
@@ -72,7 +72,7 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
         getLogger().info("Qounters enabled, will not load mod UI.Loading qounters feeder object");
         HeartBeat::AssetBundleInstinateInformation result; // there is no asset bundle with qounters
         result.gameObject = UnityEngine::GameObject::New_ctor();
-        auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>();
+        auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
         comp->loadedComponents = result;
         comp->isQountersMode = true;
         return;
@@ -91,8 +91,8 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
 
     getLogger().info("Loading '{}' at game start", SelectedUI);
 
-    UnityEngine::GameObject* parent = self->get_energyPanelGo();
-    auto& assetUI = HeartBeat::assetBundleMgr.loadedBundles[SelectedUI];
+    UnityEngine::GameObject *parent = self->get_energyPanelGo();
+    auto &assetUI = HeartBeat::assetBundleMgr.loadedBundles[SelectedUI];
     if (assetUI.infos.contains("root")) {
         std::string root_str = assetUI.infos["root"];
         if (root_str == "energyPanelGo")
@@ -113,7 +113,7 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
         getLogger().error("The UI Can't loaded.");
         return;
     }
-    auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj*>();
+    auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
     comp->loadedComponents = result;
     comp->isQountersMode = false;
     getLogger().info("The UI has been created");
@@ -127,7 +127,6 @@ MAKE_HOOK_MATCH(HeartBeatSceneChange, &UnityEngine::SceneManagement::SceneManage
 
     return HeartBeatSceneChange(scene);
 }
-
 
 // Called later on in the game loading - a good time to install function hooks
 extern "C" void late_load() {
@@ -150,7 +149,6 @@ extern "C" void late_load() {
         getLogger().info("The mod is not enabled");
         return;
     }
-
 
     getLogger().info("Installing hooks...");
     INSTALL_HOOK(getLogger(), GameplayCoreHook);

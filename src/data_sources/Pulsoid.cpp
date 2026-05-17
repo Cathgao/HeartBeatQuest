@@ -28,10 +28,7 @@
 
 namespace HeartBeat {
 
-
-HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource()
-    : DataSource(DataSourceType::DS_Pulsoid)
-    , status("") {
+HeartBeatPulsoidDataSource::HeartBeatPulsoidDataSource() : DataSource(DataSourceType::DS_Pulsoid), status("") {
     Recorder::SetHeartDeviceName(HEART_DEV_NAME_PULSOID);
 }
 
@@ -62,7 +59,7 @@ void HeartBeatPulsoidDataSource::ResetConnection() {
     });
 }
 
-void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePtr& ptr) {
+void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePtr &ptr) {
     if (!ptr)
         return;
     if (ptr->type == ix::WebSocketMessageType::Error) {
@@ -90,7 +87,7 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
     }
     if (ptr->type != ix::WebSocketMessageType::Message)
         return;
-    auto& payload = ptr->str;
+    auto &payload = ptr->str;
     if (payload.size() > 0 && payload.size() < 10) {
         the_heart = atoi(payload.c_str());
         std::atomic_thread_fence(std::memory_order_release);
@@ -98,8 +95,7 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
     }
 }
 
-
-bool HeartBeatPulsoidDataSource::GetData(int& heartbeat) {
+bool HeartBeatPulsoidDataSource::GetData(int &heartbeat) {
     if (has_unread_heart_data) {
         std::atomic_thread_fence(std::memory_order_acquire);
         has_unread_heart_data = false;
@@ -156,7 +152,7 @@ void HeartBeatPulsoidDataSource::RequestSafePair(std::function<void(void)> ondon
                 runInUnityThread(std::bind(onfail_unity, "Invalid HTTP response"));
                 return;
             }
-            std::string& pair_token = resp->body;
+            std::string &pair_token = resp->body;
             if (pair_token[0] == '?') {
                 runInUnityThread(std::bind(onfail_unity, pair_token.substr(1)));
                 return;
@@ -165,7 +161,6 @@ void HeartBeatPulsoidDataSource::RequestSafePair(std::function<void(void)> ondon
                 runInUnityThread(std::bind(onfail_unity, "Server error, check your internet"));
                 return;
             }
-
 
             runInUnityThread([this, pair_token, ondone_unity]() {
                 this->token_url = std::string(SERVER_HOST "/pulsoid/safe/token?token=") + pair_token;
@@ -198,7 +193,7 @@ void HeartBeatPulsoidDataSource::SafePairDone(
                     onfail("Invalid response code");
                     return;
                 }
-                std::string& token = resp->body;
+                std::string &token = resp->body;
                 if (token.size() == 0) {
                     onfail("Invalid token");
                     return;

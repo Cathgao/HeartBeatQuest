@@ -11,8 +11,8 @@
 #include "SettingsSnapshot.hpp"
 #include "main.hpp"
 
-HeartBeat::JavaSingleClassObject::JavaSingleClassObject(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv* env,
-                                                        const char* packageName)
+HeartBeat::JavaSingleClassObject::JavaSingleClassObject(jobject SomeClassLoader, jmethodID LoadClassMethod, JNIEnv *env,
+                                                        const char *packageName)
     : env(env) {
     // We can't use env->FindClass("top.zxff.nativeblereader.BleReader") to find our class
     // Because we use a different class loader, which is a InMemoryDexClassLoader,
@@ -61,23 +61,23 @@ void HeartBeat::JavaSingleClassObject::RegisterNatives() {
         return;
     }
 }
-jmethodID HeartBeat::JavaSingleClassObject::GetMethodID(const char* methodName, const char* signature) {
+jmethodID HeartBeat::JavaSingleClassObject::GetMethodID(const char *methodName, const char *signature) {
     auto ret = env->GetMethodID(ThisClass, methodName, signature);
-    getLogger().info("Loading java method {}, result is {}", methodName, (void*)ret);
+    getLogger().info("Loading java method {}, result is {}", methodName, (void *)ret);
     return ret;
 }
 
 bool HeartBeat::LoadJavaLibraryIfNeeded() {
     switch (HeartBeat::SettingsSnapshot::getInstance()->DataSourceType) {
-        case HeartBeat::DS_BLE:
-        case HeartBeat::DS_OSC:
-            break;
-        default:
-            return false;
+    case HeartBeat::DS_BLE:
+    case HeartBeat::DS_OSC:
+        break;
+    default:
+        return false;
     }
 
-    JNIEnv* env;
-    auto ret = modloader_jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
+    JNIEnv *env;
+    auto ret = modloader_jvm->GetEnv((void **)&env, JNI_VERSION_1_6);
 
     if (env == nullptr) {
         getLogger().error("JNI Env is nullptr");
@@ -115,7 +115,7 @@ bool HeartBeat::LoadJavaLibraryIfNeeded() {
     jobject buffobj;
     {
         auto arr = env->NewByteArray(sizeof(ble_dex));
-        env->SetByteArrayRegion(arr, 0, sizeof(ble_dex), (const jbyte*)&*ble_dex);
+        env->SetByteArrayRegion(arr, 0, sizeof(ble_dex), (const jbyte *)&*ble_dex);
 
         CHECK_EXCEPTION();
 
