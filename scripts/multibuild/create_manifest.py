@@ -5,12 +5,12 @@ import requests
 import re
 import zipfile
 import io
-from common import load_json, latest_build_config_folder
+from scripts.multibuild.common import load_json, latest_build_config_folder
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
 def usage():
-    print("usage: python ./multibuild/create_manifest.py <game version, e.g. 1.40.7>")
+    print("usage: python ./scripts/multibuild/create_manifest.py <game version, e.g. 1.40.7>")
 
 if not len(sys.argv) == 2:
     usage()

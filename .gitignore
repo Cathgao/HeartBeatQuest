@@ -72,6 +72,6 @@ compile_commands.json
 
 qpm.shared.json
 
-multibuild/__pycache__
+scripts/multibuild/__pycache__
 
 build_third_party

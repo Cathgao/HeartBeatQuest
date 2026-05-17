@@ -1,5 +1,5 @@
 import re
-from common import load_json, latest_build_config_folder
+from scripts.multibuild.common import load_json, latest_build_config_folder
 
 #### get the remote latest game version ####
 versions = load_json("https://mods.bsquest.xyz/versions.json")
@@ -20,7 +20,7 @@ local_latest = latest_build_config_folder().name
 
 if local_latest != latest:
     print(f"we need update for version {latest}")
-    cmd = f"python ./multibuild/create_manifest.py {latest}"
+    cmd = f"python ./scripts/multibuild/create_manifest.py {latest}"
     import os
     ret = os.system(cmd)
     if ret != 0:

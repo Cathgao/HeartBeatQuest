@@ -23,7 +23,7 @@ Set the `ANDROID_NDK_HOME` environment variable. Do **not** use `ndkpath.txt`.
 - Debug: `qpm s copy`
 - Release: `qpm qmod zip`
 
-This mod supports multiple game versions. See the [multibuild](../multibuild) directory for switching build configs between versions.
+This mod supports multiple game versions. See the [scripts/multibuild](../scripts/multibuild) directory for switching build configs between versions.
 
 The mod's Java code is compiled into the C source. See [extra/Readme.md](../extra/Readme.md) if you need to compile the Java code.
 

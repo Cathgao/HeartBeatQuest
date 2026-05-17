@@ -25,7 +25,7 @@ jobs:
       with:
         submodules: 'recursive'
     - name: Apply game version
-      run: python multibuild/apply.py ${{ matrix.game-version }}
+      run: python scripts/multibuild/apply.py ${{ matrix.game-version }}
 
     - name: QPM Action
       uses: Fernthedev/qpm-action@v1
