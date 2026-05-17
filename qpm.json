@@ -45,7 +45,7 @@
             "./build",
             "./extern/libs",
             "extra",
-            "UnityUI/Assets/AssetBundlesAndroid"
+            "Projects/UnityUI/Assets/AssetBundlesAndroid"
         ],
         "qmodIncludeFiles": [],
         "qmodOutput": "HeartBeatQuest.1_40_8.qmod"
