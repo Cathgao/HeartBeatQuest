@@ -12,7 +12,7 @@ def update(input_file_path, output_file_path, variable_name):
 
 from pathlib import Path
 import zipfile
-release_apk = Path("AndroidProject/HeartBeatNative/nativeblereader/build/outputs/apk/release/nativeblereader-release-unsigned.apk")
+release_apk = Path("Projects/Android/HeartBeatNative/nativeblereader/build/outputs/apk/release/nativeblereader-release-unsigned.apk")
 if release_apk.exists():
     print("release apk exists, use it")
     with zipfile.ZipFile(release_apk) as apk:
