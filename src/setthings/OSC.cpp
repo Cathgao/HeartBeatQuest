@@ -6,6 +6,7 @@
 void HeartBeat::OSCSettings::CreateElements() {
     // Create a container that has a scroll bar
     auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
+    oscDataSource = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>();
 
     static char osc_port[4096];
     sprintf(osc_port, LANG->heart_osc_port, getModConfig().OSCPort.GetValue());
@@ -13,69 +14,80 @@ void HeartBeat::OSCSettings::CreateElements() {
                            UnityEngine::Vector2{50, 4});
     mDnsNameText = BSML::Lite::CreateText(container->get_transform(), LANG->mdns_name_no);
 
-    BSML::Lite::CreateToggle(
-        container->get_transform(), LANG->mdns_enable, getModConfig().OSC_MDNS_ENABLED.GetValue(), [this](bool value) {
-            getModConfig().OSC_MDNS_ENABLED.SetValue(value);
-            if (value) {
-                HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>()->StartMDns();
-            } else {
-                HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>()->StopMDns();
-            }
-        });
+    BSML::Lite::CreateToggle(container->get_transform(), LANG->mdns_enable, getModConfig().OSC_MDNS_ENABLED.GetValue(),
+                             [this](bool value) {
+                                 getModConfig().OSC_MDNS_ENABLED.SetValue(value);
+                                 if (value) {
+                                     oscDataSource->StartMDns();
+                                 } else {
+                                     oscDataSource->StopMDns();
+                                 }
+                             });
 
     osc_list = BSML::Lite::CreateScrollableList(container->get_transform(), {70, 60},
                                                 [this](int idx) { UpdateSelectedOscValue(idx); });
     osc_list->set_listStyle(BSML::CustomListTableData::ListStyle::Simple);
     osc_list->tableView->set_selectionType(HMUI::TableViewSelectionType::Single);
-    osc_addr.push_back("None");
     UpdateOscScrollList();
 }
+
+DEFINE_TYPE(HeartBeat, OSCDeviceItem);
+HeartBeat::OSCDeviceItem *HeartBeat::OSCDeviceItem::construct() {
+    auto ret = OSCDeviceItem::New_ctor();
+    ret->text = "";
+    ret->subText = nullptr;
+    ret->icon = nullptr;
+    return ret;
+}
+
 void HeartBeat::OSCSettings::UpdateSelectedOscValue(int idx) {
-    HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>()->SetSelectedAddr(osc_addr[idx]);
+    oscDataSource->SetSelectedAddr(((OSCDeviceItem *)osc_list->data->get_Item(idx))->devAddress);
     UpdateOscScrollList();
 }
 void HeartBeat::OSCSettings::UpdateOscScrollList() {
-    auto *i = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>();
-    bool any_data_changed = false;
-    int the_selected = -1;
-    {
-        std::set<std::string> already_in(osc_addr.begin(), osc_addr.end());
-        auto &devs = i->received_addresses;
-
-        for (auto it = devs.begin(), end = devs.end(); it != end; ++it) {
-            if (already_in.count(*it))
-                continue;
-            osc_addr.push_back(*it);
-            already_in.insert(*it);
-        }
-
-        while (osc_list->data.size() > osc_addr.size()) {
-            osc_list->data->RemoveAt(osc_list->data.size() - 1);
-            any_data_changed = true;
-        }
-        while (osc_list->data.size() < osc_addr.size()) {
-            osc_list->data->Add(BSML::CustomCellInfo::construct(""));
-            any_data_changed = true;
-        }
-
-        for (int j = 0; j < osc_addr.size(); j++) {
-            bool selected = (osc_addr[j] == i->GetSelectedAddress());
-            std::string name;
-
-            name = std::string(selected ? ">>" : "  ") + osc_addr[j];
-            if (osc_list->data[j]->text != name) {
-                osc_list->data[j]->text = name;
-                any_data_changed = true;
-            }
-            if (selected) {
-                the_selected = j;
-            }
-        }
+    bool changed = false;
+    std::string selected = oscDataSource->GetSelectedAddress();
+    if (osc_list->data.size() == 0) {
+        auto dev = HeartBeat::OSCDeviceItem::construct();
+        dev->isNone = true;
+        osc_list->data.push_back(dev);
+        changed = true;
     }
-    if (any_data_changed)
+
+    int select_cell_idx = -1;
+    int index = 0;
+
+    OSCDeviceItem *noneItem = (OSCDeviceItem *)osc_list->data->get_Item(0);
+    if (selected == "")
+        select_cell_idx = 0;
+    changed |= noneItem->Update("", selected == "");
+
+    for (auto address : oscDataSource->received_addresses) {
+        OSCDeviceItem *listItem;
+        if (osc_list->data.size() <= index) {
+            listItem = OSCDeviceItem::construct();
+            osc_list->data.push_back(listItem);
+            changed = true;
+        } else {
+            listItem = (OSCDeviceItem *)osc_list->data->get_Item(index);
+        }
+
+        bool isSelected = selected == address;
+        changed |= listItem->Update(address, isSelected);
+        if (isSelected)
+            select_cell_idx = index;
+        index++;
+    }
+    if (index > osc_list->data.size()) {
+        osc_list->data->RemoveRange(index, osc_list->data.size() - index);
+        changed = true;
+    }
+    if (changed) {
         osc_list->tableView->ReloadData();
-    if (the_selected >= 0) {
-        osc_list->tableView->SelectCellWithIdx(the_selected, false);
+    }
+
+    if (select_cell_idx >= 0) {
+        osc_list->tableView->SelectCellWithIdx(select_cell_idx, false);
     }
 }
 
@@ -83,7 +95,7 @@ void HeartBeat::OSCSettings::Update() {
     UpdateOscScrollList();
 
     static std::string myMdnsName = "";
-    std::string otherName = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>()->mDnsName;
+    std::string otherName = oscDataSource->mDnsName;
     if (myMdnsName != otherName) {
         myMdnsName = otherName;
         mDnsNameText->set_text(LANG->mdns_name_title + myMdnsName);

@@ -10,6 +10,7 @@
 
 #include <unistd.h>
 #include "ModConfig.hpp"
+#include "ModObject.hpp"
 #include "java/MDnsHelper.h"
 #include "main.hpp"
 #include "BeatLeaderRecorder.hpp"
@@ -153,15 +154,12 @@ void HeartBeatOSCDataSource::parseOscMessage(char *&thebuff, ssize_t &sz) {
             return;
     }
 
-    {
-        std::lock_guard<std::mutex> g(this->mutex);
-        if (this->selected_addr == addr) {
-            this->the_heart = heart_rate;
-            std::atomic_thread_fence(std::memory_order_release);
-            this->has_unread_heart_data = true;
-        }
-        this->received_addresses.insert(addr);
+    if (this->GetSelectedAddress() == addr) {
+        this->the_heart = heart_rate;
+        std::atomic_thread_fence(std::memory_order_release);
+        this->has_unread_heart_data = true;
     }
+    runInUnityThread([this, addr]() { this->received_addresses.insert(addr); });
 }
 
 void *HeartBeatOSCDataSource::ServerThread(void *self) {
