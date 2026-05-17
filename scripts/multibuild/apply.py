@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import json
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 def usage():
     print("usage: python ./scripts/multibuild/apply.py <game version, e.g. 1.40.6>")
