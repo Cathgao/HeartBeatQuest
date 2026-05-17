@@ -20,7 +20,7 @@ As a reference, here is what each color bar means.
 - 4: 80%–90%, hard
 - 5: above 90%, maximum
 
-This mod supports DIY interfaces via Unity asset bundles. See [UnityUI/Readme.md](../UnityUI/Readme.md) for details.
+This mod supports DIY interfaces via Unity asset bundles. See [Projects/UnityUI/Readme.md](../Projects/UnityUI/Readme.md) for details.
 
 > [!NOTE]
 > **FEEL FREE TO REQUEST UI FEATURES**  
