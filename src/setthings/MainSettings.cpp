@@ -8,6 +8,7 @@
 #include "settings/MainSettings.hpp"
 #include "SettingsSnapshot.hpp"
 #include <atomic>
+#include "QountersDriver.hpp"
 
 std::atomic_int HeartBeat::Settings::active_setthings_ui_count = 0;
 
