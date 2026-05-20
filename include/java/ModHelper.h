@@ -15,7 +15,7 @@ class JavaModHelper : public JavaSingleClassObject {
     }
 
     void OnModExit() {
-        auto ret = env->CallVoidMethod(ThisObj, m_onModExit);
+        env->CallVoidMethod(ThisObj, m_onModExit);
         CheckException();
     }
 
