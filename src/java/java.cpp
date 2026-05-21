@@ -143,6 +143,7 @@ bool HeartBeat::LoadJavaLibraryIfNeeded() {
 
     try {
         HeartBeat::JavaModHelper::instance = new JavaModHelper(SomeClassLoader, LoadClassMethod, env);
+        HeartBeat::JavaModHelper::instance->CreateObject();
 
         if (HeartBeat::SettingsSnapshot::getInstance()->DataSourceType == DS_OSC) {
             HeartBeat::MDnsHelper::osc_instance = new MDnsHelper(SomeClassLoader, LoadClassMethod, env);
