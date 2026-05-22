@@ -1,3 +1,5 @@
+#include "BeatLeaderRecorder.hpp"
+#include "config-utils/shared/config-utils.hpp"
 #ifdef WITH_QOUNTERS
 
 #include "QountersDriver.hpp"
@@ -18,7 +20,8 @@ namespace HeartBeat {
 namespace Qounters {
 
 #define METACORE_EVENT_MOD "HeartBeatQuest"
-#define METACORE_EVENT_ID 1
+#define METACORE_EVENT_ID_HEART_RATE 1
+#define METACORE_EVENT_ID_REPLAY_STATUS 2
 
 static int qounters_hr = 0;
 
@@ -172,6 +175,9 @@ DECLARE_JSON_STRUCT(HeartRateRangeColorOption) {
     VALUE_DEFAULT(ConfigUtils::Color, range_7_8, ConfigUtils::Color(1, 1, 1, 1));
     VALUE_DEFAULT(ConfigUtils::Color, range_8_9, ConfigUtils::Color(1, 1, 1, 1));
     VALUE_DEFAULT(ConfigUtils::Color, range_9_, ConfigUtils::Color(1, 1, 1, 1));
+
+    VALUE_DEFAULT(bool, use_replay_color, false);
+    VALUE_DEFAULT(ConfigUtils::Color, range_replay, ConfigUtils::Color(1, 1, 1, 1));
 };
 
 UnityEngine::Color hrRangeColor(UnparsedJSON unparsed) {
@@ -252,11 +258,31 @@ void hrRangeColorUI(UnityEngine::GameObject *parent, UnparsedJSON unparsed) {
         },
         ::Qounters::API::FinalizeAction);
     BSML::Lite::AddHoverHint(sptr, "Pickup a color");
+
+    auto *rptr = BSML::Lite::CreateToggle(parent, "Set color for replay", opts.use_replay_color, [](bool v) {
+        static int id = ::Qounters::API::GetActionId();
+        opts.use_replay_color = v;
+        ::Qounters::API::SetColorOptions(id, opts);
+    });
+    BSML::Lite::AddHoverHint(rptr, "Enable this will use replay color when playing replay.");
+
+    sptr = ::Qounters::API::CreateColorPicker(
+        parent, "Replay color", opts.range_replay,
+        [](UnityEngine::Color val) {
+            static int id = ::Qounters::API::GetActionId();
+            opts.range_replay = val;
+            ::Qounters::API::SetColorOptions(id, opts);
+        },
+        ::Qounters::API::FinalizeAction);
+    BSML::Lite::AddHoverHint(sptr, "Pickup a color");
 }
 
+bool hrIsInReplayEnable(UnparsedJSON unparsed) { return Recorder::isReplaying(); }
+void hrIsInReplayEnableUI(UnityEngine::GameObject *parent, UnparsedJSON unparsed) {}
+void informIsReplayUpdated() { MetaCore::Events::Broadcast(METACORE_EVENT_MOD, METACORE_EVENT_ID_REPLAY_STATUS); }
 void DisplayData(int heartrate) {
     qounters_hr = heartrate;
-    MetaCore::Events::Broadcast(METACORE_EVENT_MOD, METACORE_EVENT_ID);
+    MetaCore::Events::Broadcast(METACORE_EVENT_MOD, METACORE_EVENT_ID_HEART_RATE);
 }
 
 static bool enabled = false;
@@ -275,15 +301,23 @@ void Init() {
         ::Qounters::Sources::RegisterColor(
             "HeartRateRangeColor", ::Qounters::Types::SourceFn<UnityEngine::Color>(hrRangeColor), hrRangeColorUI);
 
-        MetaCore::Events::RegisterEvent(METACORE_EVENT_MOD, METACORE_EVENT_ID);
+        MetaCore::Events::RegisterEvent(METACORE_EVENT_MOD, METACORE_EVENT_ID_HEART_RATE);
         ::Qounters::Events::RegisterToEvent(::Qounters::Types::Sources::Text, "HeartRate", METACORE_EVENT_MOD,
-                                            METACORE_EVENT_ID);
+                                            METACORE_EVENT_ID_HEART_RATE);
         ::Qounters::Events::RegisterToEvent(::Qounters::Types::Sources::Shape, "HeartRatePrecent", METACORE_EVENT_MOD,
-                                            METACORE_EVENT_ID);
+                                            METACORE_EVENT_ID_HEART_RATE);
         ::Qounters::Events::RegisterToEvent(::Qounters::Types::Sources::Enable, "HeartRatePercentRange",
-                                            METACORE_EVENT_MOD, METACORE_EVENT_ID);
+                                            METACORE_EVENT_MOD, METACORE_EVENT_ID_HEART_RATE);
         ::Qounters::Events::RegisterToEvent(::Qounters::Types::Sources::Color, "HeartRateRangeColor",
-                                            METACORE_EVENT_MOD, METACORE_EVENT_ID);
+                                            METACORE_EVENT_MOD, METACORE_EVENT_ID_HEART_RATE);
+
+        ::Qounters::Sources::RegisterEnable(
+            "HeartRateIsInReplay", ::Qounters::Types::SourceFn<bool>(hrIsInReplayEnable), hrIsInReplayEnableUI);
+
+        MetaCore::Events::RegisterEvent(METACORE_EVENT_MOD, METACORE_EVENT_ID_REPLAY_STATUS);
+        ::Qounters::Events::RegisterToEvent(::Qounters::Types::Sources::Enable, "HeartRateIsInReplay",
+                                            METACORE_EVENT_MOD, METACORE_EVENT_ID_REPLAY_STATUS);
+
         enabled = true;
         return;
     }

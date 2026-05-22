@@ -1,4 +1,5 @@
 #include "BeatLeaderRecorder.hpp"
+#include "QountersDriver.hpp"
 #include "SettingsSnapshot.hpp"
 #include "conditional-dependencies/shared/main.hpp"
 #include <cstddef>
@@ -201,6 +202,9 @@ void ReplayCallback(const char *buff, size_t length, std::string sourceName) {
         return;
     recordData.clear();
     replayStarted = true;
+#ifdef WITH_QOUNTERS
+    HeartBeat::Qounters::informIsReplayUpdated();
+#endif
     currentDataToReplay = -1;
     for (int i = 0; i < recordCount; i++) {
         float timestamp;
@@ -254,6 +258,9 @@ MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInsta
     } else {
         recordData.clear();
         replayStarted = false;
+#ifdef WITH_QOUNTERS
+        HeartBeat::Qounters::informIsReplayUpdated();
+#endif
     }
 
     if (!needRecord)
@@ -276,6 +283,9 @@ MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInsta
     recordStarted = true;
     lastRecordSongTime = -1000;
     isPaused = false;
+#ifdef WITH_QOUNTERS
+    HeartBeat::Qounters::informIsReplayUpdated();
+#endif
 }
 
 MAKE_HOOK_MATCH(LevelPause, &GlobalNamespace::PauseMenuManager::ShowMenu, void,

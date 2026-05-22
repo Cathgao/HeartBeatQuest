@@ -67,6 +67,9 @@ void HeartBeatObj::OnDestroy() {
     // we will disable replay here (when the UI inside the game scene is destroyed), because I don't want hook a scene
     // unload function.
     HeartBeat::Recorder::replayStarted = false;
+#ifdef WITH_QOUNTERS
+    HeartBeat::Qounters::informIsReplayUpdated();
+#endif
 }
 void HeartBeatObj::Update() {
 #if WITH_QOUNTERS

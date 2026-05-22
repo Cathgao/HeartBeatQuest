@@ -6,7 +6,7 @@ namespace HeartBeat {
 namespace Qounters {
 void Init();
 void DisplayData(int heartrate);
-
+void informIsReplayUpdated();
 bool Enabled();
 } // namespace Qounters
 } // namespace HeartBeat
