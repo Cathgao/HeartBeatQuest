@@ -6,7 +6,7 @@ The Qounters++ feature is enabled in the following versions:
 
 | Game Version | HeartBeatQuest Version | Qounters++ Version | Notes |
 |--------------|------------------------|--------------------|-------|
-| `1.40.8`     | `>=TBD`               | N/A                | |
+| `1.40.8`     | `>=1.4.2`               | `1.1.4`               | |
 | `<1.40.8`    | N/A                   | N/A                | Qounters++ with the API isn't available on older game versions |
 
 # Compatibility
@@ -48,11 +48,14 @@ A boolean source called `HeartRatePercentRange` is added to Qounters++.
 
 You can configure it to output `true` or `false` per heart rate zone. This is useful for displaying something only in one or more specific zones.
 
+A boolean source called HeartRateIsInReplay is also added. Informing the current displayed hr value is from replay file or not.
 ## Color Source
 
 A color source called `HeartRateRangeColor` is added to Qounters++.
 
 You can configure it to output different colors per heart rate zone. This is useful for changing UI element colors based on the current zone.
+
+It's also possible to config a `Replay color` for replay data if you enable the `Set color for replay` toggle. 
 
 # Manual Compatibility
 

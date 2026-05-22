@@ -51,6 +51,7 @@ Thanks to everyone who has directly or indirectly supported this mod:
 * [raftario](https://github.com/raftario)
 * [Lauriethefish](https://github.com/Lauriethefish), [danrouse](https://github.com/danrouse) and [Bobby Shmurner](https://github.com/BobbyShmurner) for [this template](https://github.com/Lauriethefish/quest-mod-template)
 * NSGolova — [BeatLeader](https://github.com/BeatLeader/beatleader-qmod) for replay and webreplay support
+* Metalit - [Qounters](https://github.com/Metalit/Qounters), [Replay](https://github.com/Metalit/Replay)
 * And other developers in the BSMG Discord channel
 * [Hyperate](https://www.hyperate.io) — API support
 * [Pulsoid](https://pulsoid.net/) — API support
