@@ -8,7 +8,7 @@ void Setup() {
 #include "langs/english.inc"
         ;
 
-    SSL10n::Database::Helper(SSL10n::L_French)
+    SSL10n::Database::Helper(SSL10n::L_Simplified_Chinese)
 #define V(key, value) .v("HEART_BEAT_QUEST_" #key, value)
 #include "langs/chinese.inc"
         ;
