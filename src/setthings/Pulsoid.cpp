@@ -16,20 +16,20 @@ void HeartBeat::PulsoidSettings::CreateElements() {
     auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
     BSML::Lite::CreateUIButton(
-        container->get_transform(), LANG->pulsoid_reconnect, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8},
+        container->get_transform(), LANG::pulsoid_reconnect(), UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8},
         []() { HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatPulsoidDataSource>()->ResetConnection(); });
 
     statusText =
         BSML::Lite::CreateText(container->get_transform(), "", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 1});
 
-    BSML::Lite::CreateText(container->get_transform(), LANG->pulsoid_input_hint, 4, UnityEngine::Vector2{},
+    BSML::Lite::CreateText(container->get_transform(), LANG::pulsoid_input_hint(), 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 4});
 
     {
         auto *pair_container = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
         PairInBrowserBtn = BSML::Lite::CreateUIButton(
-            pair_container->get_transform(), LANG->pulsoid_connect, UnityEngine::Vector2{}, UnityEngine::Vector2{20, 8},
-            [this]() {
+            pair_container->get_transform(), LANG::pulsoid_connect(), UnityEngine::Vector2{},
+            UnityEngine::Vector2{20, 8}, [this]() {
                 setButtonOpeningUrl();
                 HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatPulsoidDataSource>()->RequestSafePair(
                     [this]() {
@@ -44,7 +44,7 @@ void HeartBeat::PulsoidSettings::CreateElements() {
             });
 
         BrowserCompleteBtn = BSML::Lite::CreateUIButton(
-            pair_container->get_transform(), LANG->pulsoid_done, UnityEngine::Vector2{}, UnityEngine::Vector2{20, 8},
+            pair_container->get_transform(), LANG::pulsoid_done(), UnityEngine::Vector2{}, UnityEngine::Vector2{20, 8},
             [this]() {
                 setButtonBusying();
                 HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatPulsoidDataSource>()->SafePairDone(
@@ -74,8 +74,8 @@ void HeartBeat::PulsoidSettings::CreateElements() {
             });
 
         CancelBrowserPairBtn = BSML::Lite::CreateUIButton(
-            pair_container->get_transform(), LANG->pulsoid_cancel, UnityEngine::Vector2{}, UnityEngine::Vector2{20, 8},
-            [this]() {
+            pair_container->get_transform(), LANG::pulsoid_cancel(), UnityEngine::Vector2{},
+            UnityEngine::Vector2{20, 8}, [this]() {
                 HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatPulsoidDataSource>()->SafePairCancel();
                 setButtonPairDone();
             });
@@ -87,12 +87,12 @@ void HeartBeat::PulsoidSettings::CreateElements() {
         BSML::Lite::CreateText(container->get_transform(), "", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     errMsgText->set_color(UnityEngine::Color::get_red());
 
-    BSML::Lite::CreateText(container->get_transform(), LANG->pulsoid_token, 4, UnityEngine::Vector2{},
+    BSML::Lite::CreateText(container->get_transform(), LANG::pulsoid_token(), 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 4});
     tokenText =
         BSML::Lite::CreateText(container->get_transform(), "", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     BSML::Lite::CreateUIButton(
-        container->get_transform(), LANG->pulsoid_clear_token, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8},
+        container->get_transform(), LANG::pulsoid_clear_token(), UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8},
         [this]() {
             getModConfig().PulsoidToken.SetValue(getModConfig().PulsoidToken.GetDefaultValue());
             this->SyncModConfig();
@@ -100,7 +100,7 @@ void HeartBeat::PulsoidSettings::CreateElements() {
         });
 
     {
-        std::string config_file_hint = LANG->pulsoid_edit_config_hint + modConfigFilePath;
+        std::string config_file_hint = LANG::pulsoid_edit_config_hint() + modConfigFilePath;
         char buff[1024];
         int j = 0;
         for (int i = 0, ch_count = 0; i < config_file_hint.size(); i++) {

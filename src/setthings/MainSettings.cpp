@@ -17,9 +17,9 @@ void HeartBeat::MainSettings::CreateElements() {
     // Create a container that has a scroll bar
     auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
-    BSML::Lite::CreateText(container->get_transform(), LANG->mod_version, 4, UnityEngine::Vector2{},
+    BSML::Lite::CreateText(container->get_transform(), LANG::mod_version(), 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 4});
-    BSML::Lite::CreateText(container->get_transform(), LANG->for_game, 4, UnityEngine::Vector2{},
+    BSML::Lite::CreateText(container->get_transform(), LANG::for_game(), 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 8});
     std::string build_feature = "";
 
@@ -42,7 +42,7 @@ void HeartBeat::MainSettings::CreateElements() {
                                UnityEngine::Vector2{50, 4});
     }
 
-    BSML::Lite::CreateToggle(container->get_transform(), LANG->enabled, getModConfig().Enabled.GetValue(),
+    BSML::Lite::CreateToggle(container->get_transform(), LANG::enabled(), getModConfig().Enabled.GetValue(),
                              [](bool v) { getModConfig().Enabled.SetValue(v); });
 
     if (SettingsSnapshot::getInstance()->ModEnabled == false)
@@ -55,13 +55,13 @@ void HeartBeat::MainSettings::CreateElements() {
     // A data source toggle
     static std::vector<std::string_view> data_sources;
     // the value of data_sources MUST consist with the DS_*** enum
-    data_sources = {LANG->data_source_random, LANG->data_source_lan,      LANG->data_source_bluetooth,
-                    LANG->data_source_osc,    LANG->data_source_hyperate, LANG->data_source_pulsoid};
+    data_sources = {LANG::data_source_random(), LANG::data_source_lan(),      LANG::data_source_bluetooth(),
+                    LANG::data_source_osc(),    LANG::data_source_hyperate(), LANG::data_source_pulsoid()};
 
     static std::vector<std::string_view> data_sources_in_ui;
     data_sources_in_ui = {
-        LANG->data_source_bluetooth, LANG->data_source_hyperate, LANG->data_source_osc,
-        LANG->data_source_pulsoid,   LANG->data_source_random,
+        LANG::data_source_bluetooth(), LANG::data_source_hyperate(), LANG::data_source_osc(),
+        LANG::data_source_pulsoid(),   LANG::data_source_random(),
     };
 
     auto current_data_type = getModConfig().DataSourceType.GetValue();
@@ -70,7 +70,7 @@ void HeartBeat::MainSettings::CreateElements() {
     }
     if (current_data_type < 0)
         current_data_type = HeartBeat::DS_BLE, getModConfig().DataSourceType.SetValue(current_data_type);
-    BSML::Lite::CreateDropdown(container->get_transform(), LANG->data_source, data_sources[current_data_type],
+    BSML::Lite::CreateDropdown(container->get_transform(), LANG::data_source(), data_sources[current_data_type],
                                data_sources_in_ui, [](::StringW value) {
                                    for (int i = 0; i < data_sources.size(); i++) {
                                        if (data_sources[i] == value) {
@@ -83,27 +83,27 @@ void HeartBeat::MainSettings::CreateElements() {
                                });
 
     if (HeartBeat::Recorder::BeatLeaderDetected()) {
-        BSML::Lite::CreateToggle(container->get_transform(), LANG->enable_record,
+        BSML::Lite::CreateToggle(container->get_transform(), LANG::enable_record(),
                                  getModConfig().EnableRecord.GetValue(),
                                  [](bool v) { getModConfig().EnableRecord.SetValue(v); });
-        BSML::Lite::CreateToggle(container->get_transform(), LANG->record_dev_name,
+        BSML::Lite::CreateToggle(container->get_transform(), LANG::record_dev_name(),
                                  getModConfig().RecordDevName.GetValue(),
                                  [](bool v) { getModConfig().RecordDevName.SetValue(v); });
     } else {
-        BSML::Lite::CreateText(container->get_transform(), LANG->no_beatleader, 4, UnityEngine::Vector2{},
+        BSML::Lite::CreateText(container->get_transform(), LANG::no_beatleader(), 4, UnityEngine::Vector2{},
                                UnityEngine::Vector2{50, 8});
     }
 
     // the age is just used to provide a default value for maxheart
     static BSML::IncrementSetting *MaxHeartIncr;
-    BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG->age, 0, 1, getModConfig().Age.GetValue(),
+    BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG::age(), 0, 1, getModConfig().Age.GetValue(),
                                        [](float v) {
                                            getModConfig().Age.SetValue(v);
                                            MaxHeartIncr->set_Value(220 - v);
                                            MaxHeartIncr->UpdateState();
                                            getModConfig().MaxHeart.SetValue(220 - v);
                                        });
-    MaxHeartIncr = BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG->max_heart, 0, 1,
+    MaxHeartIncr = BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG::max_heart(), 0, 1,
                                                       getModConfig().MaxHeart.GetValue(),
                                                       [](float v) { getModConfig().MaxHeart.SetValue(v); });
 
@@ -114,8 +114,8 @@ void HeartBeat::MainSettings::CreateElements() {
 
     static HMUI::CurvedTextMeshPro *feature_unsupport_hint_ui;
 
-    BSML::Lite::CreateDropdown(container->get_transform(), LANG->select_ui, getModConfig().SelectedUI.GetValue(), ui_s,
-                               [](StringW v) {
+    BSML::Lite::CreateDropdown(container->get_transform(), LANG::select_ui(), getModConfig().SelectedUI.GetValue(),
+                               ui_s, [](StringW v) {
                                    if (getModConfig().SelectedUI.GetValue() != v) {
                                        getModConfig().SelectedUI.SetValue(v);
 
@@ -142,12 +142,12 @@ void HeartBeat::MainSettings::CreateElements() {
                                        }
                                        if (supported) {
                                            if (need_advanced_ui) {
-                                               feature_unsupport_hint_ui->set_text(LANG->advance_ui_required);
+                                               feature_unsupport_hint_ui->set_text(LANG::advance_ui_required());
                                            } else {
                                                feature_unsupport_hint_ui->set_text("");
                                            }
                                        } else {
-                                           feature_unsupport_hint_ui->set_text(LANG->unsupported_feature_udpatre_mod);
+                                           feature_unsupport_hint_ui->set_text(LANG::unsupported_feature_udpatre_mod());
                                        }
                                    }
                                });
@@ -156,18 +156,18 @@ void HeartBeat::MainSettings::CreateElements() {
         BSML::Lite::CreateText(container->get_transform(), "", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     feature_unsupport_hint_ui->set_color(UnityEngine::Color::get_red());
 
-    private_public_btn = BSML::Lite::CreateUIButton(container->get_transform(), LANG->waiting, UnityEngine::Vector2{},
+    private_public_btn = BSML::Lite::CreateUIButton(container->get_transform(), LANG::waiting(), UnityEngine::Vector2{},
                                                     UnityEngine::Vector2{50, 8}, [this]() {
                                                         private_ui = !private_ui;
                                                         UpdateContent();
                                                     });
 
-    BSML::Lite::CreateText(container->get_transform(), LANG->your_setthings_is_in_another_menu, 4,
+    BSML::Lite::CreateText(container->get_transform(), LANG::your_setthings_is_in_another_menu(), 4,
                            UnityEngine::Vector2{}, UnityEngine::Vector2{50, 10});
 
     UpdateContent();
 }
 
 void HeartBeat::MainSettings::UpdateContent() {
-    BSML::Lite::SetButtonText(private_public_btn, private_ui ? LANG->hiding_mac_addr : LANG->showing_mac_addr);
+    BSML::Lite::SetButtonText(private_public_btn, private_ui ? LANG::hiding_mac_addr() : LANG::showing_mac_addr());
 }

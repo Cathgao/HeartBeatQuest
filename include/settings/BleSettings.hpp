@@ -16,7 +16,7 @@ class BleSettings : public Settings {
     void UpdateSelectedBLEValue(int idx);
 
   public:
-    BleSettings() : Settings("Bluetooth Device", LANG->heart_devices, "<3") {}
+    BleSettings() : Settings("Bluetooth Device", LANG::heart_devices(), "<3") {}
     void CreateElements() override;
 
     void Open() override;
@@ -47,7 +47,7 @@ public:
         if (isNone) {
             if (this->selected != selected || dirty) {
                 this->selected = selected;
-                this->text = selected ? LANG->ble_none_selected : LANG->ble_none_not_selected;
+                this->text = selected ? LANG::ble_none_selected() : LANG::ble_none_not_selected();
                 dirty = false;
                 return true;
             } else {

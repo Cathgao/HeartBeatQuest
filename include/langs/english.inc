@@ -29,7 +29,7 @@ V(pulsoid_no_token, "No token")
 
 V(unsupported_feature_udpatre_mod, "UI unsupported, maybe update your mod")
 
-V(heart_osc_port, "OSC Port: %d")
+V(heart_osc_port, "OSC Port is {}")
 
 V(scan_start, "Start Scan")
 V(scan_stop, "Stop Scan")

@@ -101,6 +101,11 @@
       "id": "metacore",
       "versionRange": "^1.6.3",
       "additionalData": {}
+    },
+    {
+      "id": "sslocalization",
+      "versionRange": "^0.1.0",
+      "additionalData": {}
     }
   ]
 }

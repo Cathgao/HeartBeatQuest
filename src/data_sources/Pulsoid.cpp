@@ -47,10 +47,10 @@ void HeartBeatPulsoidDataSource::ResetConnection() {
     runBackground([this]() {
         websocket.stop();
         if (getModConfig().PulsoidToken.GetValue() == getModConfig().PulsoidToken.GetDefaultValue()) {
-            runInUnityThread([this]() { status = LANG->pulsoid_no_token; });
+            runInUnityThread([this]() { status = LANG::pulsoid_no_token(); });
             return;
         }
-        runInUnityThread([this]() { status = LANG->hyperate_con_start; });
+        runInUnityThread([this]() { status = LANG::hyperate_con_start(); });
         websocket.setUrl(
             "ws://dev.pulsoid.net/api/v1/data/real_time?response_mode=text_plain_only_heart_rate&access_token=" +
             getModConfig().PulsoidToken.GetValue());
@@ -72,9 +72,9 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
 
         runInUnityThread([this, reason = ptr->errorInfo.reason, retry = ptr->errorInfo.retries]() {
             std::stringstream ss;
-            ss << LANG->hyperate_network_error; // << reason; the token is inside the reason. so hide it
+            ss << LANG::hyperate_network_error(); // << reason; the token is inside the reason. so hide it
             if (retry > 0) {
-                ss << "\n" << LANG->hyperate_retry << "(" << retry << ")";
+                ss << "\n" << LANG::hyperate_retry() << "(" << retry << ")";
             }
             status = ss.str();
         });
@@ -83,7 +83,7 @@ void HeartBeatPulsoidDataSource::onWebSocketMessage(const ix::WebSocketMessagePt
     }
 
     if (ptr->type == ix::WebSocketMessageType::Open) {
-        runInUnityThread([this]() { status = LANG->hyperate_connected; });
+        runInUnityThread([this]() { status = LANG::hyperate_connected(); });
     }
     if (ptr->type != ix::WebSocketMessageType::Message)
         return;

@@ -30,7 +30,7 @@ V(pulsoid_no_token, "无可用token")
 
 V(unsupported_feature_udpatre_mod, "UI不支持,可能需要升级MOD")
 
-V(heart_osc_port, "OSC端口号: %d")
+V(heart_osc_port, "OSC端口号 {}")
 
 V(scan_start, "开始扫描")
 V(scan_stop, "停止扫描")
