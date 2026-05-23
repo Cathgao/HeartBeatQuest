@@ -53,7 +53,6 @@ void HeartBeat::MainMenuPreviewer::Reload() {
     HeartBeat::assetBundleMgr.Instantiate(SelectedUI, canvas->get_transform(), result);
     MainMenuPreviewObjectComp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
     MainMenuPreviewObjectComp->loadedComponents = result;
-    MainMenuPreviewObjectComp->isQountersMode = false;
 
     MainMenuPreviewObject = obj;
 }

@@ -72,17 +72,6 @@ void HeartBeatObj::OnDestroy() {
 #endif
 }
 void HeartBeatObj::Update() {
-#if WITH_QOUNTERS
-    if (isQountersMode) {
-        DataHub::getInstance()->Update();
-        int data;
-        if (DataHub::getInstance()->GetData(data))
-            HeartBeat::Qounters::DisplayData(data);
-        // there is no asset bundle UI for qounters, just return.
-        return;
-    }
-#endif
-
     if (this->gameObject->activeInHierarchy == false)
         return;
 

@@ -25,6 +25,10 @@
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "beatsaber-hook/shared/utils/hooking.hpp"
 
+#ifdef WITH_QOUNTERS
+#include "qppopt/shared/api.hpp"
+#endif
+
 // clang-format off
 static modloader::ModInfo modInfo = {MOD_ID, VERSION, 0}; // Stores the ID and version of our mod, and is sent to the modloader upon startup
 // clang-format on
@@ -68,13 +72,9 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
     }
 
 #ifdef WITH_QOUNTERS
-    if (HeartBeat::Qounters::Enabled() && !getModConfig().IgnoreQounters.GetValue()) {
+    if (HeartBeat::Qounters::Enabled() && ::Qounters::API::IsEnabled()) {
         getLogger().info("Qounters enabled, will not load mod UI.Loading qounters feeder object");
-        HeartBeat::AssetBundleInstinateInformation result; // there is no asset bundle with qounters
-        result.gameObject = UnityEngine::GameObject::New_ctor();
-        auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
-        comp->loadedComponents = result;
-        comp->isQountersMode = true;
+        HeartBeat::Qounters::CreateDriverObject();
         return;
     }
 #endif
@@ -115,7 +115,6 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
     }
     auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
     comp->loadedComponents = result;
-    comp->isQountersMode = false;
     getLogger().info("The UI has been created");
 }
 

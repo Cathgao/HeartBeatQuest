@@ -8,6 +8,9 @@ void Init();
 void DisplayData(int heartrate);
 void informIsReplayUpdated();
 bool Enabled();
+
+void CreateDriverObject();
+
 } // namespace Qounters
 } // namespace HeartBeat
 

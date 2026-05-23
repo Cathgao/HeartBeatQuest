@@ -11,10 +11,47 @@
 #include "bsml/shared/BSML/Components/Settings/ColorSetting.hpp"
 #include "main.hpp"
 #include "rapidjson-macros/shared/macros.hpp"
+#include "UIManager.hpp"
+#include "DataHub.hpp"
 #include <dlfcn.h>
 #include "metacore/shared/events.hpp"
 #include "qppopt/shared/api.hpp"
 #include "qppopt/shared/events.hpp"
+
+DECLARE_CLASS_CODEGEN(HeartBeat, HeartBeatQountersDriver, UnityEngine::MonoBehaviour) {
+    DECLARE_INSTANCE_METHOD(void, Start);
+    DECLARE_INSTANCE_METHOD(void, OnDestroy);
+    DECLARE_INSTANCE_METHOD(void, Update);
+
+  private:
+    bool isAddedToUIManager = false;
+};
+DEFINE_TYPE(HeartBeat, HeartBeatQountersDriver);
+
+void HeartBeat::Qounters::CreateDriverObject() {
+    UnityEngine::GameObject::New_ctor()->AddComponent<HeartBeat::HeartBeatQountersDriver *>();
+}
+
+void HeartBeat::HeartBeatQountersDriver::Start() {
+    if (isAddedToUIManager)
+        return;
+    isAddedToUIManager = true;
+    UIManager::getInstance()->addReader();
+}
+void HeartBeat::HeartBeatQountersDriver::Update() {
+    DataHub::getInstance()->Update();
+    int data;
+    if (DataHub::getInstance()->GetData(data))
+        HeartBeat::Qounters::DisplayData(data);
+    // there is no asset bundle UI for qounters, just return.
+}
+
+void HeartBeat::HeartBeatQountersDriver::OnDestroy() {
+    if (isAddedToUIManager) {
+        isAddedToUIManager = false;
+        UIManager::getInstance()->decReader();
+    }
+}
 
 namespace HeartBeat {
 namespace Qounters {

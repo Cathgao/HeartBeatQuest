@@ -55,7 +55,6 @@ DECLARE_CLASS_CODEGEN(HeartBeat, HeartBeatObj, UnityEngine::MonoBehaviour){
     DECLARE_INSTANCE_METHOD(void, Update);
 public:
     AssetBundleInstinateInformation loadedComponents;
-    bool isQountersMode;
 
     bool isAddedToUIManager = false;
     
