@@ -49,6 +49,8 @@ DECLARE_CLASS_CODEGEN(HeartBeat, HeartBeatObj, UnityEngine::MonoBehaviour,
 #else
 DECLARE_CLASS_CODEGEN(HeartBeat, HeartBeatObj, UnityEngine::MonoBehaviour){
 #endif
+    DECLARE_DEFAULT_CTOR();
+    DECLARE_SIMPLE_DTOR();
     // DECLARE_INSTANCE_METHOD creates methods
     DECLARE_INSTANCE_METHOD(void, Start);
     DECLARE_INSTANCE_METHOD(void, OnDestroy);

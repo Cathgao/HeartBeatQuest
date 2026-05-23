@@ -32,6 +32,7 @@ DECLARE_CLASS_CODEGEN(
 ) {
 #endif
     DECLARE_DEFAULT_CTOR();
+    DECLARE_SIMPLE_DTOR();
 public:
     bool dirty = true;
     bool selected = false;

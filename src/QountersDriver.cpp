@@ -27,6 +27,8 @@
 #include "HeartBeat.hpp"
 
 DECLARE_CLASS_CODEGEN(HeartBeat, HeartBeatQountersDriver, UnityEngine::MonoBehaviour) {
+    DECLARE_DEFAULT_CTOR();
+
     DECLARE_INSTANCE_METHOD(void, Start);
     DECLARE_INSTANCE_METHOD(void, OnDestroy);
     DECLARE_INSTANCE_METHOD(void, Update);
