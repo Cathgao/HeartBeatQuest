@@ -21,14 +21,27 @@ void HeartBeat::MainSettings::CreateElements() {
                            UnityEngine::Vector2{50, 4});
     BSML::Lite::CreateText(container->get_transform(), LANG->for_game, 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 8});
+    std::string build_feature = "";
+
 #ifdef WITH_REPLAY
-    BSML::Lite::CreateText(container->get_transform(), "build-feature: replay", 4, UnityEngine::Vector2{},
-                           UnityEngine::Vector2{50, 4});
+    build_feature = build_feature + "replay ";
+    // BSML::Lite::CreateText(container->get_transform(), "build-feature: replay", 4, UnityEngine::Vector2{},
+    //                        UnityEngine::Vector2{50, 4});
 #endif
 #ifdef WITH_QOUNTERS
-    BSML::Lite::CreateText(container->get_transform(), "build-feature: qounters++", 4, UnityEngine::Vector2{},
-                           UnityEngine::Vector2{50, 4});
+    build_feature = build_feature + "qounters++  ";
+    // BSML::Lite::CreateText(container->get_transform(), "build-feature: qounters++", 4, UnityEngine::Vector2{},
+    //                        UnityEngine::Vector2{50, 4});
+    if (Qounters::Enabled()) {
+        BSML::Lite::CreateText(container->get_transform(), "Qounters++ API Initialized", 4, UnityEngine::Vector2{},
+                               UnityEngine::Vector2{50, 4});
+    }
 #endif
+    if (build_feature.size()) {
+        BSML::Lite::CreateText(container->get_transform(), "build with:" + build_feature, 4, UnityEngine::Vector2{},
+                               UnityEngine::Vector2{50, 4});
+    }
+
     BSML::Lite::CreateToggle(container->get_transform(), LANG->enabled, getModConfig().Enabled.GetValue(),
                              [](bool v) { getModConfig().Enabled.SetValue(v); });
 
@@ -93,17 +106,6 @@ void HeartBeat::MainSettings::CreateElements() {
     MaxHeartIncr = BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG->max_heart, 0, 1,
                                                       getModConfig().MaxHeart.GetValue(),
                                                       [](float v) { getModConfig().MaxHeart.SetValue(v); });
-
-#ifdef WITH_QOUNTERS
-    if (HeartBeat::Qounters::Enabled()) {
-        BSML::Lite::CreateText(container->get_transform(), LANG->ui_not_avaliable_in_qounter, 4, UnityEngine::Vector2{},
-                               UnityEngine::Vector2{50, 10});
-        BSML::Lite::AddHoverHint(BSML::Lite::CreateToggle(container->get_transform(), LANG->ignore_qounters,
-                                                          getModConfig().IgnoreQounters.GetValue(),
-                                                          [](bool v) { getModConfig().IgnoreQounters.SetValue(v); }),
-                                 LANG->ignore_qounters_hint);
-    }
-#endif
 
     std::vector<std::string_view> ui_s;
     for (auto &pair : HeartBeat::assetBundleMgr.loadedBundles) {

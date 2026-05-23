@@ -1,5 +1,6 @@
 #ifdef WITH_QOUNTERS
 
+#include "bsml/shared/BSML-Lite/Creation/Text.hpp"
 #include "UnityEngine/UI/Graphic.hpp"
 #include "BeatLeaderRecorder.hpp"
 #include "config-utils/shared/config-utils.hpp"
@@ -75,10 +76,11 @@ DECLARE_JSON_STRUCT(HeartRateTextOption) {
 };
 
 UnityEngine::UI::Graphic *hrBundledUIPremade(UnityEngine::GameObject *parent, UnparsedJSON) {
-    auto ret = UnityEngine::GameObject::New_ctor()->AddComponent<UnityEngine::UI::Graphic *>();
+    auto ret = BSML::Lite::CreateText(parent->get_transform(), "", {0, 0}, {50, 30});
     ret->get_transform()->set_parent(parent->get_transform());
 
     // create the UI selected by player from HeartBeatQuest menu
+    HeartBeat::assetBundleMgr.Init();
     std::string SelectedUI = getModConfig().SelectedUI.GetValue();
     if (!HeartBeat::assetBundleMgr.loadedBundles.contains(SelectedUI))
         SelectedUI = "Default";
@@ -363,8 +365,7 @@ void Init() {
     if (::Qounters::API::IsInstalled()) {
         getLogger().info("Qounters detected, will load.");
 
-        ::Qounters::Sources::premades["HeartBeatQuest"] = {
-            {"HeartRateUI", ::Qounters::Types::PremadeFn(HeartBeat::Qounters::hrBundledUIPremade)}};
+        ::Qounters::API::RegisterPremade("", "HeartRateUI", HeartBeat::Qounters::hrBundledUIPremade);
 
         ::Qounters::Sources::RegisterText("HeartRate", ::Qounters::Types::SourceFn<std::string>(hrTextSource),
                                           hrTextSourceUI);
