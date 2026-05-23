@@ -1,6 +1,11 @@
+#ifdef WITH_QOUNTERS
+
+#include "UnityEngine/UI/Graphic.hpp"
 #include "BeatLeaderRecorder.hpp"
 #include "config-utils/shared/config-utils.hpp"
-#ifdef WITH_QOUNTERS
+#include "qppopt/shared/sources.hpp"
+#include "qppopt/shared/types.hpp"
+#include <cstddef>
 
 #include "QountersDriver.hpp"
 #include "ModConfig.hpp"
@@ -17,6 +22,8 @@
 #include "metacore/shared/events.hpp"
 #include "qppopt/shared/api.hpp"
 #include "qppopt/shared/events.hpp"
+#include <vector>
+#include "HeartBeat.hpp"
 
 DECLARE_CLASS_CODEGEN(HeartBeat, HeartBeatQountersDriver, UnityEngine::MonoBehaviour) {
     DECLARE_INSTANCE_METHOD(void, Start);
@@ -66,6 +73,33 @@ DECLARE_JSON_STRUCT(HeartRateTextOption) {
     VALUE_DEFAULT(bool, heartBeforeText, false);
     VALUE_DEFAULT(bool, heartAfterText, false);
 };
+
+UnityEngine::UI::Graphic *hrBundledUIPremade(UnityEngine::GameObject *parent, UnparsedJSON) {
+    auto ret = UnityEngine::GameObject::New_ctor()->AddComponent<UnityEngine::UI::Graphic *>();
+    ret->get_transform()->set_parent(parent->get_transform());
+
+    // create the UI selected by player from HeartBeatQuest menu
+    std::string SelectedUI = getModConfig().SelectedUI.GetValue();
+    if (!HeartBeat::assetBundleMgr.loadedBundles.contains(SelectedUI))
+        SelectedUI = "Default";
+    if (!HeartBeat::assetBundleMgr.loadedBundles.contains(SelectedUI)) {
+        getLogger().error("Can't find ui asset bundle '{}' to load!", SelectedUI);
+        return ret;
+    }
+
+    HeartBeat::AssetBundleInstinateInformation result;
+    if (!HeartBeat::assetBundleMgr.Instantiate(SelectedUI, parent->get_transform(), result)) {
+        getLogger().error("The UI Can't loaded.");
+        return ret;
+    }
+    auto comp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
+    comp->loadedComponents = result;
+
+    // the created UI root is result.gameObject
+    result.gameObject->get_transform()->set_parent(ret->get_transform());
+    getLogger().info("loaded bundle for qounters premade");
+    return ret;
+}
 
 std::string hrTextSource(UnparsedJSON unparsed) {
     static HeartRateTextOption opts;
@@ -328,6 +362,9 @@ void Init() {
 
     if (::Qounters::API::IsInstalled()) {
         getLogger().info("Qounters detected, will load.");
+
+        ::Qounters::Sources::premades["HeartBeatQuest"] = {
+            {"HeartRateUI", ::Qounters::Types::PremadeFn(HeartBeat::Qounters::hrBundledUIPremade)}};
 
         ::Qounters::Sources::RegisterText("HeartRate", ::Qounters::Types::SourceFn<std::string>(hrTextSource),
                                           hrTextSourceUI);
