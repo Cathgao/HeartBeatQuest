@@ -6,8 +6,7 @@ The Qounters++ feature is enabled in the following versions:
 
 | Game Version | HeartBeatQuest Version | Qounters++ Version | Notes |
 |--------------|------------------------|--------------------|-------|
-| `1.40.8`     | `>=1.4.2`               | `1.1.4`               | |
-| `<1.40.8`    | N/A                   | N/A                | Qounters++ with the API isn't available on older game versions |
+| `>=1.40.8`     | `>=0.4.2`               | `1.1.4`               | |
 
 # Compatibility
 
@@ -18,6 +17,10 @@ When Qounters++ is detected, the built-in UI (which is what you see without Qoun
 # Qounters++ Support
 
 Add the heart rate manually in the Qounters++ configuration. The following sources are supported:
+
+## Premade
+
+The mod's heart rate UI is added to the qounters as premade. It follows the setthings that you selected in the HeartBeatQuest menu.
 
 ## Text Source
 

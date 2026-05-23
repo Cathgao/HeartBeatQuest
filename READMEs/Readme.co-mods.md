@@ -4,4 +4,4 @@ This mod works with the following other mods:
 
 - [BeatLeader](https://github.com/BeatLeader/beatleader-qmod) — records your heart rate into the replay file.
 - [Replay](https://github.com/Metalit/Replay) — displays the recorded heart rate when watching a replay.
-- [Qounters](https://github.com/Metalit/Qounters/tree/main) - see [Qounters usage document](READMEs/Qounters.md)
+- [Qounters](https://github.com/Metalit/Qounters/tree/main) - see [Qounters usage document](/READMEs/Qounters.md)
