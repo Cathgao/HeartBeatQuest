@@ -21,9 +21,9 @@ void HeartBeat::MainSettings::CreateElements() {
     // Create a container that has a scroll bar
     auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
-    BSML::Lite::CreateText(container->get_transform(), SSL10n::FormatKey(LANG::mod_version(), VERSION), 4,
+    BSML::Lite::CreateText(container->get_transform(), SSL10n::FormatKey("HEART_BEAT_QUEST_mod_version", VERSION), 4,
                            UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
-    BSML::Lite::CreateText(container->get_transform(), SSL10n::FormatKey(LANG::for_game(), GAME_VERSION), 4,
+    BSML::Lite::CreateText(container->get_transform(), SSL10n::FormatKey("HEART_BEAT_QUEST_for_game", GAME_VERSION), 4,
                            UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
     std::string build_feature = "";
 
@@ -76,23 +76,26 @@ void HeartBeat::MainSettings::CreateElements() {
     }
     if (current_data_type < 0)
         current_data_type = HeartBeat::DS_BLE, getModConfig().DataSourceType.SetValue(current_data_type);
-    BSML::Lite::CreateDropdown(container->get_transform(), LANG::data_source(), data_sources[current_data_type],
-                               data_sources_in_ui,
-                               [](::StringW value) {
-                                   for (int i = 0; i < data_sources.size(); i++) {
-                                       if (data_sources[i] == value) {
-                                           getLogger().debug("{} selected", i);
-                                           getModConfig().DataSourceType.SetValue(i);
-                                           break;
+    auto dropdown =
+        BSML::Lite::CreateDropdown(container->get_transform(), LANG::data_source(), data_sources[current_data_type],
+                                   data_sources_in_ui, [](::StringW value) {
+                                       for (int i = 0; i < data_sources.size(); i++) {
+                                           if (data_sources[i] == value) {
+                                               getLogger().debug("{} selected", i);
+                                               getModConfig().DataSourceType.SetValue(i);
+                                               break;
+                                           }
                                        }
-                                   }
-                                   getLogger().debug("{} selected.", value);
-                               })
-        ->formatter = [](::System::Object *obj) -> StringW {
+                                       getLogger().debug("{} selected.", value);
+                                   });
+    dropdown->formatter = [](::System::Object *obj) -> StringW {
         if (!obj)
             return "null";
         return SSL10n::Get(obj->ToString());
     };
+    /* apply the dropdown formatter*/
+    dropdown->UpdateChoices();
+    dropdown->UpdateState();
 
     if (HeartBeat::Recorder::BeatLeaderDetected()) {
         BSML::Lite::CreateToggle(container->get_transform(), LANG::enable_record(),
