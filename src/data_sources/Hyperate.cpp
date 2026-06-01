@@ -113,7 +113,6 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
         dom.SetObject();
         dom.AddMember("_id", CheckHypeRateWebSocketIdentity(), dom.GetAllocator());
         dom.AddMember("id", id, dom.GetAllocator());
-        dom.AddMember("lang", rapidjson::StringRef(LANG::lang_name()), dom.GetAllocator());
         dom.AddMember("ver", VERSION, dom.GetAllocator());
         dom.AddMember("forgame", GAME_VERSION, dom.GetAllocator());
 

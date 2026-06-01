@@ -1,6 +1,5 @@
 ﻿Polyglot,desc,english
 HEART_BEAT_QUEST_enabled,,enabled(need restart)
-HEART_BEAT_QUEST_lang_name,,english
 HEART_BEAT_QUEST_heart_config,,HEART Config
 HEART_BEAT_QUEST_heart_devices,,HEART Devices
 HEART_BEAT_QUEST_heart_senders,,HEART Senders
@@ -36,7 +35,6 @@ HEART_BEAT_QUEST_pairing,,Pairing.. click to stop.
 HEART_BEAT_QUEST_not_pairing,,Not pairing.. click to start.
 HEART_BEAT_QUEST_hiding_mac_addr,,"hiding mac address, click to show."
 HEART_BEAT_QUEST_showing_mac_addr,,"showing mac address, click to hide"
-HEART_BEAT_QUEST_unknown_left_quote,,Unknown(
 HEART_BEAT_QUEST_server_skip,,skip 
 HEART_BEAT_QUEST_heart_rate_lan_protocol_ver,,Heart Rate Lan Protocol Ver 
 HEART_BEAT_QUEST_mod_version,,Mod version {}

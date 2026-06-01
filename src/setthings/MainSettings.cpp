@@ -1,5 +1,7 @@
 #include "BeatLeaderRecorder.hpp"
 #include "ModConfig.hpp"
+#include "System/Object.hpp"
+#include "beatsaber-hook/shared/utils/typedefs-string.hpp"
 #include "data_sources/DataSource.hpp"
 #include "i18n.hpp"
 #include "main.hpp"
@@ -57,13 +59,15 @@ void HeartBeat::MainSettings::CreateElements() {
     // A data source toggle
     static std::vector<std::string_view> data_sources;
     // the value of data_sources MUST consist with the DS_*** enum
-    data_sources = {LANG::data_source_random(), LANG::data_source_lan(),      LANG::data_source_bluetooth(),
-                    LANG::data_source_osc(),    LANG::data_source_hyperate(), LANG::data_source_pulsoid()};
+    data_sources = {"HEART_BEAT_QUEST_data_source_random",    "HEART_BEAT_QUEST_data_source_lan",
+                    "HEART_BEAT_QUEST_data_source_bluetooth", "HEART_BEAT_QUEST_data_source_osc",
+                    "HEART_BEAT_QUEST_data_source_hyperate",  "HEART_BEAT_QUEST_data_source_pulsoid"};
 
     static std::vector<std::string_view> data_sources_in_ui;
     data_sources_in_ui = {
-        LANG::data_source_bluetooth(), LANG::data_source_hyperate(), LANG::data_source_osc(),
-        LANG::data_source_pulsoid(),   LANG::data_source_random(),
+        "HEART_BEAT_QUEST_data_source_bluetooth", "HEART_BEAT_QUEST_data_source_hyperate",
+        "HEART_BEAT_QUEST_data_source_osc",       "HEART_BEAT_QUEST_data_source_pulsoid",
+        "HEART_BEAT_QUEST_data_source_random",
     };
 
     auto current_data_type = getModConfig().DataSourceType.GetValue();
@@ -73,7 +77,8 @@ void HeartBeat::MainSettings::CreateElements() {
     if (current_data_type < 0)
         current_data_type = HeartBeat::DS_BLE, getModConfig().DataSourceType.SetValue(current_data_type);
     BSML::Lite::CreateDropdown(container->get_transform(), LANG::data_source(), data_sources[current_data_type],
-                               data_sources_in_ui, [](::StringW value) {
+                               data_sources_in_ui,
+                               [](::StringW value) {
                                    for (int i = 0; i < data_sources.size(); i++) {
                                        if (data_sources[i] == value) {
                                            getLogger().debug("{} selected", i);
@@ -82,7 +87,12 @@ void HeartBeat::MainSettings::CreateElements() {
                                        }
                                    }
                                    getLogger().debug("{} selected.", value);
-                               });
+                               })
+        ->formatter = [](::System::Object *obj) -> StringW {
+        if (!obj)
+            return "null";
+        return SSL10n::Get(obj->ToString());
+    };
 
     if (HeartBeat::Recorder::BeatLeaderDetected()) {
         BSML::Lite::CreateToggle(container->get_transform(), LANG::enable_record(),

@@ -3,8 +3,6 @@
 #endif
 V(enabled)
 
-V(lang_name)
-
 V(heart_config)
 V(heart_devices)
 V(heart_senders)
@@ -51,7 +49,6 @@ V(pairing)
 V(not_pairing)
 V(hiding_mac_addr)
 V(showing_mac_addr)
-V(unknown_left_quote)
 V(server_skip)
 V(heart_rate_lan_protocol_ver)
 V(mod_version)
