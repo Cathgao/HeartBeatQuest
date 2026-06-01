@@ -1,6 +1,7 @@
 #include "BeatLeaderRecorder.hpp"
 #include "ModConfig.hpp"
 #include "data_sources/DataSource.hpp"
+#include "i18n.hpp"
 #include "main.hpp"
 #include "settings/MainSettings.hpp"
 #include "settings/PreviewObj.hpp"
@@ -9,6 +10,7 @@
 #include "SettingsSnapshot.hpp"
 #include <atomic>
 #include "QountersDriver.hpp"
+#include "sslocalization/shared/SSL10n.hpp"
 
 std::atomic_int HeartBeat::Settings::active_setthings_ui_count = 0;
 
@@ -17,10 +19,10 @@ void HeartBeat::MainSettings::CreateElements() {
     // Create a container that has a scroll bar
     auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
-    BSML::Lite::CreateText(container->get_transform(), LANG::mod_version(), 4, UnityEngine::Vector2{},
-                           UnityEngine::Vector2{50, 4});
-    BSML::Lite::CreateText(container->get_transform(), LANG::for_game(), 4, UnityEngine::Vector2{},
-                           UnityEngine::Vector2{50, 8});
+    BSML::Lite::CreateText(container->get_transform(), SSL10n::FormatKey(LANG::mod_version(), VERSION), 4,
+                           UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
+    BSML::Lite::CreateText(container->get_transform(), SSL10n::FormatKey(LANG::for_game(), GAME_VERSION), 4,
+                           UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8});
     std::string build_feature = "";
 
 #ifdef WITH_REPLAY

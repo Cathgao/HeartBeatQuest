@@ -39,8 +39,8 @@ HEART_BEAT_QUEST_showing_mac_addr,,"showing mac address, click to hide"
 HEART_BEAT_QUEST_unknown_left_quote,,Unknown(
 HEART_BEAT_QUEST_server_skip,,skip 
 HEART_BEAT_QUEST_heart_rate_lan_protocol_ver,,Heart Rate Lan Protocol Ver 
-HEART_BEAT_QUEST_mod_version,,"Mod version "" VERSIO"
-HEART_BEAT_QUEST_for_game,,"For Game "" GAME_VERSIO"
+HEART_BEAT_QUEST_mod_version,,Mod version {}
+HEART_BEAT_QUEST_for_game,,For Game {}
 HEART_BEAT_QUEST_no_beatleader,,"Beatleader not detected or supported, record is disabled"
 HEART_BEAT_QUEST_waiting,,Waiting...
 HEART_BEAT_QUEST_config_adjust_speed,,Config Adjust Speed
