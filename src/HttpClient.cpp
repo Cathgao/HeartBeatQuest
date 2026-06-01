@@ -6,6 +6,7 @@
 #include "ixwebsocket/IXHttp.h"
 #include "ixwebsocket/IXHttpClient.h"
 #include "main.hpp"
+#include "sslocalization/shared/SSL10n.hpp"
 #include <sys/system_properties.h>
 
 const char *getQuestDeviceName() {
@@ -65,7 +66,7 @@ std::string HeartBeat::getModUserAgent(bool with_identity) {
 
     if (with_identity)
         ss << " id/" << identity;
-    ss << " lang/" << (LANG ? LANG->lang_name : "?");
+    ss << " ssl10n/" << SSL10n::GetCurrentLanguage();
     return ss.str();
 }
 

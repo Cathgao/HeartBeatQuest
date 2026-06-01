@@ -84,9 +84,9 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
 
         if (closed || getModConfig().HypeRateId.GetValue() == "") {
             if (closed) {
-                status = LANG->hyperate_refused;
+                status = LANG::hyperate_refused();
             } else {
-                status = LANG->hyperate_no_id;
+                status = LANG::hyperate_no_id();
             }
             if (callback.has_value())
                 runInUnityThread(std::move(callback.value()));
@@ -94,7 +94,7 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
         }
 
         websocket.start();
-        status = LANG->hyperate_con_start;
+        status = LANG::hyperate_con_start();
         if (callback.has_value()) {
             runInUnityThread(std::move(callback.value()));
         }
@@ -113,7 +113,6 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
         dom.SetObject();
         dom.AddMember("_id", CheckHypeRateWebSocketIdentity(), dom.GetAllocator());
         dom.AddMember("id", id, dom.GetAllocator());
-        dom.AddMember("lang", rapidjson::StringRef(LANG->lang_name), dom.GetAllocator());
         dom.AddMember("ver", VERSION, dom.GetAllocator());
         dom.AddMember("forgame", GAME_VERSION, dom.GetAllocator());
 
@@ -125,7 +124,7 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
         // getLogger().info("Send package to server: {}", toSend);
 
         websocket.send(toSend);
-        runInUnityThread([this]() { status = LANG->hyperate_connected; });
+        runInUnityThread([this]() { status = LANG::hyperate_connected(); });
         return;
     }
 
@@ -139,9 +138,9 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
 
         runInUnityThread([this, reason = ptr->errorInfo.reason, retry = ptr->errorInfo.retries]() {
             std::stringstream ss;
-            ss << LANG->hyperate_network_error << reason;
+            ss << LANG::hyperate_network_error() << reason;
             if (retry > 0) {
-                ss << "\n" << LANG->hyperate_retry << "(" << retry << ")";
+                ss << "\n" << LANG::hyperate_retry() << "(" << retry << ")";
             }
             status = ss.str();
         });
@@ -193,7 +192,7 @@ void HeartBeatHypeRateDataSource::handleServerPayload(const std::string &type, r
                 msg = msg.substr(0, 255) + ".....";
             }
             runInUnityThread([this, msg = std::move(msg)]() {
-                status = LANG->hyperate_you_have_message;
+                status = LANG::hyperate_you_have_message();
                 serverMessage = msg;
             });
         } else {

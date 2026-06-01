@@ -16,7 +16,7 @@ class PulsoidSettings : public Settings {
     HMUI::CurvedTextMeshPro *statusText = nullptr;
 
   public:
-    PulsoidSettings() : Settings("Pulsoid Connect", LANG->pulsoid, "<3") {}
+    PulsoidSettings() : Settings("Pulsoid Connect", LANG::pulsoid(), "<3") {}
     void CreateElements() override;
     // void Update() override;
     void Close() override;
