@@ -53,10 +53,6 @@ void HeartBeat::MainSettings::CreateElements() {
     if (SettingsSnapshot::getInstance()->ModEnabled == false)
         return;
 
-    std::vector<std::string_view> languages = {"auto", "english", "chinese"};
-    BSML::Lite::CreateDropdown(container->get_transform(), "Language(need restart)", getModConfig().ModLang.GetValue(),
-                               languages, [](StringW v) { getModConfig().ModLang.SetValue(v); });
-
     // A data source toggle
     static std::vector<std::string_view> data_sources;
     // the value of data_sources MUST consist with the DS_*** enum
