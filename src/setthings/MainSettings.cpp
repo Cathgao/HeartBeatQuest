@@ -37,13 +37,14 @@ void HeartBeat::MainSettings::CreateElements() {
     // BSML::Lite::CreateText(container->get_transform(), "build-feature: qounters++", 4, UnityEngine::Vector2{},
     //                        UnityEngine::Vector2{50, 4});
     if (Qounters::Enabled()) {
-        BSML::Lite::CreateText(container->get_transform(), "Qounters++ API Initialized", 4, UnityEngine::Vector2{},
-                               UnityEngine::Vector2{50, 4});
+        BSML::Lite::CreateText(container->get_transform(), SSL10n::Get("HEART_BEAT_QUEST_QOUNTERSPP_INIT"), 4,
+                               UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     }
 #endif
     if (build_feature.size()) {
-        BSML::Lite::CreateText(container->get_transform(), "build with:" + build_feature, 4, UnityEngine::Vector2{},
-                               UnityEngine::Vector2{50, 4});
+        BSML::Lite::CreateText(container->get_transform(),
+                               SSL10n::Get("HEART_BEAT_QUEST_setthings_build_with") + build_feature, 4,
+                               UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     }
 
     BSML::Lite::CreateToggle(container->get_transform(), LANG::enabled(), getModConfig().Enabled.GetValue(),
