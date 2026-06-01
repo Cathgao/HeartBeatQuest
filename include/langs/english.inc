@@ -56,16 +56,11 @@ V(for_game)
 V(no_beatleader)
 V(waiting)
 
-V(config_adjust_speed)
-
 V(text_color)
 V(flash_text_color)
 V(replay_flash_text_color)
 V(flash_duration_when_text_come)
 V(flash_test)
-
-V(line_space)
-V(reset_default_line_space)
 
 V(reset_to_default)
 

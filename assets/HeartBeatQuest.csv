@@ -41,14 +41,11 @@ HEART_BEAT_QUEST_mod_version,,Mod version {}
 HEART_BEAT_QUEST_for_game,,For Game {}
 HEART_BEAT_QUEST_no_beatleader,,"Beatleader not detected or supported, record is disabled"
 HEART_BEAT_QUEST_waiting,,Waiting...
-HEART_BEAT_QUEST_config_adjust_speed,,Config Adjust Speed
 HEART_BEAT_QUEST_text_color,,Text Color
 HEART_BEAT_QUEST_flash_text_color,,Flash Text Color
 HEART_BEAT_QUEST_replay_flash_text_color,,Replay Flash Text Color
 HEART_BEAT_QUEST_flash_duration_when_text_come,,Flash duration when data come
 HEART_BEAT_QUEST_flash_test,,Flash Test
-HEART_BEAT_QUEST_line_space,,Line Space
-HEART_BEAT_QUEST_reset_default_line_space,,Reset Default Line Space
 HEART_BEAT_QUEST_reset_to_default,,Reset to default
 HEART_BEAT_QUEST_data_source,,data source(need restart)
 HEART_BEAT_QUEST_data_source_random,,random
