@@ -4,11 +4,11 @@
 
 namespace LANG {
 
-#define V(key, v) inline const char *KEY_##key = "HEART_BEAT_QUEST_" #key;
+#define V(key) inline const char *KEY_##key = "HEART_BEAT_QUEST_" #key;
 #include "langs/english.inc"
 #undef V
 
-#define V(key, v)                                                                                                      \
+#define V(key)                                                                                                         \
     inline std::string key() { return SSL10n::Get("HEART_BEAT_QUEST_" #key); };
 #include "langs/english.inc"
 #undef V

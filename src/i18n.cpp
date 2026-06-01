@@ -1,16 +1,9 @@
 #include "i18n.hpp"
 #include "sslocalization/shared/SSL10n.hpp"
-
+#include "asset.hpp"
 namespace I18N {
 void Setup() {
-    SSL10n::Database::Helper()
-#define V(key, value) .v("HEART_BEAT_QUEST_" #key, value)
-#include "langs/english.inc"
-        ;
-
-    SSL10n::Database::Helper(SSL10n::L_Simplified_Chinese)
-#define V(key, value) .v("HEART_BEAT_QUEST_" #key, value)
-#include "langs/chinese.inc"
-        ;
+    SSL10n::Database::PolyglotFormat::AddCSVContent((char *)AssetGenerated::HeartBeatQuest_csv,
+                                                    sizeof(AssetGenerated::HeartBeatQuest_csv));
 }
 } // namespace I18N
