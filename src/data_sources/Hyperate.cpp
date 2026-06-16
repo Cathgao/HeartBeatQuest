@@ -18,7 +18,7 @@
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/document.h"
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/stringbuffer.h"
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/writer.h"
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 #include "ixwebsocket/IXWebSocket.h"
 #include "ixwebsocket/IXWebSocketHttpHeaders.h"
 #include "ixwebsocket/IXWebSocketMessageType.h"
@@ -84,9 +84,9 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
 
         if (closed || getModConfig().HypeRateId.GetValue() == "") {
             if (closed) {
-                status = LANG::hyperate_refused();
+                status = SSL10nGen::STR::hyperate_refused();
             } else {
-                status = LANG::hyperate_no_id();
+                status = SSL10nGen::STR::hyperate_no_id();
             }
             if (callback.has_value())
                 runInUnityThread(std::move(callback.value()));
@@ -94,7 +94,7 @@ void HeartBeatHypeRateDataSource::RestartSocket(std::optional<std::function<void
         }
 
         websocket.start();
-        status = LANG::hyperate_con_start();
+        status = SSL10nGen::STR::hyperate_con_start();
         if (callback.has_value()) {
             runInUnityThread(std::move(callback.value()));
         }
@@ -124,7 +124,7 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
         // getLogger().info("Send package to server: {}", toSend);
 
         websocket.send(toSend);
-        runInUnityThread([this]() { status = LANG::hyperate_connected(); });
+        runInUnityThread([this]() { status = SSL10nGen::STR::hyperate_connected(); });
         return;
     }
 
@@ -138,9 +138,9 @@ void HeartBeatHypeRateDataSource::onWebSocketMessage(const ix::WebSocketMessageP
 
         runInUnityThread([this, reason = ptr->errorInfo.reason, retry = ptr->errorInfo.retries]() {
             std::stringstream ss;
-            ss << LANG::hyperate_network_error() << reason;
+            ss << SSL10nGen::STR::hyperate_network_error() << reason;
             if (retry > 0) {
-                ss << "\n" << LANG::hyperate_retry() << "(" << retry << ")";
+                ss << "\n" << SSL10nGen::STR::hyperate_retry() << "(" << retry << ")";
             }
             status = ss.str();
         });
@@ -192,7 +192,7 @@ void HeartBeatHypeRateDataSource::handleServerPayload(const std::string &type, r
                 msg = msg.substr(0, 255) + ".....";
             }
             runInUnityThread([this, msg = std::move(msg)]() {
-                status = LANG::hyperate_you_have_message();
+                status = SSL10nGen::STR::hyperate_you_have_message();
                 serverMessage = msg;
             });
         } else {

@@ -2,11 +2,10 @@
 #include "BackgroundThread.hpp"
 #include "ModConfig.hpp"
 #include "ModObject.hpp"
-#include "i18n.hpp"
 #include "ixwebsocket/IXHttp.h"
 #include "ixwebsocket/IXHttpClient.h"
 #include "main.hpp"
-#include "sslocalization/shared/SSL10n.hpp"
+#include "SSL10n.hpp"
 #include <sys/system_properties.h>
 
 const char *getQuestDeviceName() {

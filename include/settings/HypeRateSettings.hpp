@@ -1,13 +1,13 @@
 #pragma once
 #include "HMUI/CurvedTextMeshPro.hpp"
 #include "settings/Settings.hpp"
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 
 namespace HeartBeat {
 
 class HypeRateSettings : public Settings {
   public:
-    HypeRateSettings() : Settings("HypeRate Connect", LANG::hyperate(), "<3") {}
+    HypeRateSettings() : Settings("HypeRate Connect", SSL10nGen::STR::hyperate(), "<3") {}
     void CreateElements() override;
 
     std::string hyperate_id;

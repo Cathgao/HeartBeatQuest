@@ -3,7 +3,7 @@
 #include "System/Object.hpp"
 #include "beatsaber-hook/shared/utils/typedefs-string.hpp"
 #include "data_sources/DataSource.hpp"
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 #include "main.hpp"
 #include "settings/MainSettings.hpp"
 #include "settings/PreviewObj.hpp"
@@ -12,7 +12,7 @@
 #include "SettingsSnapshot.hpp"
 #include <atomic>
 #include "QountersDriver.hpp"
-#include "sslocalization/shared/SSL10n.hpp"
+#include "SSL10n.hpp"
 
 std::atomic_int HeartBeat::Settings::active_setthings_ui_count = 0;
 
@@ -47,7 +47,7 @@ void HeartBeat::MainSettings::CreateElements() {
                                UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     }
 
-    BSML::Lite::CreateToggle(container->get_transform(), LANG::enabled(), getModConfig().Enabled.GetValue(),
+    BSML::Lite::CreateToggle(container->get_transform(), SSL10nGen::STR::enabled(), getModConfig().Enabled.GetValue(),
                              [](bool v) { getModConfig().Enabled.SetValue(v); });
 
     if (SettingsSnapshot::getInstance()->ModEnabled == false)
@@ -74,8 +74,8 @@ void HeartBeat::MainSettings::CreateElements() {
     if (current_data_type < 0)
         current_data_type = HeartBeat::DS_BLE, getModConfig().DataSourceType.SetValue(current_data_type);
     auto dropdown =
-        BSML::Lite::CreateDropdown(container->get_transform(), LANG::data_source(), data_sources[current_data_type],
-                                   data_sources_in_ui, [](::StringW value) {
+        BSML::Lite::CreateDropdown(container->get_transform(), SSL10nGen::STR::data_source(),
+                                   data_sources[current_data_type], data_sources_in_ui, [](::StringW value) {
                                        for (int i = 0; i < data_sources.size(); i++) {
                                            if (data_sources[i] == value) {
                                                getLogger().debug("{} selected", i);
@@ -95,27 +95,27 @@ void HeartBeat::MainSettings::CreateElements() {
     dropdown->UpdateState();
 
     if (HeartBeat::Recorder::BeatLeaderDetected()) {
-        BSML::Lite::CreateToggle(container->get_transform(), LANG::enable_record(),
+        BSML::Lite::CreateToggle(container->get_transform(), SSL10nGen::STR::enable_record(),
                                  getModConfig().EnableRecord.GetValue(),
                                  [](bool v) { getModConfig().EnableRecord.SetValue(v); });
-        BSML::Lite::CreateToggle(container->get_transform(), LANG::record_dev_name(),
+        BSML::Lite::CreateToggle(container->get_transform(), SSL10nGen::STR::record_dev_name(),
                                  getModConfig().RecordDevName.GetValue(),
                                  [](bool v) { getModConfig().RecordDevName.SetValue(v); });
     } else {
-        BSML::Lite::CreateText(container->get_transform(), LANG::no_beatleader(), 4, UnityEngine::Vector2{},
+        BSML::Lite::CreateText(container->get_transform(), SSL10nGen::STR::no_beatleader(), 4, UnityEngine::Vector2{},
                                UnityEngine::Vector2{50, 8});
     }
 
     // the age is just used to provide a default value for maxheart
     static BSML::IncrementSetting *MaxHeartIncr;
-    BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG::age(), 0, 1, getModConfig().Age.GetValue(),
-                                       [](float v) {
+    BSML::Lite::CreateIncrementSetting(container->get_transform(), SSL10nGen::STR::age(), 0, 1,
+                                       getModConfig().Age.GetValue(), [](float v) {
                                            getModConfig().Age.SetValue(v);
                                            MaxHeartIncr->set_Value(220 - v);
                                            MaxHeartIncr->UpdateState();
                                            getModConfig().MaxHeart.SetValue(220 - v);
                                        });
-    MaxHeartIncr = BSML::Lite::CreateIncrementSetting(container->get_transform(), LANG::max_heart(), 0, 1,
+    MaxHeartIncr = BSML::Lite::CreateIncrementSetting(container->get_transform(), SSL10nGen::STR::max_heart(), 0, 1,
                                                       getModConfig().MaxHeart.GetValue(),
                                                       [](float v) { getModConfig().MaxHeart.SetValue(v); });
 
@@ -126,60 +126,62 @@ void HeartBeat::MainSettings::CreateElements() {
 
     static HMUI::CurvedTextMeshPro *feature_unsupport_hint_ui;
 
-    BSML::Lite::CreateDropdown(container->get_transform(), LANG::select_ui(), getModConfig().SelectedUI.GetValue(),
-                               ui_s, [](StringW v) {
-                                   if (getModConfig().SelectedUI.GetValue() != v) {
-                                       getModConfig().SelectedUI.SetValue(v);
+    BSML::Lite::CreateDropdown(
+        container->get_transform(), SSL10nGen::STR::select_ui(), getModConfig().SelectedUI.GetValue(), ui_s,
+        [](StringW v) {
+            if (getModConfig().SelectedUI.GetValue() != v) {
+                getModConfig().SelectedUI.SetValue(v);
 
-                                       MainMenuPreviewer::getInstance()->Reload();
+                MainMenuPreviewer::getInstance()->Reload();
 
-                                       bool supported = true;
-                                       bool need_advanced_ui = false;
-                                       {
-                                           HeartBeat::assetBundleMgr.Init();
-                                           auto it = HeartBeat::assetBundleMgr.loadedBundles.find(v);
-                                           if (it != HeartBeat::assetBundleMgr.loadedBundles.end()) {
-                                               auto &features = it->second.unsupported_features;
-                                               if (features.size() > 0)
-                                                   supported = false;
-                                               auto &infos = it->second.infos;
-                                               if (infos.contains("root")) {
-                                                   auto &root = infos["root"];
-                                                   if (root == "songProgressPanelGO" || root == "relativeScoreGo" ||
-                                                       root == "immediateRankGo") {
-                                                       need_advanced_ui = true;
-                                                   }
-                                               }
-                                           }
-                                       }
-                                       if (supported) {
-                                           if (need_advanced_ui) {
-                                               feature_unsupport_hint_ui->set_text(LANG::advance_ui_required());
-                                           } else {
-                                               feature_unsupport_hint_ui->set_text("");
-                                           }
-                                       } else {
-                                           feature_unsupport_hint_ui->set_text(LANG::unsupported_feature_udpatre_mod());
-                                       }
-                                   }
-                               });
+                bool supported = true;
+                bool need_advanced_ui = false;
+                {
+                    HeartBeat::assetBundleMgr.Init();
+                    auto it = HeartBeat::assetBundleMgr.loadedBundles.find(v);
+                    if (it != HeartBeat::assetBundleMgr.loadedBundles.end()) {
+                        auto &features = it->second.unsupported_features;
+                        if (features.size() > 0)
+                            supported = false;
+                        auto &infos = it->second.infos;
+                        if (infos.contains("root")) {
+                            auto &root = infos["root"];
+                            if (root == "songProgressPanelGO" || root == "relativeScoreGo" ||
+                                root == "immediateRankGo") {
+                                need_advanced_ui = true;
+                            }
+                        }
+                    }
+                }
+                if (supported) {
+                    if (need_advanced_ui) {
+                        feature_unsupport_hint_ui->set_text(SSL10nGen::STR::advance_ui_required());
+                    } else {
+                        feature_unsupport_hint_ui->set_text("");
+                    }
+                } else {
+                    feature_unsupport_hint_ui->set_text(SSL10nGen::STR::unsupported_feature_udpatre_mod());
+                }
+            }
+        });
 
     feature_unsupport_hint_ui =
         BSML::Lite::CreateText(container->get_transform(), "", 4, UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
     feature_unsupport_hint_ui->set_color(UnityEngine::Color::get_red());
 
-    private_public_btn = BSML::Lite::CreateUIButton(container->get_transform(), LANG::waiting(), UnityEngine::Vector2{},
-                                                    UnityEngine::Vector2{50, 8}, [this]() {
+    private_public_btn = BSML::Lite::CreateUIButton(container->get_transform(), SSL10nGen::STR::waiting(),
+                                                    UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8}, [this]() {
                                                         private_ui = !private_ui;
                                                         UpdateContent();
                                                     });
 
-    BSML::Lite::CreateText(container->get_transform(), LANG::your_setthings_is_in_another_menu(), 4,
+    BSML::Lite::CreateText(container->get_transform(), SSL10nGen::STR::your_setthings_is_in_another_menu(), 4,
                            UnityEngine::Vector2{}, UnityEngine::Vector2{50, 10});
 
     UpdateContent();
 }
 
 void HeartBeat::MainSettings::UpdateContent() {
-    BSML::Lite::SetButtonText(private_public_btn, private_ui ? LANG::hiding_mac_addr() : LANG::showing_mac_addr());
+    BSML::Lite::SetButtonText(private_public_btn,
+                              private_ui ? SSL10nGen::STR::hiding_mac_addr() : SSL10nGen::STR::showing_mac_addr());
 }

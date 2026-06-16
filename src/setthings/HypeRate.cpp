@@ -11,7 +11,7 @@ void HypeRateSettings::CreateElements() {
     auto *container = BSML::Lite::CreateScrollableSettingsContainer(controller->get_transform());
 
     hyperate_id = getModConfig().HypeRateId.GetValue();
-    BSML::Lite::CreateText(container->get_transform(), LANG::hyperate_input_hint(), 4, UnityEngine::Vector2{},
+    BSML::Lite::CreateText(container->get_transform(), SSL10nGen::STR::hyperate_input_hint(), 4, UnityEngine::Vector2{},
                            UnityEngine::Vector2{50, 4});
 
     static HMUI::InputFieldView *hyperate_id_input;
@@ -19,8 +19,8 @@ void HypeRateSettings::CreateElements() {
                                                         [this](StringW v) { hyperate_id = std::string(v); });
 
     buttons.push_back(BSML::Lite::CreateUIButton(
-        container->get_transform(), LANG::hyperate_reset(), UnityEngine::Vector2{}, UnityEngine::Vector2{50, 8},
-        [this]() {
+        container->get_transform(), SSL10nGen::STR::hyperate_reset(), UnityEngine::Vector2{},
+        UnityEngine::Vector2{50, 8}, [this]() {
             {
                 hyperate_id = getModConfig().HypeRateId.GetValue();
                 hyperate_id_input->set_text(hyperate_id.c_str());
@@ -32,7 +32,7 @@ void HypeRateSettings::CreateElements() {
                 std::bind(&HypeRateSettings::enableBtns, this));
         }));
     buttons.push_back(BSML::Lite::CreateUIButton(
-        container->get_transform(), LANG::hyperate_save_and_connect(), UnityEngine::Vector2{},
+        container->get_transform(), SSL10nGen::STR::hyperate_save_and_connect(), UnityEngine::Vector2{},
         UnityEngine::Vector2{50, 8}, [this]() {
             getModConfig().HypeRateId.SetValue(hyperate_id);
             disableBtns();
@@ -40,9 +40,9 @@ void HypeRateSettings::CreateElements() {
                 std::bind(&HypeRateSettings::enableBtns, this));
         }));
 
-    statusText = BSML::Lite::CreateText(container->get_transform(), LANG::no_message_from_server(), 4,
+    statusText = BSML::Lite::CreateText(container->get_transform(), SSL10nGen::STR::no_message_from_server(), 4,
                                         UnityEngine::Vector2{}, UnityEngine::Vector2{100, 1});
-    serverMessageText = BSML::Lite::CreateText(container->get_transform(), LANG::no_message_from_server(), 4,
+    serverMessageText = BSML::Lite::CreateText(container->get_transform(), SSL10nGen::STR::no_message_from_server(), 4,
                                                UnityEngine::Vector2{}, UnityEngine::Vector2{100, 1});
 }
 

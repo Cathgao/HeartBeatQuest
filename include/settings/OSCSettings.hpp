@@ -1,7 +1,7 @@
 #pragma once
 #include "HMUI/CurvedTextMeshPro.hpp"
 #include "settings/Settings.hpp"
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 
 namespace HeartBeat {
 class HeartBeatOSCDataSource;
@@ -13,7 +13,7 @@ class OSCSettings : public Settings {
     void UpdateSelectedOscValue(int idx);
 
   public:
-    OSCSettings() : Settings("OSC Source", LANG::heart_osc_senders(), "<3") {}
+    OSCSettings() : Settings("OSC Source", SSL10nGen::STR::heart_osc_senders(), "<3") {}
     void CreateElements() override;
     void Update() override;
 
@@ -43,7 +43,7 @@ public:
         if (isNone) {
             if (this->selected != selected || dirty) {
                 this->selected = selected;
-                this->text = selected ? LANG::ble_none_selected() : LANG::ble_none_not_selected();
+                this->text = selected ? SSL10nGen::STR::ble_none_selected() : SSL10nGen::STR::ble_none_not_selected();
                 dirty = false;
                 return true;
             } else {

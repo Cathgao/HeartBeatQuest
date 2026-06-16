@@ -1,7 +1,7 @@
 #pragma once
 #include "HMUI/CurvedTextMeshPro.hpp"
 #include "settings/Settings.hpp"
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 
 namespace HeartBeat {
 
@@ -16,7 +16,7 @@ class PulsoidSettings : public Settings {
     HMUI::CurvedTextMeshPro *statusText = nullptr;
 
   public:
-    PulsoidSettings() : Settings("Pulsoid Connect", LANG::pulsoid(), "<3") {}
+    PulsoidSettings() : Settings("Pulsoid Connect", SSL10nGen::STR::pulsoid(), "<3") {}
     void CreateElements() override;
     // void Update() override;
     void Close() override;

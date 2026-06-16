@@ -161,26 +161,6 @@ add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMENT "Copy a files for ndk stack")
         endforeach()
 
-################# begin of asset generate ####################
-
-file(GLOB_RECURSE ASSET_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/*
-)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/assets_hpp)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/assets_cpp)
-set(ASSET_HPP   ${CMAKE_CURRENT_BINARY_DIR}/assets_hpp/asset.hpp)
-set(ASSET_CPP   ${CMAKE_CURRENT_BINARY_DIR}/assets_cpp/asset.cpp)
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-add_custom_command(
-        OUTPUT ${ASSET_HPP} ${ASSET_CPP}
-        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/build_assets.py ${ASSET_HPP} ${ASSET_CPP}
-        DEPENDS ${ASSET_FILES}
-        COMMENT "Generating Assets"
-        VERBATIM
-)
-add_custom_target(generate_assets DEPENDS ${ASSET_HPP} ${ASSET_CPP})
-add_dependencies(${COMPILE_ID} generate_assets)
-target_sources(${COMPILE_ID} PRIVATE ${ASSET_CPP})
-target_include_directories(${COMPILE_ID} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/assets_hpp)
-
-################# end of asset generate ####################
+include(${EXTERN_DIR}/includes/sslocalization/shared/utils/csv2hpp.cmake)
+# argument: projectname, generated_build_folder, include_header_name, your_csv_file_path1, your_csv_file_path2, your_csv_file_path3, ...
+ssl10n_csv2hpp(${COMPILE_ID} ${CMAKE_CURRENT_BINARY_DIR}/SSL10nGenerated SSL10nGenerated.hpp "${CMAKE_CURRENT_SOURCE_DIR}/localize.csv")

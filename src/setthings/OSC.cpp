@@ -2,20 +2,19 @@
 #include "ModConfig.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Settings.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Text.hpp"
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 #include "settings/OSCSettings.hpp"
 void HeartBeat::OSCSettings::CreateElements() {
     // Create a container that has a scroll bar
     auto *container = BSML::Lite::CreateVerticalLayoutGroup(controller->get_transform());
     oscDataSource = HeartBeat::DataSource::getInstance()->as<HeartBeat::HeartBeatOSCDataSource>();
 
-    BSML::Lite::CreateText(
-        container->get_transform(),
-        SSL10n::FormatKeyWithDefault(LANG::KEY_heart_osc_port, "OSC port {}", getModConfig().OSCPort.GetValue()), 4,
-        UnityEngine::Vector2{}, UnityEngine::Vector2{50, 4});
-    mDnsNameText = BSML::Lite::CreateText(container->get_transform(), LANG::mdns_name_no());
+    BSML::Lite::CreateText(container->get_transform(),
+                           SSL10nGen::FMT::heart_osc_port(getModConfig().OSCPort.GetValue()), 4, UnityEngine::Vector2{},
+                           UnityEngine::Vector2{50, 4});
+    mDnsNameText = BSML::Lite::CreateText(container->get_transform(), SSL10nGen::STR::mdns_name_no());
 
-    BSML::Lite::CreateToggle(container->get_transform(), LANG::mdns_enable(),
+    BSML::Lite::CreateToggle(container->get_transform(), SSL10nGen::STR::mdns_enable(),
                              getModConfig().OSC_MDNS_ENABLED.GetValue(), [this](bool value) {
                                  getModConfig().OSC_MDNS_ENABLED.SetValue(value);
                                  if (value) {
@@ -99,6 +98,6 @@ void HeartBeat::OSCSettings::Update() {
     std::string otherName = oscDataSource->mDnsName;
     if (myMdnsName != otherName) {
         myMdnsName = otherName;
-        mDnsNameText->set_text(LANG::mdns_name_title() + myMdnsName);
+        mDnsNameText->set_text(SSL10nGen::STR::mdns_name_title() + myMdnsName);
     }
 }

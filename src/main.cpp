@@ -14,7 +14,7 @@
 
 #include "ModConfig.hpp"
 
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 #include <cstddef>
 #include <mutex>
 #include "BeatLeaderRecorder.hpp"
@@ -135,11 +135,11 @@ extern "C" void late_load() {
 
     custom_types::Register::AutoRegister();
 
+    getLogger().info("init l10n");
+    SSL10nGen::LoadCsv();
+
     getLogger().info("init BSML");
     BSML::Init();
-
-    getLogger().info("init i18n");
-    I18N::Setup();
 
     getLogger().info("Installing ui...");
     HeartBeat::SettingsUI::Setup();

@@ -1,7 +1,7 @@
 #pragma once
 #include "HMUI/CurvedTextMeshPro.hpp"
 #include "settings/Settings.hpp"
-#include "i18n.hpp"
+#include "SSL10nGenerated.hpp"
 
 namespace HeartBeat {
 
@@ -16,7 +16,7 @@ class BleSettings : public Settings {
     void UpdateSelectedBLEValue(int idx);
 
   public:
-    BleSettings() : Settings("Bluetooth Device", LANG::heart_devices(), "<3") {}
+    BleSettings() : Settings("Bluetooth Device", SSL10nGen::STR::heart_devices(), "<3") {}
     void CreateElements() override;
 
     void Open() override;
@@ -47,7 +47,7 @@ public:
         if (isNone) {
             if (this->selected != selected || dirty) {
                 this->selected = selected;
-                this->text = selected ? LANG::ble_none_selected() : LANG::ble_none_not_selected();
+                this->text = selected ? SSL10nGen::STR::ble_none_selected() : SSL10nGen::STR::ble_none_not_selected();
                 dirty = false;
                 return true;
             } else {
