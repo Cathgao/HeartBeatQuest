@@ -23,6 +23,10 @@
 #include "multi_version_compat.hpp"
 #include <time.h>
 
+#ifdef WITH_REPLAY
+#include "metacore/shared/stats.hpp"
+#endif
+
 inline double now_ms(void) {
     struct timespec res;
     clock_gettime(CLOCK_REALTIME, &res);
@@ -357,11 +361,11 @@ void RecordDataIfNeeded(int heartrate) {
 bool isReplaying() { return replayStarted; }
 bool ReplayGetData(int &heartrate) {
     // auto beg_time = now_ms();
-
+#ifdef WITH_REPLAY
     auto isInSection = [](int index) {
         return index >= 0 && index < recordData.size() &&
-               recordData[index].timestamp <= audioTimeSyncController->songTime &&
-               (index + 1 >= recordData.size() || recordData[index + 1].timestamp > audioTimeSyncController->songTime);
+               recordData[index].timestamp <= MetaCore::Stats::GetSongTime() &&
+               (index + 1 >= recordData.size() || recordData[index + 1].timestamp > MetaCore::Stats::GetSongTime());
     };
     if (replayStarted && audioTimeSyncController) {
         if (isInSection(currentDataToReplay)) {
@@ -387,6 +391,7 @@ bool ReplayGetData(int &heartrate) {
             }
         }
     }
+#endif // WITH_REPLAY
     return false;
 }
 
