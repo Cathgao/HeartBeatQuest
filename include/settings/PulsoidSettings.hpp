@@ -16,7 +16,8 @@ class PulsoidSettings : public Settings {
     HMUI::CurvedTextMeshPro *statusText = nullptr;
 
   public:
-    PulsoidSettings() : Settings("Pulsoid Connect", SSL10nGen::STR::pulsoid(), "<3") {}
+    PulsoidSettings()
+        : Settings("HEART_BEAT_QUEST_SETTHINGS_PUSLOID_TITLE", "HEART_BEAT_QUEST_SETTHINGS_PUSLOID_BUTTON", "<3") {}
     void CreateElements() override;
     // void Update() override;
     void Close() override;

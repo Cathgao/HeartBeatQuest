@@ -7,7 +7,8 @@ namespace HeartBeat {
 
 class MainSettings : public Settings {
   public:
-    MainSettings() : Settings("HeartBeatQuest Main Config", SSL10nGen::STR::heart_config(), "<3") {}
+    MainSettings()
+        : Settings("HEART_BEAT_QUEST_SETTHINGS_MAIN_TITLE", "HEART_BEAT_QUEST_SETTHINGS_MAIN_BUTTON", "<3") {}
     void CreateElements() override;
 
     UnityEngine::UI::Button *private_public_btn = nullptr;

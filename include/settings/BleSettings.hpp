@@ -16,7 +16,7 @@ class BleSettings : public Settings {
     void UpdateSelectedBLEValue(int idx);
 
   public:
-    BleSettings() : Settings("Bluetooth Device", SSL10nGen::STR::heart_devices(), "<3") {}
+    BleSettings() : Settings("HEART_BEAT_QUEST_SETTHINGS_BLE_TITLE", "HEART_BEAT_QUEST_SETTHINGS_BLE_BUTTON", "<3") {}
     void CreateElements() override;
 
     void Open() override;

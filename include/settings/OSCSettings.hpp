@@ -13,7 +13,7 @@ class OSCSettings : public Settings {
     void UpdateSelectedOscValue(int idx);
 
   public:
-    OSCSettings() : Settings("OSC Source", SSL10nGen::STR::heart_osc_senders(), "<3") {}
+    OSCSettings() : Settings("HEART_BEAT_QUEST_SETTHINGS_OSC_TITLE", "HEART_BEAT_QUEST_SETTHINGS_OSC_BUTTON", "<3") {}
     void CreateElements() override;
     void Update() override;
 

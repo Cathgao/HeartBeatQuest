@@ -7,7 +7,8 @@ namespace HeartBeat {
 
 class HypeRateSettings : public Settings {
   public:
-    HypeRateSettings() : Settings("HypeRate Connect", SSL10nGen::STR::hyperate(), "<3") {}
+    HypeRateSettings()
+        : Settings("HEART_BEAT_QUEST_SETTHINGS_HYPERATE_TITLE", "HEART_BEAT_QUEST_SETTHINGS_HYPERATE_BUTTON", "<3") {}
     void CreateElements() override;
 
     std::string hyperate_id;

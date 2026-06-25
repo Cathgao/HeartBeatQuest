@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SSL10n.hpp"
+#include "bsml/shared/BSML/MenuButtons/MenuButton.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "HMUI/ViewController.hpp"
 #include <atomic>
@@ -9,6 +11,7 @@
 #include <vector>
 #include "bsml/shared/BSML.hpp"
 #include "PreviewObj.hpp"
+#include "bsml/shared/BSML/FlowCoordinators/MainMenuHolderFlowCoordinator.hpp"
 
 namespace HeartBeat {
 
@@ -25,6 +28,10 @@ class Settings {
 
     bool m_isActive = false;
 
+    SafePtr<BSML::MenuButton> menuButton;
+    bool registered = false;
+    BSML::MainMenuRegistration *mainMenuRegistraction;
+
   protected:
     HMUI::ViewController *controller = nullptr;
 
@@ -33,26 +40,44 @@ class Settings {
         : menuTitle(menuTitle), buttonText(buttonText), hoverHint(hoverHint) {}
 
     void Register() {
-        BSML::Register::RegisterMainMenuViewControllerMethod(
-            menuTitle, buttonText, hoverHint,
-            [this](HMUI::ViewController *self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
-                if (firstActivation) {
-                    this->controller = self;
-                    this->CreateElements();
-                    self->add_didDeactivateEvent(
-                        custom_types::MakeDelegate<HMUI::ViewController::DidDeactivateDelegate *>(
-                            std::function([this](bool removedFromHierarchy, bool screenSystemDisabling) {
-                                MainMenuPreviewer::getInstance()->Hide();
-                                m_isActive = false;
-                                active_setthings_ui_count--;
-                                this->Close();
-                            })));
+        BSML::Init();
+
+        auto setupFunc = [this](HMUI::ViewController *self, bool firstActivation, bool addedToHierarchy,
+                                bool screenSystemEnabling) {
+            if (firstActivation) {
+                this->controller = self;
+                this->CreateElements();
+                self->add_didDeactivateEvent(custom_types::MakeDelegate<HMUI::ViewController::DidDeactivateDelegate *>(
+                    std::function([this](bool removedFromHierarchy, bool screenSystemDisabling) {
+                        MainMenuPreviewer::getInstance()->Hide();
+                        m_isActive = false;
+                        active_setthings_ui_count--;
+                        this->Close();
+                    })));
+            }
+            this->Open();
+            m_isActive = true;
+            active_setthings_ui_count++;
+            MainMenuPreviewer::getInstance()->Show();
+        };
+        this->mainMenuRegistraction =
+            new BSML::MainMenuRegistration(SSL10n::Get(menuTitle), SSL10n::Get(buttonText), hoverHint, setupFunc);
+        this->menuButton = BSML::MenuButton::Make_new(
+            SSL10n::Get(buttonText), hoverHint, std::bind(&BSML::MainMenuRegistration::Present, mainMenuRegistraction));
+
+        registered = BSML::Register::RegisterMenuButton(&*this->menuButton);
+
+        SSL10n::OnLanguageChangeCallback += [this]() {
+            if (SSL10n::Get(menuTitle) != menuButton->text) {
+                if (registered) {
+                    BSML::Register::UnRegisterMenuButton(&*this->menuButton);
+                    this->menuButton = BSML::MenuButton::Make_new(
+                        SSL10n::Get(buttonText), hoverHint,
+                        std::bind(&BSML::MainMenuRegistration::Present, mainMenuRegistraction));
+                    registered = BSML::Register::RegisterMenuButton(&*this->menuButton);
                 }
-                this->Open();
-                m_isActive = true;
-                active_setthings_ui_count++;
-                MainMenuPreviewer::getInstance()->Show();
-            });
+            }
+        };
     }
 
     bool isActive() { return m_isActive; }
