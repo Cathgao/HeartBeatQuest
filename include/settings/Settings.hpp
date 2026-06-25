@@ -68,7 +68,7 @@ class Settings {
         registered = BSML::Register::RegisterMenuButton(&*this->menuButton);
 
         SSL10n::OnLanguageChangeCallback += [this]() {
-            if (SSL10n::Get(menuTitle) != menuButton->text) {
+            if (SSL10n::Get(buttonText) != menuButton->text) {
                 if (registered) {
                     BSML::Register::UnRegisterMenuButton(&*this->menuButton);
                     this->menuButton = BSML::MenuButton::Make_new(
