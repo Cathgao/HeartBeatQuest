@@ -15,6 +15,7 @@
 #include "ModConfig.hpp"
 
 #include "SSL10nGenerated.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 #include <cstddef>
 #include <mutex>
 #include "BeatLeaderRecorder.hpp"
@@ -118,14 +119,6 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
     getLogger().info("The UI has been created");
 }
 
-MAKE_HOOK_MATCH(HeartBeatSceneChange, &UnityEngine::SceneManagement::SceneManager::SetActiveScene, bool,
-                UnityEngine::SceneManagement::Scene scene) {
-    // maybe I could find a better hook site in the future.
-    static std::once_flag in_game_init_flag;
-    std::call_once(in_game_init_flag, []() { HeartBeat::InitModObject(); });
-
-    return HeartBeatSceneChange(scene);
-}
 
 // Called later on in the game loading - a good time to install function hooks
 extern "C" void late_load() {
@@ -151,7 +144,9 @@ extern "C" void late_load() {
 
     getLogger().info("Installing hooks...");
     INSTALL_HOOK(getLogger(), GameplayCoreHook);
-    INSTALL_HOOK(getLogger(), HeartBeatSceneChange);
+    BSML::MainThreadScheduler::Schedule([]() {
+        HeartBeat::InitModObject();
+    });
 
     getLogger().info("init recorder...");
     HeartBeat::Recorder::Init();
