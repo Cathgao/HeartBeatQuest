@@ -92,7 +92,7 @@ UnityEngine::UI::Graphic *hrBundledUIPremade(UnityEngine::GameObject *parent, Un
     }
 
     HeartBeat::AssetBundleInstinateInformation result;
-    if (!HeartBeat::assetBundleMgr.Instantiate(SelectedUI, parent->get_transform(), result)) {
+    if (!HeartBeat::assetBundleMgr.Instantiate(SelectedUI, parent->get_transform(), result) || !result.gameObject) {
         getLogger().error("The UI Can't loaded.");
         return ret;
     }

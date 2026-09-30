@@ -123,11 +123,26 @@ void HeartBeat::MainSettings::CreateElements() {
     for (auto &pair : HeartBeat::assetBundleMgr.loadedBundles) {
         ui_s.push_back(pair.first);
     }
+    if (ui_s.empty()) {
+        ui_s.push_back("Default");
+    }
+
+    std::string selectedUIVal = getModConfig().SelectedUI.GetValue();
+    bool foundSelected = false;
+    for (auto &s : ui_s) {
+        if (s == selectedUIVal) {
+            foundSelected = true;
+            break;
+        }
+    }
+    if (!foundSelected) {
+        selectedUIVal = std::string(ui_s[0]);
+    }
 
     static HMUI::CurvedTextMeshPro *feature_unsupport_hint_ui;
 
     BSML::Lite::CreateDropdown(
-        container->get_transform(), SSL10nGen::STR::select_ui(), getModConfig().SelectedUI.GetValue(), ui_s,
+        container->get_transform(), SSL10nGen::STR::select_ui(), selectedUIVal, ui_s,
         [](StringW v) {
             if (getModConfig().SelectedUI.GetValue() != v) {
                 getModConfig().SelectedUI.SetValue(v);

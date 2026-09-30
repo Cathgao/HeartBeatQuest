@@ -13,13 +13,17 @@ HeartBeat::MainMenuPreviewer::MainMenuPreviewer() {
 }
 
 void HeartBeat::MainMenuPreviewer::Show() {
-    MainMenuPreviewObject->set_active(true);
-    MainMenuPreviewObjectComp->addToUIManager();
+    if (MainMenuPreviewObject)
+        MainMenuPreviewObject->set_active(true);
+    if (MainMenuPreviewObjectComp)
+        MainMenuPreviewObjectComp->addToUIManager();
 }
 
 void HeartBeat::MainMenuPreviewer::Hide() {
-    MainMenuPreviewObjectComp->removeFromUIManager();
-    MainMenuPreviewObject->set_active(false);
+    if (MainMenuPreviewObjectComp)
+        MainMenuPreviewObjectComp->removeFromUIManager();
+    if (MainMenuPreviewObject)
+        MainMenuPreviewObject->set_active(false);
 }
 
 void HeartBeat::MainMenuPreviewer::Reload() {
@@ -46,13 +50,17 @@ void HeartBeat::MainMenuPreviewer::Reload() {
     if (!HeartBeat::assetBundleMgr.loadedBundles.contains(SelectedUI))
         SelectedUI = "Default";
     if (!HeartBeat::assetBundleMgr.loadedBundles.contains(SelectedUI)) {
-        getLogger().error("Can't find ui asset bundle '{}' to load!", SelectedUI);
+        getLogger().warn("Can't find ui asset bundle '{}' to load!", SelectedUI);
     }
 
     HeartBeat::AssetBundleInstinateInformation result;
-    HeartBeat::assetBundleMgr.Instantiate(SelectedUI, canvas->get_transform(), result);
-    MainMenuPreviewObjectComp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
-    MainMenuPreviewObjectComp->loadedComponents = result;
+    if (HeartBeat::assetBundleMgr.Instantiate(SelectedUI, canvas->get_transform(), result) && result.gameObject) {
+        MainMenuPreviewObjectComp = result.gameObject->AddComponent<HeartBeat::HeartBeatObj *>();
+        MainMenuPreviewObjectComp->loadedComponents = result;
+    } else {
+        getLogger().warn("UI preview object instantiation failed for '{}'", SelectedUI);
+        MainMenuPreviewObjectComp = nullptr;
+    }
 
     MainMenuPreviewObject = obj;
 }

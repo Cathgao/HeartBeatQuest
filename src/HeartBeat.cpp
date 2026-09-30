@@ -108,13 +108,18 @@ namespace HeartBeat {
 AssetBundleManager assetBundleMgr;
 
 void FixPrefab(UnityEngine::Transform *transform) {
+    if (!transform)
+        return;
     auto tm = transform->GetComponent<TMPro::TMP_Text *>();
     if (tm) {
         tm->set_font(BSML::Helpers::GetMainTextFont());
         tm->set_fontSharedMaterial(BSML::Helpers::GetMainUIFontMaterial());
     }
     for (int i = 0; i < transform->get_childCount(); i++) {
-        FixPrefab(transform->GetChild(i).ptr());
+        auto child = transform->GetChild(i);
+        if (child) {
+            FixPrefab(child.ptr());
+        }
     }
 }
 
@@ -124,7 +129,15 @@ void AssetBundleManager::Init() {
     initialized = true;
 
     auto LoadAssetBundle = [this](UnityEngine::AssetBundle *bundle, std::optional<std::string> filepath) {
+        if (!bundle) {
+            getLogger().warn("LoadAssetBundle called with null bundle");
+            return;
+        }
         auto assetNamesUnity = bundle->GetAllAssetNames();
+        if (!assetNamesUnity) {
+            getLogger().warn("bundle->GetAllAssetNames() returned null");
+            return;
+        }
         std::vector<std::string> assetPaths = {assetNamesUnity->begin(), assetNamesUnity->end()};
         for (auto assetPath : assetPaths) {
             getLogger().info("Start load {}", assetPath);
@@ -205,11 +218,19 @@ void AssetBundleManager::Init() {
     };
 
     try {
-        auto bundle = UnityEngine::AssetBundle::LoadFromFile(DEFAULT_UI_PATH);
-        LoadAssetBundle(bundle, {});
-        getLogger().info("Unload bundle {}", (void *)bundle);
-        bundle->Unload(true);
-        getLogger().info("done");
+        if (std::filesystem::exists(DEFAULT_UI_PATH)) {
+            auto bundle = UnityEngine::AssetBundle::LoadFromFile(DEFAULT_UI_PATH);
+            if (bundle) {
+                LoadAssetBundle(bundle, {});
+                getLogger().info("Unload bundle {}", (void *)bundle);
+                bundle->Unload(true);
+                getLogger().info("done");
+            } else {
+                getLogger().warn("Failed to load bundle from {}", DEFAULT_UI_PATH);
+            }
+        } else {
+            getLogger().warn("Default UI bundle does not exist at {}", DEFAULT_UI_PATH);
+        }
     } catch (...) {
         getLogger().error("Can't load default ui");
     }
@@ -220,8 +241,12 @@ void AssetBundleManager::Init() {
             if (entry.is_regular_file() && entry.path().has_extension() && entry.path().extension() == ".bundle") {
                 try {
                     auto bundle = UnityEngine::AssetBundle::LoadFromFile(entry.path().c_str());
-                    LoadAssetBundle(bundle, entry.path());
-                    bundle->Unload(true);
+                    if (bundle) {
+                        LoadAssetBundle(bundle, entry.path());
+                        bundle->Unload(true);
+                    } else {
+                        getLogger().warn("Failed to load asset bundle from {}", entry.path().c_str());
+                    }
                 } catch (...) {
                     getLogger().error("Can't load asset file {}", entry.path().c_str());
                 }
@@ -232,10 +257,13 @@ void AssetBundleManager::Init() {
 }
 
 void HandleTransformsInBundle(AssetBundleInstinateInformation &result, UnityEngine::Transform *transform) {
+    if (!transform)
+        return;
     {
         auto tm = transform->GetComponent<TMPro::TMP_Text *>();
         if (tm) {
-            if (transform->get_name()->Equals("auto:heartrate")) {
+            auto tname = transform->get_name();
+            if (tname && tname->Equals("auto:heartrate")) {
                 result.heartrateTexts.push_back(tm);
             }
         }
@@ -245,12 +273,19 @@ void HandleTransformsInBundle(AssetBundleInstinateInformation &result, UnityEngi
         }
     }
     for (int i = 0; i < transform->get_childCount(); i++) {
-        HandleTransformsInBundle(result, transform->GetChild(i).ptr());
+        auto child = transform->GetChild(i);
+        if (child) {
+            HandleTransformsInBundle(result, child.ptr());
+        }
     }
 }
 
 bool AssetBundleManager::Instantiate(std::string name, UnityEngine::Transform *parent,
                                      AssetBundleInstinateInformation &result) {
+    if (!parent) {
+        getLogger().error("Instantiate called with null parent");
+        return false;
+    }
     if (!loadedBundles.contains(name))
         return false;
     auto &assetUI = loadedBundles[name];
@@ -289,6 +324,10 @@ bool AssetBundleManager::Instantiate(std::string name, UnityEngine::Transform *p
     auto gameobject = UnityEngine::GameObject::Instantiate(prefab, parent);
     getLogger().info("InstinateDone");
     bundle->Unload(false);
+    if (!gameobject) {
+        getLogger().error("GameObject::Instantiate returned null");
+        return false;
+    }
     HandleTransformsInBundle(result, gameobject->get_transform());
     result.gameObject = gameobject;
     return true;

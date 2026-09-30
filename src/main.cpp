@@ -110,7 +110,7 @@ MAKE_HOOK_MATCH(GameplayCoreHook, &GlobalNamespace::CoreGameHUDController::Initi
     getLogger().info("UI Mount position: {}", parent->get_name());
 
     HeartBeat::AssetBundleInstinateInformation result;
-    if (!HeartBeat::assetBundleMgr.Instantiate(SelectedUI, parent->get_transform(), result)) {
+    if (!HeartBeat::assetBundleMgr.Instantiate(SelectedUI, parent->get_transform(), result) || !result.gameObject) {
         getLogger().error("The UI Can't loaded.");
         return;
     }
