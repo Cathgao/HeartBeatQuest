@@ -11,21 +11,18 @@
 #include <string>
 #include <arpa/inet.h>
 #include <sys/endian.h>
+#include <dlfcn.h>
 #include "beatsaber-hook/shared/utils/logging.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "beatsaber-hook/shared/utils/hooking.hpp"
+#include "custom-types/shared/delegate.hpp"
 #include "GlobalNamespace/ScoreController.hpp"
 #include "GlobalNamespace/AudioTimeSyncController.hpp"
-#include "GlobalNamespace/GameplayCoreInstaller.hpp"
 #include "GlobalNamespace/PauseMenuManager.hpp"
 #include "main.hpp"
 #include "ModConfig.hpp"
 #include "multi_version_compat.hpp"
 #include <time.h>
-
-#ifdef WITH_REPLAY
-#include "metacore/shared/stats.hpp"
-#endif
 
 inline double now_ms(void) {
     struct timespec res;
@@ -233,18 +230,16 @@ MAKE_HOOK_MATCH(ScoreControllerStart, &GlobalNamespace::ScoreController::Start, 
                 GlobalNamespace::ScoreController *self) {
     ScoreControllerStart(self);
     audioTimeSyncController = self->_audioTimeSyncController;
-}
-MAKE_HOOK_MATCH(ScoreControllerDestroy, &GlobalNamespace::ScoreController::OnDestroy, void,
-                GlobalNamespace::ScoreController *self) {
-    ScoreControllerDestroy(self);
-    audioTimeSyncController = nullptr;
-}
-
-MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInstaller::InstallBindings, void,
-                GlobalNamespace::GameplayCoreInstaller *self) {
-    SinglePlayerInstallBindings(self);
-
-    // ReplayCallbackShouldCleanData = true;
+    if (audioTimeSyncController) {
+        auto delegate = custom_types::MakeDelegate<System::Action*>(
+            std::function<void()>([]() {
+                if (audioTimeSyncController) {
+                    isPaused = (audioTimeSyncController->get_state() == GlobalNamespace::AudioTimeSyncController_State::Paused);
+                }
+            })
+        );
+        audioTimeSyncController->add_stateChangedEvent(delegate);
+    }
 
     auto DisableRecord = []() {
         recordStarted = false;
@@ -297,21 +292,26 @@ MAKE_HOOK_MATCH(SinglePlayerInstallBindings, &GlobalNamespace::GameplayCoreInsta
 #endif
 }
 
-MAKE_HOOK_MATCH(LevelPause, &GlobalNamespace::PauseMenuManager::ShowMenu, void,
-                GlobalNamespace::PauseMenuManager *self) {
-    LevelPause(self);
-    isPaused = true;
+MAKE_HOOK_MATCH(ScoreControllerDestroy, &GlobalNamespace::ScoreController::OnDestroy, void,
+                GlobalNamespace::ScoreController *self) {
+    ScoreControllerDestroy(self);
+    audioTimeSyncController = nullptr;
 }
 
-MAKE_HOOK_MATCH(LevelUnpause, &GlobalNamespace::PauseMenuManager::HandleResumeFromPauseAnimationDidFinish, void,
-                GlobalNamespace::PauseMenuManager *self) {
-    LevelUnpause(self);
-    isPaused = false;
-}
+// Hooks LevelPause and LevelUnpause removed in favor of native AudioTimeSyncController state tracking (zero-hook)
 
 bool BeatLeaderDetected() {
-    return !!CondDeps::FindUnsafe<void, std::string, std::function<void(std::string, int *, void **)>>(
-        "bl", "AddReplayCustomDataProvider");
+    if (CondDeps::FindUnsafe<void, std::string, std::function<void(std::string, int *, void **)>>(
+            "bl", "AddReplayCustomDataProvider").has_value()) {
+        return true;
+    }
+    if (dlsym(RTLD_DEFAULT, "__AddReplayCustomDataProvider") != nullptr) {
+        return true;
+    }
+    auto handle = dlopen("/data/data/com.beatgames.beatsaber/files/mods/libbl.so", RTLD_NOW | RTLD_NOLOAD);
+    if (handle) return true;
+    handle = dlopen("/data/data/com.beatgames.beatsaber/files/mods/libbl.so", RTLD_NOW | RTLD_LOCAL);
+    return handle != nullptr;
 }
 
 void Init() {
@@ -323,6 +323,21 @@ void Init() {
         getLogger().info("Beatleader is detected, enable record support");
         needRecord = true;
         AddReplayCustomDataProvider.value()("HeartBeatQuest", RecordCallback);
+    } else {
+        auto sym = dlsym(RTLD_DEFAULT, "__AddReplayCustomDataProvider");
+        if (!sym) {
+            auto handle = dlopen("/data/data/com.beatgames.beatsaber/files/mods/libbl.so", RTLD_NOW | RTLD_LOCAL);
+            if (handle) {
+                sym = dlsym(handle, "__AddReplayCustomDataProvider");
+            }
+        }
+        if (sym) {
+            getLogger().info("Beatleader is detected via dlopen libbl.so, enable record support");
+            auto res = reinterpret_cast<CondDeps::CondDepsRet (*)()>(sym)();
+            auto fn = reinterpret_cast<void (*)(std::string, std::function<void(std::string, int *, void **)>)>(res.func);
+            needRecord = true;
+            fn("HeartBeatQuest", RecordCallback);
+        }
     }
 
 #ifdef WITH_REPLAY
@@ -346,14 +361,13 @@ void Init() {
     if (needRecord || needReplay) {
         INSTALL_HOOK(getLogger(), ScoreControllerStart);
         INSTALL_HOOK(getLogger(), ScoreControllerDestroy);
-        INSTALL_HOOK(getLogger(), SinglePlayerInstallBindings);
-        INSTALL_HOOK(getLogger(), LevelPause);
-        INSTALL_HOOK(getLogger(), LevelUnpause);
+        // Zero-hook: LevelPause and LevelUnpause hooks eliminated!
     }
 }
 
 void RecordDataIfNeeded(int heartrate) {
-    if (needRecord && audioTimeSyncController && recordStarted && !isPaused) {
+    bool currentPaused = isPaused || (audioTimeSyncController && audioTimeSyncController->get_state() == GlobalNamespace::AudioTimeSyncController_State::Paused);
+    if (needRecord && audioTimeSyncController && recordStarted && !currentPaused) {
         float_t now = audioTimeSyncController->songTime;
 
         if (now >= lastRecordSongTime && now < lastRecordSongTime + MIN_REDORD_TIME_INVERVAL)
@@ -367,11 +381,11 @@ void RecordDataIfNeeded(int heartrate) {
 bool isReplaying() { return replayStarted; }
 bool ReplayGetData(int &heartrate) {
     // auto beg_time = now_ms();
-#ifdef WITH_REPLAY
+
     auto isInSection = [](int index) {
         return index >= 0 && index < recordData.size() &&
-               recordData[index].timestamp <= MetaCore::Stats::GetSongTime() &&
-               (index + 1 >= recordData.size() || recordData[index + 1].timestamp > MetaCore::Stats::GetSongTime());
+               recordData[index].timestamp <= audioTimeSyncController->songTime &&
+               (index + 1 >= recordData.size() || recordData[index + 1].timestamp > audioTimeSyncController->songTime);
     };
     if (replayStarted && audioTimeSyncController) {
         if (isInSection(currentDataToReplay)) {
@@ -397,7 +411,6 @@ bool ReplayGetData(int &heartrate) {
             }
         }
     }
-#endif // WITH_REPLAY
     return false;
 }
 
